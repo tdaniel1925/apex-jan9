@@ -56,10 +56,24 @@ export default function DashboardPage() {
           return;
         }
 
+        // If there's an error other than not found, stop loading
+        if (agentError && agentError.code !== 'PGRST116') {
+          console.error('Agent fetch error:', agentError);
+          setLoading(false);
+          return;
+        }
+
       if (!agentData && retryCount < maxRetries) {
         // Agent not found yet, layout might be creating it - retry after delay
         retryCount++;
         setTimeout(fetchData, 500);
+        return;
+      }
+
+      // If agent still not found after retries, stop loading
+      if (!agentData) {
+        console.error('Agent not found after retries');
+        setLoading(false);
         return;
       }
 
