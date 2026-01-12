@@ -19,7 +19,7 @@ const mockAnthropicClient = {
 };
 
 vi.mock('@/lib/ai/claude-client', () => ({
-  getAnthropicClient: vi.fn(() => mockAnthropicClient),
+  getAnthropicClient: vi.fn(() => Promise.resolve(mockAnthropicClient)),
   CLAUDE_MODELS: {
     SONNET: 'claude-3-5-sonnet-20241022',
   },
@@ -50,6 +50,8 @@ function createMockSupabase(user: any, agent: any = null) {
 describe('POST /api/ai/chat', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mock environment variable
+    process.env.ANTHROPIC_API_KEY = 'test-key';
   });
 
   it('should return 401 if user is not authenticated', async () => {
