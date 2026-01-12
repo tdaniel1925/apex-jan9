@@ -53,3 +53,6 @@ export function createAdminClient() {
 
 // Alias for backwards compatibility
 export { createServerSupabaseClient as createServerClient };
+
+// Alias for service operations (bypasses RLS)
+export { createAdminClient as createServiceClient };

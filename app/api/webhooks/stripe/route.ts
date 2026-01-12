@@ -2,12 +2,12 @@
  * Stripe Webhook Handler
  * POST /api/webhooks/stripe - Handle Stripe events
  *
- * Flow:
- * 1. Verify webhook signature
- * 2. Handle checkout.session.completed
- * 3. Create order + order_items
- * 4. Create commission (triggers PBV update via database trigger)
- * 5. Eventually trigger override calculations (future: background job)
+ * Handles:
+ * - checkout.session.completed (product purchases)
+ * - customer.subscription.created (new copilot subscriptions)
+ * - customer.subscription.updated (subscription changes)
+ * - customer.subscription.deleted (cancellations)
+ * - invoice.paid (subscription payments - for commissions)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -15,6 +15,12 @@ import { headers } from 'next/headers';
 import { createAdminClient } from '@/lib/db/supabase-server';
 import { stripe, verifyStripeWebhook } from '@/lib/stripe';
 import { calculateRetailCommission } from '@/lib/engines/retail-commission-engine';
+import {
+  handleSubscriptionUpdate,
+  handleSubscriptionCancelled,
+} from '@/lib/copilot/subscription-service';
+import { createCopilotCommission } from '@/lib/copilot/commission-service';
+import { getTierFromPriceId, COPILOT_TIERS } from '@/lib/copilot/config';
 import Stripe from 'stripe';
 
 export async function POST(request: NextRequest) {
@@ -39,7 +45,26 @@ export async function POST(request: NextRequest) {
     // Handle different event types
     switch (event.type) {
       case 'checkout.session.completed':
-        await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+        const session = event.data.object as Stripe.Checkout.Session;
+        // Check if this is a subscription checkout or product checkout
+        if (session.mode === 'subscription') {
+          await handleSubscriptionCheckout(session);
+        } else {
+          await handleCheckoutCompleted(session);
+        }
+        break;
+
+      case 'customer.subscription.created':
+      case 'customer.subscription.updated':
+        await handleSubscriptionEvent(event.data.object as Stripe.Subscription);
+        break;
+
+      case 'customer.subscription.deleted':
+        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
+        break;
+
+      case 'invoice.paid':
+        await handleInvoicePaid(event.data.object as Stripe.Invoice);
         break;
 
       default:
@@ -193,6 +218,136 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     console.log(`   - Commission: $${commission.commission_amount.toFixed(2)}`);
   } catch (error) {
     console.error('Error processing checkout.session.completed:', error);
+    throw error;
+  }
+}
+
+/**
+ * Handle subscription checkout completed
+ */
+async function handleSubscriptionCheckout(session: Stripe.Checkout.Session) {
+  try {
+    const metadata = session.metadata;
+    if (!metadata?.agent_id) {
+      console.log('Subscription checkout without agent_id, skipping');
+      return;
+    }
+
+    console.log(`✅ Subscription checkout completed for agent ${metadata.agent_id}`);
+    // The subscription.created webhook will handle the actual subscription setup
+  } catch (error) {
+    console.error('Error processing subscription checkout:', error);
+    throw error;
+  }
+}
+
+/**
+ * Handle subscription created/updated events
+ */
+async function handleSubscriptionEvent(subscription: Stripe.Subscription) {
+  try {
+    const metadata = subscription.metadata;
+    if (!metadata?.agent_id) {
+      console.log('Subscription event without agent_id, skipping');
+      return;
+    }
+
+    // Get the price ID from the first item
+    const priceId = subscription.items.data[0]?.price?.id;
+    if (!priceId) {
+      throw new Error('No price ID in subscription');
+    }
+
+    // Get period dates (use type assertion for Stripe API compatibility)
+    const sub = subscription as unknown as {
+      id: string;
+      customer: string;
+      status: string;
+      current_period_start: number;
+      current_period_end: number;
+    };
+
+    await handleSubscriptionUpdate(
+      subscription.id,
+      subscription.customer as string,
+      subscription.status,
+      priceId,
+      new Date(sub.current_period_start * 1000),
+      new Date(sub.current_period_end * 1000),
+      metadata as Record<string, string>
+    );
+
+    console.log(`✅ Subscription ${subscription.status} for agent ${metadata.agent_id}`);
+  } catch (error) {
+    console.error('Error processing subscription event:', error);
+    throw error;
+  }
+}
+
+/**
+ * Handle subscription deleted event
+ */
+async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+  try {
+    await handleSubscriptionCancelled(subscription.id);
+    console.log(`✅ Subscription ${subscription.id} cancelled`);
+  } catch (error) {
+    console.error('Error processing subscription deletion:', error);
+    throw error;
+  }
+}
+
+/**
+ * Handle invoice paid - create commission for subscription payments
+ */
+async function handleInvoicePaid(invoice: Stripe.Invoice) {
+  try {
+    // Type assertion for Stripe API compatibility
+    const inv = invoice as unknown as {
+      subscription: string | null;
+      amount_paid: number;
+      billing_reason: string | null;
+    };
+
+    // Only process subscription invoices
+    if (!inv.subscription) {
+      return;
+    }
+
+    // Get the subscription to find the agent
+    const subscription = await stripe.subscriptions.retrieve(inv.subscription);
+    const metadata = subscription.metadata;
+
+    if (!metadata?.agent_id) {
+      console.log('Invoice paid for subscription without agent_id, skipping commission');
+      return;
+    }
+
+    // Skip if this is the first invoice (trial conversion handled separately)
+    // Only create commission for renewal payments
+    if (inv.billing_reason === 'subscription_create') {
+      // First payment - create commission
+      await createCopilotCommission(
+        metadata.agent_id,
+        subscription.id,
+        inv.amount_paid,
+        parseInt(metadata.bonus_volume || '0', 10),
+        metadata.tier as 'basic' | 'pro' | 'agency' || 'basic'
+      );
+      console.log(`✅ Initial commission created for agent ${metadata.agent_id}`);
+    } else if (inv.billing_reason === 'subscription_cycle') {
+      // Renewal payment - create commission
+      await createCopilotCommission(
+        metadata.agent_id,
+        subscription.id,
+        inv.amount_paid,
+        parseInt(metadata.bonus_volume || '0', 10),
+        metadata.tier as 'basic' | 'pro' | 'agency' || 'basic'
+      );
+      console.log(`✅ Renewal commission created for agent ${metadata.agent_id}`);
+    }
+  } catch (error) {
+    console.error('Error processing invoice paid:', error);
     throw error;
   }
 }

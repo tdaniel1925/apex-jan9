@@ -68,6 +68,11 @@ describe('AuthContext', () => {
           single: vi.fn().mockResolvedValue({ data: null, error: null }),
         })),
       })),
+      insert: vi.fn(() => ({
+        select: vi.fn(() => ({
+          single: vi.fn().mockResolvedValue({ data: null, error: null }),
+        })),
+      })),
     });
   });
 
@@ -192,8 +197,9 @@ describe('AuthContext', () => {
     } as any);
 
     // Mock onAuthStateChange to capture the callback
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let authChangeCallback: any;
-    mockSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+    (mockSupabase.auth.onAuthStateChange as any).mockImplementation((callback: any) => {
       authChangeCallback = callback;
       return { data: { subscription: { unsubscribe: vi.fn() } } };
     });
