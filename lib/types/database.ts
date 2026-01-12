@@ -397,6 +397,133 @@ export interface OrderItem {
 export type OrderItemInsert = Omit<OrderItem, 'id' | 'created_at'>;
 
 // ============================================
+// EMAIL SEQUENCES (Nurturing Campaigns)
+// ============================================
+export type EmailSequenceTrigger = 'lead_capture' | 'signup' | 'copilot_trial' | 'manual';
+
+export interface EmailSequence {
+  id: string;
+  name: string;
+  description: string | null;
+  trigger_type: EmailSequenceTrigger;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export type EmailSequenceInsert = Omit<EmailSequence, 'id' | 'created_at' | 'updated_at'>;
+export type EmailSequenceUpdate = Partial<EmailSequenceInsert>;
+
+// ============================================
+// EMAIL SEQUENCE STEPS
+// ============================================
+export interface EmailSequenceStep {
+  id: string;
+  sequence_id: string;
+  step_number: number;
+  subject: string;
+  body_html: string;
+  body_text: string | null;
+  delay_days: number;
+  delay_hours: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export type EmailSequenceStepInsert = Omit<EmailSequenceStep, 'id' | 'created_at'>;
+export type EmailSequenceStepUpdate = Partial<EmailSequenceStepInsert>;
+
+// ============================================
+// LEAD EMAIL QUEUE (Scheduled Emails)
+// ============================================
+export type EmailQueueStatus = 'pending' | 'sent' | 'failed' | 'cancelled';
+
+export interface LeadEmailQueue {
+  id: string;
+  contact_id: string;
+  sequence_step_id: string;
+  scheduled_for: string;
+  sent_at: string | null;
+  status: EmailQueueStatus;
+  error_message: string | null;
+  resend_message_id: string | null;
+  created_at: string;
+}
+
+export type LeadEmailQueueInsert = Omit<LeadEmailQueue, 'id' | 'created_at' | 'sent_at' | 'error_message' | 'resend_message_id'>;
+export type LeadEmailQueueUpdate = Partial<Omit<LeadEmailQueue, 'id' | 'created_at'>>;
+
+// ============================================
+// LEAD ACTIVITIES (Engagement Tracking)
+// ============================================
+export type LeadActivityType =
+  | 'email_sent'
+  | 'email_open'
+  | 'email_click'
+  | 'page_view'
+  | 'form_submit'
+  | 'copilot_demo'
+  | 'copilot_message';
+
+export interface LeadActivity {
+  id: string;
+  contact_id: string;
+  activity_type: LeadActivityType;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+export type LeadActivityInsert = Omit<LeadActivity, 'id' | 'created_at'>;
+
+// ============================================
+// COPILOT USAGE (Daily Message Limits)
+// ============================================
+export interface CopilotUsage {
+  id: string;
+  agent_id: string;
+  date: string; // YYYY-MM-DD
+  messages_used: number;
+}
+
+export type CopilotUsageInsert = Omit<CopilotUsage, 'id'>;
+export type CopilotUsageUpdate = Pick<CopilotUsage, 'messages_used'>;
+
+// ============================================
+// COPILOT SUBSCRIPTIONS (Stripe Integration)
+// ============================================
+export type CopilotTier = 'basic' | 'pro' | 'agency';
+export type CopilotSubscriptionStatus = 'trialing' | 'active' | 'past_due' | 'cancelled';
+
+export interface CopilotSubscription {
+  id: string;
+  agent_id: string;
+  stripe_subscription_id: string | null;
+  stripe_customer_id: string | null;
+  tier: CopilotTier;
+  bonus_volume: number;
+  price_cents: number;
+  status: CopilotSubscriptionStatus;
+  trial_ends_at: string | null;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type CopilotSubscriptionInsert = Omit<CopilotSubscription, 'id' | 'created_at' | 'updated_at'>;
+export type CopilotSubscriptionUpdate = Partial<CopilotSubscriptionInsert>;
+
+// ============================================
+// COPILOT TIER CONFIG
+// ============================================
+export const COPILOT_TIERS = {
+  trial: { price_cents: 0, bonus_volume: 0, messages_per_day: 5 },
+  basic: { price_cents: 2900, bonus_volume: 20, messages_per_day: 50 },
+  pro: { price_cents: 7900, bonus_volume: 60, messages_per_day: 200 },
+  agency: { price_cents: 19900, bonus_volume: 150, messages_per_day: -1 }, // -1 = unlimited
+} as const;
+
+// ============================================
 // DATABASE SCHEMA TYPE (for Supabase client)
 // ============================================
 export interface Database {
@@ -586,6 +713,78 @@ export interface Database {
         Row: OrderItem;
         Insert: OrderItemInsert;
         Update: Partial<OrderItemInsert>;
+        Relationships: {
+          foreignKeyName: string;
+          columns: string[];
+          isOneToOne: boolean;
+          referencedRelation: string;
+          referencedColumns: string[];
+        }[];
+      };
+      email_sequences: {
+        Row: EmailSequence;
+        Insert: EmailSequenceInsert;
+        Update: EmailSequenceUpdate;
+        Relationships: {
+          foreignKeyName: string;
+          columns: string[];
+          isOneToOne: boolean;
+          referencedRelation: string;
+          referencedColumns: string[];
+        }[];
+      };
+      email_sequence_steps: {
+        Row: EmailSequenceStep;
+        Insert: EmailSequenceStepInsert;
+        Update: EmailSequenceStepUpdate;
+        Relationships: {
+          foreignKeyName: string;
+          columns: string[];
+          isOneToOne: boolean;
+          referencedRelation: string;
+          referencedColumns: string[];
+        }[];
+      };
+      lead_email_queue: {
+        Row: LeadEmailQueue;
+        Insert: LeadEmailQueueInsert;
+        Update: LeadEmailQueueUpdate;
+        Relationships: {
+          foreignKeyName: string;
+          columns: string[];
+          isOneToOne: boolean;
+          referencedRelation: string;
+          referencedColumns: string[];
+        }[];
+      };
+      lead_activities: {
+        Row: LeadActivity;
+        Insert: LeadActivityInsert;
+        Update: Partial<LeadActivityInsert>;
+        Relationships: {
+          foreignKeyName: string;
+          columns: string[];
+          isOneToOne: boolean;
+          referencedRelation: string;
+          referencedColumns: string[];
+        }[];
+      };
+      copilot_usage: {
+        Row: CopilotUsage;
+        Insert: CopilotUsageInsert;
+        Update: CopilotUsageUpdate;
+        Relationships: {
+          foreignKeyName: string;
+          columns: string[];
+          isOneToOne: boolean;
+          referencedRelation: string;
+          referencedColumns: string[];
+        }[];
+      };
+      copilot_subscriptions: {
+        Row: CopilotSubscription;
+        Insert: CopilotSubscriptionInsert;
+        Update: CopilotSubscriptionUpdate;
         Relationships: {
           foreignKeyName: string;
           columns: string[];
