@@ -107,7 +107,7 @@ export async function PATCH(
 
     const { data: product, error } = await supabase
       .from('products')
-      .update(updateData)
+      .update(updateData as never)
       .eq('id', id)
       .select()
       .single();
