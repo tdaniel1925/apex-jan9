@@ -14,9 +14,10 @@ import { createServerClient } from '@/lib/db/supabase-server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { itemId: string } }
+  { params }: { params: Promise<{ itemId: string }> }
 ) {
   try {
+    const { itemId } = await params;
     const supabase = await createServerClient();
 
     // Get authenticated user
@@ -59,7 +60,7 @@ export async function GET(
         )
       `
       )
-      .eq('id', params.itemId)
+      .eq('id', itemId)
       .single();
 
     if (itemError || !orderItem) {
@@ -105,7 +106,7 @@ export async function GET(
         .update({
           downloads_remaining: orderItem.downloads_remaining - 1,
         })
-        .eq('id', params.itemId);
+        .eq('id', itemId);
 
       if (updateError) {
         console.error('Failed to update downloads_remaining:', updateError);

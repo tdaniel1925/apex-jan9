@@ -11,7 +11,7 @@ import { isAdmin } from '@/lib/auth/admin-auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check admin authentication
@@ -23,11 +23,12 @@ export async function GET(
       );
     }
 
+    const { id } = await params;
     const supabase = createAdminClient();
     const { data: product, error } = await supabase
       .from('products')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (error) throw error;
@@ -51,7 +52,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check admin authentication
@@ -63,6 +64,7 @@ export async function PATCH(
       );
     }
 
+    const { id } = await params;
     const body = await request.json();
     const supabase = createAdminClient();
 
@@ -72,7 +74,7 @@ export async function PATCH(
         .from('products')
         .select('id')
         .eq('slug', body.slug)
-        .neq('id', params.id)
+        .neq('id', id)
         .single();
 
       if (existingProduct) {
@@ -106,7 +108,7 @@ export async function PATCH(
     const { data: product, error } = await supabase
       .from('products')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
 
@@ -124,7 +126,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check admin authentication
@@ -136,13 +138,14 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
     const supabase = createAdminClient();
 
     // Check if product has any orders
     const { count } = await supabase
       .from('order_items')
       .select('*', { count: 'exact', head: true })
-      .eq('product_id', params.id);
+      .eq('product_id', id);
 
     if (count && count > 0) {
       return NextResponse.json(
@@ -154,7 +157,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('products')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (error) throw error;
 
