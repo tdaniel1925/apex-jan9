@@ -240,26 +240,35 @@ await sendEmail({
 | Copilot demo started | +50 |
 | Form submitted | +30 |
 
-### Copilot Tiers & Commission
+### Copilot Tiers & Commission (Based on Bonus Volume)
 
-| Tier | Price | Agent Commission | Upline Override |
-|------|-------|-----------------|-----------------|
-| Trial | Free | - | - |
-| Basic | $29/mo | 30% ($8.70) | Yes (Gen 1-6) |
-| Pro | $79/mo | 30% ($23.70) | Yes (Gen 1-6) |
-| Agency | $199/mo | 30% ($59.70) | Yes (Gen 1-6) |
+**IMPORTANT**: Commissions are based on Bonus Volume (BV), NOT retail price.
+BV is set at product/subscription setup level.
 
-### Override Structure (Per Generation)
+| Tier | Price | Bonus Volume | Messages/Day |
+|------|-------|--------------|--------------|
+| Trial | Free | 0 BV | 5 |
+| Basic | $29/mo | 20 BV | 50 |
+| Pro | $79/mo | 60 BV | 200 |
+| Agency | $199/mo | 150 BV | Unlimited |
+
+### Override Structure (Per Generation, on BV)
 
 ```typescript
+// Overrides are calculated on Bonus Volume, not retail price
 const COPILOT_OVERRIDES = {
-  1: 0.10,  // 10% - Direct sponsor
-  2: 0.08,  // 8%
-  3: 0.06,  // 6%
-  4: 0.04,  // 4%
-  5: 0.03,  // 3%
-  6: 0.02,  // 2%
+  1: 0.10,  // 10% of BV - Direct sponsor
+  2: 0.08,  // 8% of BV
+  3: 0.06,  // 6% of BV
+  4: 0.04,  // 4% of BV
+  5: 0.03,  // 3% of BV
+  6: 0.02,  // 2% of BV
 };
+
+// Example: Agent subscribes to Pro (60 BV)
+// Sponsor (Gen 1): 60 × 0.10 = 6 BV
+// Gen 2: 60 × 0.08 = 4.8 BV
+// etc.
 ```
 
 ### The Rules

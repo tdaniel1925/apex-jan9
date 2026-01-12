@@ -119,6 +119,8 @@ CREATE TABLE copilot_subscriptions (
   stripe_subscription_id TEXT UNIQUE,
   stripe_customer_id TEXT,
   tier TEXT NOT NULL, -- 'basic', 'pro', 'agency'
+  bonus_volume INTEGER NOT NULL, -- BV for this tier (20, 60, 150)
+  price_cents INTEGER NOT NULL, -- Monthly price in cents (2900, 7900, 19900)
   status TEXT NOT NULL, -- 'trialing', 'active', 'past_due', 'cancelled'
   trial_ends_at TIMESTAMPTZ,
   current_period_start TIMESTAMPTZ,
@@ -181,31 +183,37 @@ CREATE TABLE copilot_subscriptions (
 ### Phase 4: AI Copilot Subscription
 
 #### Tiers & Limits
-| Tier | Price | Messages/Day | Features |
-|------|-------|--------------|----------|
-| Trial | Free | 5 | Basic AI chat |
-| Basic | $29/mo | 50 | AI chat + scripts |
-| Pro | $79/mo | 200 | + Lead insights |
-| Agency | $199/mo | Unlimited | + Team access |
+| Tier | Price | Bonus Volume (BV) | Messages/Day | Features |
+|------|-------|-------------------|--------------|----------|
+| Trial | Free | 0 | 5 | Basic AI chat |
+| Basic | $29/mo | 20 BV | 50 | AI chat + scripts |
+| Pro | $79/mo | 60 BV | 200 | + Lead insights |
+| Agency | $199/mo | 150 BV | Unlimited | + Team access |
 
 #### Stripe Products
-- `copilot_basic`: $29/month
-- `copilot_pro`: $79/month
-- `copilot_agency`: $199/month
+- `copilot_basic`: $29/month (20 BV)
+- `copilot_pro`: $79/month (60 BV)
+- `copilot_agency`: $199/month (150 BV)
 
-#### Commission Structure
-- **Personal Sale**: 30% of subscription price
-  - Basic: $8.70/mo
-  - Pro: $23.70/mo
-  - Agency: $59.70/mo
+#### Commission Structure (Based on Bonus Volume, NOT Retail Price)
 
-- **Upline Override**: Based on genealogy generation
-  - Gen 1: 10%
-  - Gen 2: 8%
-  - Gen 3: 6%
-  - Gen 4: 4%
-  - Gen 5: 3%
-  - Gen 6: 2%
+**IMPORTANT**: Commissions are calculated on Bonus Volume (BV), not the subscription price.
+BV is set at the product/subscription level during setup.
+
+- **Personal Sale**: Commission rate × BV
+  - Example: 30% rate × 60 BV (Pro) = 18 BV commission value
+
+- **Upline Override**: Based on genealogy generation (calculated on BV)
+  - Gen 1: 10% of BV
+  - Gen 2: 8% of BV
+  - Gen 3: 6% of BV
+  - Gen 4: 4% of BV
+  - Gen 5: 3% of BV
+  - Gen 6: 2% of BV
+
+#### BV to Cash Conversion
+BV is converted to cash at payout using the company's BV-to-cash rate (configured in admin).
+Example: If rate is $1.00 per BV, then 18 BV commission = $18.00
 
 ---
 
