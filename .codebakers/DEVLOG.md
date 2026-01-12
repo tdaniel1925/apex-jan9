@@ -1,5 +1,83 @@
 # Development Log
 
+## 2026-01-12 - Add Comprehensive Marketing Site with SEO
+**Session:** 2026-01-12T14:00:00Z
+**Task Size:** LARGE
+**Status:** Completed
+
+### What was done:
+- Built full marketing site with 9 pages in (marketing) route group
+- Added comprehensive SEO: metadata, OG tags, Twitter cards, sitemap, robots.txt
+- Created About, Carriers, Opportunity, Contact, FAQ pages
+- Added legal pages: Privacy Policy, Terms of Service, Income Disclaimer
+- Enhanced homepage with stats, testimonials, navigation, full footer
+- Created Contact API with form validation and email notifications
+- Added 33 new tests for marketing site (571 total tests passing)
+
+### Files created:
+- `app/(marketing)/layout.tsx` - Shared marketing layout with nav/footer
+- `app/(marketing)/about/page.tsx` - Company story, mission, values
+- `app/(marketing)/carriers/page.tsx` - 7 carrier profiles
+- `app/(marketing)/opportunity/page.tsx` - Agent opportunity info
+- `app/(marketing)/contact/page.tsx` - Contact form + info
+- `app/(marketing)/faq/page.tsx` - 5 FAQ categories
+- `app/(marketing)/privacy/page.tsx` - Privacy policy
+- `app/(marketing)/terms/page.tsx` - Terms of service
+- `app/(marketing)/income-disclaimer/page.tsx` - FTC income disclosure
+- `app/api/contact/route.ts` - Contact form API
+- `app/sitemap.ts` - Dynamic sitemap
+- `app/robots.ts` - Crawler rules
+- `components/marketing/footer.tsx` - Marketing footer
+- `components/marketing/contact-form.tsx` - Validated contact form
+- `tests/unit/marketing-site.test.ts` - 33 new tests
+
+### Files modified:
+- `app/layout.tsx` - Enhanced with full SEO metadata
+- `app/page.tsx` - Enhanced homepage with testimonials, stats
+
+### Dependencies added:
+- `react-hook-form` - Form handling
+- `@hookform/resolvers` - Zod validation
+- `@radix-ui/react-accordion` - FAQ accordion
+
+### Commit:
+- `6c86bd7` - "Add comprehensive marketing site with SEO, pages, and contact form"
+
+---
+
+## 2026-01-12 - Add Replicated Site Legal Compliance & Agent Notifications
+**Session:** 2026-01-12T12:00:00Z
+**Task Size:** MEDIUM
+**Status:** Completed
+
+### What was done:
+- Created Privacy Policy, Terms of Service, Income Disclaimer pages for replicated sites
+- Added OG meta tags and Twitter cards to replicated site layout
+- Created Social Share component for replicated sites
+- Added New Lead Notification email template
+- Updated lead capture workflow to notify agents of new leads
+- Updated footer with real navigation links
+- Added 19 tests for replicated site features
+
+### Files created:
+- `app/join/[agentCode]/privacy/page.tsx`
+- `app/join/[agentCode]/terms/page.tsx`
+- `app/join/[agentCode]/income-disclaimer/page.tsx`
+- `components/replicated/social-share.tsx`
+- `lib/email/templates/new-lead-notification.tsx`
+- `tests/unit/replicated-site.test.ts`
+
+### Files modified:
+- `app/join/[agentCode]/layout.tsx` - Added OG tags
+- `components/replicated/footer.tsx` - Real links
+- `lib/workflows/on-lead-captured.ts` - Agent notifications
+- `lib/email/email-service.ts` - New lead notification function
+
+### Commit:
+- `13bed01` - "Add replicated site legal compliance, social sharing, and agent notifications"
+
+---
+
 ## 2026-01-12 - OPTION 1: Simplified Auth Context (Fix Infinite Loading) ✅
 **Session:** 2026-01-12T00:10:00Z
 **Task Size:** LARGE

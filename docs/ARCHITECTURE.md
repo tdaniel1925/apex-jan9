@@ -284,6 +284,74 @@ Full requirements: `docs/PRD-AGENT-RECRUITMENT-SYSTEM.md`
 
 ---
 
+## Marketing Site Architecture (Added: 2026-01-12)
+
+Public-facing marketing pages with SEO optimization for the main corporate site.
+
+### Route Structure
+
+```
+/app
+  /(marketing)/           → Route group (no URL prefix)
+    layout.tsx            → Shared nav + footer layout
+    about/page.tsx        → Company story, mission, values
+    carriers/page.tsx     → 7 carrier partner profiles
+    opportunity/page.tsx  → Agent opportunity overview
+    contact/page.tsx      → Contact form + info
+    faq/page.tsx          → Accordion FAQ (5 categories)
+    privacy/page.tsx      → GDPR/CCPA privacy policy
+    terms/page.tsx        → Terms of service
+    income-disclaimer/page.tsx → FTC-compliant income disclosure
+  /api
+    /contact/route.ts     → Contact form submission API
+  sitemap.ts              → Dynamic XML sitemap
+  robots.ts               → Crawler rules
+  layout.tsx              → Root layout with full SEO metadata
+  page.tsx                → Homepage (enhanced with stats, testimonials)
+```
+
+### Component Structure
+
+```
+/components
+  /marketing
+    footer.tsx            → Full-width footer with links
+    contact-form.tsx      → React Hook Form + Zod validation (client)
+```
+
+### SEO Implementation
+
+```typescript
+// Root layout.tsx - metadataBase enables relative OG images
+export const metadata: Metadata = {
+  metadataBase: new URL(APP_URL),
+  title: { default: '...', template: '%s | Apex Affinity Group' },
+  openGraph: { type: 'website', locale: 'en_US', ... },
+  twitter: { card: 'summary_large_image', ... },
+  robots: { index: true, follow: true, googleBot: { ... } },
+};
+```
+
+### The Rules
+
+1. **Marketing pages are server components** - No `'use client'` needed
+2. **Homepage is client component** - Uses `useAuth` for conditional CTA
+3. **Contact form uses server action pattern** - Form posts to `/api/contact`
+4. **Legal pages required for compliance** - Privacy, Terms, Income Disclaimer
+5. **Income disclaimer links everywhere** - FTC requires clear disclosure
+
+### Replicated Sites vs Marketing Site
+
+| Aspect | Marketing Site | Replicated Sites |
+|--------|---------------|------------------|
+| URL | apexaffinity.com/* | /join/[agentCode]/* |
+| Purpose | Corporate, SEO, general public | Agent-specific lead capture |
+| Layout | Shared marketing layout | Agent-branded layout |
+| Legal pages | Corporate versions | Agent-attributed versions |
+| Forms | General contact | Lead capture (tied to agent) |
+
+---
+
 ## Anti-Patterns (Never Do These)
 
 | Bad | Good |
@@ -295,6 +363,8 @@ Full requirements: `docs/PRD-AGENT-RECRUITMENT-SYSTEM.md`
 | Hardcode bonus amounts | Read from config/bonuses.ts |
 | Add locks to auth context | Keep auth simple with direct state |
 | Use retry loops in auth flow | Fail fast, let user retry |
+| Put API keys in client code | Always use server-side API routes |
+| Skip income disclaimer links | FTC compliance requires disclosure |
 
 ---
 
