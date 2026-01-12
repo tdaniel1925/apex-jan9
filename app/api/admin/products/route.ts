@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
         sort_order: body.sort_order || 0,
         meta_title: body.meta_title || null,
         meta_description: body.meta_description || null,
-      })
+      } as never)
       .select()
       .single();
 
