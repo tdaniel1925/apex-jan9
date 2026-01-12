@@ -5,18 +5,25 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 
-// Validate required environment variables
-const requiredEnvVars = ['ANTHROPIC_API_KEY'] as const;
-for (const envVar of requiredEnvVars) {
-  if (!process.env[envVar]) {
-    throw new Error(`Missing required environment variable: ${envVar}`);
-  }
-}
+// Lazy-load Anthropic client to avoid build-time initialization
+// This allows the build to succeed even if the API key isn't set
+let _anthropicClient: Anthropic | null = null;
 
-// Initialize Anthropic client
-export const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+export function getAnthropicClient(): Anthropic {
+  if (!_anthropicClient) {
+    // Only create if we're in a runtime environment (not build time)
+    if (typeof window === 'undefined' && !process.env.ANTHROPIC_API_KEY) {
+      // Build time without key - return a mock that will fail gracefully
+      throw new Error('ANTHROPIC_API_KEY not configured');
+    }
+
+    const apiKey = process.env.ANTHROPIC_API_KEY || 'placeholder-key-not-set';
+    _anthropicClient = new Anthropic({
+      apiKey: apiKey,
+    });
+  }
+  return _anthropicClient;
+}
 
 // Default models
 export const CLAUDE_MODELS = {

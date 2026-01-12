@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { anthropic, CLAUDE_MODELS, SYSTEM_PROMPTS, calculateCost } from '@/lib/ai/claude-client';
+import { getAnthropicClient, CLAUDE_MODELS, SYSTEM_PROMPTS, calculateCost } from '@/lib/ai/claude-client';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 
 // Rate limiting (in production, use Redis or similar)
@@ -37,6 +37,17 @@ type Message = {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if API key is configured
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return NextResponse.json(
+        {
+          error: 'AI service not configured',
+          message: 'The AI Copilot feature is not currently available. Please contact support.'
+        },
+        { status: 503 }
+      );
+    }
+
     // Verify authentication
     const supabase = await createServerSupabaseClient();
     const {
@@ -103,7 +114,7 @@ export async function POST(request: NextRequest) {
       const stream = new ReadableStream({
         async start(controller) {
           try {
-            const messageStream = await anthropic.messages.create({
+            const messageStream = await getAnthropicClient().messages.create({
               model: CLAUDE_MODELS.SONNET,
               max_tokens: 4096,
               system: contextualPrompt,
@@ -158,7 +169,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Non-streaming response
-    const response = await anthropic.messages.create({
+    const response = await getAnthropicClient().messages.create({
       model: CLAUDE_MODELS.SONNET,
       max_tokens: 4096,
       system: contextualPrompt,
