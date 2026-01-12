@@ -22,6 +22,7 @@ export interface Agent {
   phone: string | null;
   avatar_url: string | null;
   bio: string | null;
+  calendar_link: string | null;
 
   // Rank & Status
   rank: Rank;
@@ -68,6 +69,7 @@ export interface AgentInsert {
   phone?: string | null;
   avatar_url?: string | null;
   bio?: string | null;
+  calendar_link?: string | null;
   rank?: Rank;
   status?: 'pending' | 'active' | 'inactive' | 'terminated';
   licensed_date?: string | null;
@@ -251,14 +253,22 @@ export interface Contact {
   last_contacted_at: string | null;
   next_follow_up_at: string | null;
 
+  // Lead Nurturing (Agent Recruitment System)
+  lead_score: number;
+  email_sequence_id: string | null;
+  email_sequence_started_at: string | null;
+
   // Timestamps
   created_at: string;
   updated_at: string;
 }
 
-export type ContactInsert = Omit<Contact, 'id' | 'created_at' | 'updated_at' | 'last_contacted_at' | 'next_follow_up_at'> & {
+export type ContactInsert = Omit<Contact, 'id' | 'created_at' | 'updated_at' | 'last_contacted_at' | 'next_follow_up_at' | 'lead_score' | 'email_sequence_id' | 'email_sequence_started_at'> & {
   last_contacted_at?: string | null;
   next_follow_up_at?: string | null;
+  lead_score?: number;
+  email_sequence_id?: string | null;
+  email_sequence_started_at?: string | null;
 };
 export type ContactUpdate = Partial<ContactInsert>;
 

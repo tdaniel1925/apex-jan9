@@ -55,6 +55,7 @@ describe('Retail Commission Engine', () => {
     ai_copilot_subscribed_at: null,
     username: 'test001',
     replicated_site_enabled: true,
+    calendar_link: null,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     fast_start_ends_at: '2024-04-01T00:00:00Z',
