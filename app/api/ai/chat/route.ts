@@ -114,7 +114,8 @@ export async function POST(request: NextRequest) {
       const stream = new ReadableStream({
         async start(controller) {
           try {
-            const messageStream = await getAnthropicClient().messages.create({
+            const anthropic = await getAnthropicClient();
+            const messageStream = await anthropic.messages.create({
               model: CLAUDE_MODELS.SONNET,
               max_tokens: 4096,
               system: contextualPrompt,
@@ -169,7 +170,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Non-streaming response
-    const response = await getAnthropicClient().messages.create({
+    const anthropic = await getAnthropicClient();
+    const response = await anthropic.messages.create({
       model: CLAUDE_MODELS.SONNET,
       max_tokens: 4096,
       system: contextualPrompt,
@@ -186,7 +188,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Extract text from response
-    const textContent = response.content.find((block) => block.type === 'text');
+    const textContent = response.content.find((block: any) => block.type === 'text');
     const text = textContent && textContent.type === 'text' ? textContent.text : '';
 
     return NextResponse.json({

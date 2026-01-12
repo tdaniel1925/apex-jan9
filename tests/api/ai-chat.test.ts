@@ -12,12 +12,14 @@ vi.mock('@/lib/db/supabase-server', () => ({
   createServerSupabaseClient: vi.fn(),
 }));
 
-vi.mock('@/lib/ai/claude-client', () => ({
-  anthropic: {
-    messages: {
-      create: vi.fn(),
-    },
+const mockAnthropicClient = {
+  messages: {
+    create: vi.fn(),
   },
+};
+
+vi.mock('@/lib/ai/claude-client', () => ({
+  getAnthropicClient: vi.fn(() => mockAnthropicClient),
   CLAUDE_MODELS: {
     SONNET: 'claude-3-5-sonnet-20241022',
   },
@@ -28,7 +30,7 @@ vi.mock('@/lib/ai/claude-client', () => ({
 }));
 
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
-import { anthropic, calculateCost } from '@/lib/ai/claude-client';
+import { getAnthropicClient, calculateCost } from '@/lib/ai/claude-client';
 
 function createMockSupabase(user: any, agent: any = null) {
   return {
@@ -119,7 +121,7 @@ describe('POST /api/ai/chat', () => {
     const mockSupabase = createMockSupabase(mockUser, mockAgent);
     vi.mocked(createServerSupabaseClient).mockResolvedValue(mockSupabase as any);
 
-    vi.mocked(anthropic.messages.create).mockResolvedValue({
+    vi.mocked(mockAnthropicClient.messages.create).mockResolvedValue({
       id: 'msg-1',
       type: 'message',
       role: 'assistant',
@@ -153,7 +155,7 @@ describe('POST /api/ai/chat', () => {
     const mockSupabase = createMockSupabase(mockUser, mockAgent);
     vi.mocked(createServerSupabaseClient).mockResolvedValue(mockSupabase as any);
 
-    vi.mocked(anthropic.messages.create).mockRejectedValue(new Error('API Error'));
+    vi.mocked(mockAnthropicClient.messages.create).mockRejectedValue(new Error('API Error'));
 
     const request = new NextRequest('http://localhost:3000/api/ai/chat', {
       method: 'POST',
@@ -176,7 +178,7 @@ describe('POST /api/ai/chat', () => {
     const mockSupabase = createMockSupabase(mockUser, mockAgent);
     vi.mocked(createServerSupabaseClient).mockResolvedValue(mockSupabase as any);
 
-    vi.mocked(anthropic.messages.create).mockResolvedValue({
+    vi.mocked(mockAnthropicClient.messages.create).mockResolvedValue({
       id: 'msg-1',
       type: 'message',
       role: 'assistant',
@@ -201,7 +203,7 @@ describe('POST /api/ai/chat', () => {
 
     expect(response.status).toBe(200);
     // Verify that the message was truncated in the API call
-    const callArgs = vi.mocked(anthropic.messages.create).mock.calls[0][0];
+    const callArgs = vi.mocked(mockAnthropicClient.messages.create).mock.calls[0][0];
     expect((callArgs.messages as any)[0].content.length).toBe(10000);
   });
 
@@ -216,7 +218,7 @@ describe('POST /api/ai/chat', () => {
     const mockSupabase = createMockSupabase(mockUser, mockAgent);
     vi.mocked(createServerSupabaseClient).mockResolvedValue(mockSupabase as any);
 
-    vi.mocked(anthropic.messages.create).mockResolvedValue({
+    vi.mocked(mockAnthropicClient.messages.create).mockResolvedValue({
       id: 'msg-1',
       type: 'message',
       role: 'assistant',
@@ -238,7 +240,7 @@ describe('POST /api/ai/chat', () => {
     expect(response.status).toBe(200);
 
     // Verify system prompt includes agent context
-    const callArgs = vi.mocked(anthropic.messages.create).mock.calls[0][0];
+    const callArgs = vi.mocked(mockAnthropicClient.messages.create).mock.calls[0][0];
     expect(callArgs.system).toContain('John');
     expect(callArgs.system).toContain('agent');
     expect(callArgs.system).toContain('50,000');

@@ -6,10 +6,30 @@
 import Stripe from 'stripe';
 import { loadStripe, Stripe as StripeJS } from '@stripe/stripe-js';
 
-// Server-side Stripe instance
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-12-15.clover',
-  typescript: true,
+// Server-side Stripe instance (lazy-loaded to prevent build-time initialization)
+let _stripeInstance: Stripe | null = null;
+
+function getStripeInstance(): Stripe {
+  if (!_stripeInstance) {
+    const secretKey = process.env.STRIPE_SECRET_KEY;
+
+    if (!secretKey) {
+      throw new Error('STRIPE_SECRET_KEY not configured - Checkout feature unavailable');
+    }
+
+    _stripeInstance = new Stripe(secretKey, {
+      apiVersion: '2025-12-15.clover',
+      typescript: true,
+    });
+  }
+  return _stripeInstance;
+}
+
+// Backwards compatibility export using Proxy
+export const stripe = new Proxy({} as Stripe, {
+  get(target, prop) {
+    return getStripeInstance()[prop as keyof Stripe];
+  }
 });
 
 // Client-side Stripe instance (singleton)

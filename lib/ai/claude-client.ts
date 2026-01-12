@@ -3,21 +3,21 @@
  * Following CodeBakers patterns from 14-ai.md
  */
 
-import Anthropic from '@anthropic-ai/sdk';
-
 // Lazy-load Anthropic client to avoid build-time initialization
 // This allows the build to succeed even if the API key isn't set
-let _anthropicClient: Anthropic | null = null;
+let _anthropicClient: any = null;
 
-export function getAnthropicClient(): Anthropic {
+export async function getAnthropicClient() {
   if (!_anthropicClient) {
-    // Only create if we're in a runtime environment (not build time)
-    if (typeof window === 'undefined' && !process.env.ANTHROPIC_API_KEY) {
-      // Build time without key - return a mock that will fail gracefully
-      throw new Error('ANTHROPIC_API_KEY not configured');
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY not configured - AI Copilot feature unavailable');
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY || 'placeholder-key-not-set';
+    // Dynamic import to prevent SDK from being loaded at build time
+    const { default: Anthropic } = await import('@anthropic-ai/sdk');
+
     _anthropicClient = new Anthropic({
       apiKey: apiKey,
     });
