@@ -121,6 +121,68 @@ All business rules that might change are in config files, not hardcoded.
 
 ---
 
+## Core Principle: Simplicity Over Complexity
+
+**Auth Context Pattern** (Updated: 2026-01-12)
+
+Authentication context must be kept simple to avoid race conditions and deadlocks.
+
+### The Pattern
+```typescript
+// ✅ GOOD - Simple, predictable
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // Listen for changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  return <AuthContext.Provider value={{ user, loading }}>...</AuthContext.Provider>;
+}
+```
+
+### Anti-Patterns
+```typescript
+// ❌ BAD - Locks cause deadlocks
+let authStateChangeLock = false;
+if (authStateChangeLock) return; // Can get stuck forever
+authStateChangeLock = true;
+
+// ❌ BAD - Retry logic causes race conditions
+let retries = 0;
+while (!data && retries < 3) { /* complex retry */ }
+
+// ❌ BAD - Global subscriptions leak memory
+globalSubscription?.unsubscribe();
+globalSubscription = supabase.auth.onAuthStateChange(...);
+
+// ❌ BAD - Performance tracking adds overhead
+await measureAsync('fetchAgent', async () => { /* fetch */ });
+```
+
+### The Rule
+**Authentication should be direct and simple:**
+1. No locks - they cause deadlocks
+2. No retries - they cause race conditions
+3. No global state - use component state only
+4. No performance tracking in auth flow - keep it fast
+
+---
+
 ## Anti-Patterns (Never Do These)
 
 | Bad | Good |
@@ -130,7 +192,9 @@ All business rules that might change are in config files, not hardcoded.
 | Process commission without workflow | Always call onCommissionCreated() |
 | Duplicate validation logic | Create shared validator in /lib/utils |
 | Hardcode bonus amounts | Read from config/bonuses.ts |
+| Add locks to auth context | Keep auth simple with direct state |
+| Use retry loops in auth flow | Fail fast, let user retry |
 
 ---
 
-*Last updated: January 9, 2026*
+*Last updated: January 12, 2026*
