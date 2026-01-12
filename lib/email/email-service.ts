@@ -9,6 +9,7 @@ import { CommissionUpdateEmail } from './templates/commission-update';
 import { BonusApprovalEmail } from './templates/bonus-approval';
 import { PayoutNotificationEmail } from './templates/payout-notification';
 import { WelcomeAgentEmail } from './templates/welcome-agent';
+import { NewLeadNotificationEmail } from './templates/new-lead-notification';
 
 export interface EmailResult {
   success: boolean;
@@ -199,6 +200,57 @@ export async function sendWelcomeEmail(params: {
     return { success: true, messageId: data?.id };
   } catch (error) {
     console.error('Error sending welcome email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Send new lead notification to agent
+ */
+export async function sendNewLeadNotification(params: {
+  to: string;
+  agentName: string;
+  leadName: string;
+  leadEmail: string;
+  leadPhone?: string;
+  leadMessage?: string;
+  source: string;
+}): Promise<EmailResult> {
+  try {
+    const { to, agentName, leadName, leadEmail, leadPhone, leadMessage, source } = params;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://apexaffinity.com';
+
+    const html = await render(
+      NewLeadNotificationEmail({
+        agentName,
+        leadName,
+        leadEmail,
+        leadPhone,
+        leadMessage,
+        source,
+        viewUrl: `${appUrl}/dashboard/contacts`,
+      })
+    );
+
+    const { data, error } = await resend.emails.send({
+      from: EMAIL_CONFIG.from,
+      to,
+      subject: `🎉 New Lead: ${leadName} just submitted their info!`,
+      html,
+    });
+
+    if (error) {
+      console.error('Failed to send new lead notification:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('New lead notification sent:', { to, messageId: data?.id });
+    return { success: true, messageId: data?.id };
+  } catch (error) {
+    console.error('Error sending new lead notification:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

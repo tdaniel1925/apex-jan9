@@ -6,14 +6,23 @@
  * 1. Creates a contact record
  * 2. Records the capture activity
  * 3. Enrolls the lead in the nurturing sequence
+ * 4. Notifies the agent about the new lead
  */
 
 import { createAdminClient } from '@/lib/db/supabase-server';
 import { enqueueSequenceEmails } from '@/lib/email/email-queue-processor';
+import { sendNewLeadNotification } from '@/lib/email/email-service';
 
 // Type for contact query/insert results
 interface ContactIdResult {
   id: string;
+}
+
+// Type for agent query result
+interface AgentEmailResult {
+  email: string;
+  first_name: string;
+  last_name: string;
 }
 
 interface ContactWithSequenceResult {
@@ -115,6 +124,45 @@ export async function onLeadCaptured(data: LeadCaptureData): Promise<LeadCapture
     if (!sequenceResult.success) {
       console.error('Failed to enqueue sequence emails:', sequenceResult.error);
       // Don't fail the whole operation, contact was still created
+    }
+
+    // ================================================
+    // 4. NOTIFY AGENT ABOUT NEW LEAD
+    // ================================================
+    try {
+      // Get agent details
+      const { data: agentData, error: agentError } = await supabase
+        .from('agents')
+        .select('email, first_name, last_name')
+        .eq('id', data.agentId)
+        .single() as unknown as { data: AgentEmailResult | null; error: unknown };
+
+      if (agentData && !agentError) {
+        const leadName = `${data.firstName} ${data.lastName}`;
+        const sourceLabel = data.source === 'contact_form'
+          ? 'your replicated site contact form'
+          : data.source || 'your replicated site';
+
+        const notificationResult = await sendNewLeadNotification({
+          to: agentData.email,
+          agentName: `${agentData.first_name} ${agentData.last_name}`,
+          leadName,
+          leadEmail: data.email,
+          leadPhone: data.phone,
+          leadMessage: data.metadata?.message as string | undefined,
+          source: sourceLabel,
+        });
+
+        if (!notificationResult.success) {
+          console.error('Failed to send lead notification:', notificationResult.error);
+          // Don't fail the operation - contact was still created
+        } else {
+          console.log('Lead notification sent to agent:', agentData.email);
+        }
+      }
+    } catch (notificationError) {
+      console.error('Error sending agent notification:', notificationError);
+      // Don't fail the whole operation
     }
 
     return {

@@ -1,14 +1,18 @@
 import Link from 'next/link';
 import { Agent } from '@/lib/types/database';
-import { Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 
 interface ReplicatedSiteFooterProps {
   agent: Agent;
+  agentCode?: string;
 }
 
-export function ReplicatedSiteFooter({ agent }: ReplicatedSiteFooterProps) {
+export function ReplicatedSiteFooter({ agent, agentCode }: ReplicatedSiteFooterProps) {
   const currentYear = new Date().getFullYear();
+  // Use agent code from props or fall back to agent's code
+  const code = agentCode || agent.agent_code;
+  const basePath = `/join/${code}`;
 
   return (
     <footer className="bg-muted/50 border-t">
@@ -26,10 +30,10 @@ export function ReplicatedSiteFooter({ agent }: ReplicatedSiteFooterProps) {
           <div>
             <h4 className="font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="#" className="hover:text-foreground">About Us</Link></li>
-              <li><Link href="#" className="hover:text-foreground">Our Products</Link></li>
-              <li><Link href="#" className="hover:text-foreground">Career Opportunity</Link></li>
-              <li><Link href="#" className="hover:text-foreground">Testimonials</Link></li>
+              <li><Link href={`${basePath}/about`} className="hover:text-foreground">About Us</Link></li>
+              <li><Link href={`${basePath}/products`} className="hover:text-foreground">Our Products</Link></li>
+              <li><Link href={`${basePath}/opportunity`} className="hover:text-foreground">Career Opportunity</Link></li>
+              <li><Link href={`${basePath}/testimonials`} className="hover:text-foreground">Testimonials</Link></li>
             </ul>
           </div>
 
@@ -37,10 +41,10 @@ export function ReplicatedSiteFooter({ agent }: ReplicatedSiteFooterProps) {
           <div>
             <h4 className="font-semibold mb-4">Products</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="#" className="hover:text-foreground">Life Insurance</Link></li>
-              <li><Link href="#" className="hover:text-foreground">Annuities</Link></li>
-              <li><Link href="#" className="hover:text-foreground">IUL Policies</Link></li>
-              <li><Link href="#" className="hover:text-foreground">Term Life</Link></li>
+              <li><Link href={`${basePath}/products#life-insurance`} className="hover:text-foreground">Life Insurance</Link></li>
+              <li><Link href={`${basePath}/products#annuities`} className="hover:text-foreground">Annuities</Link></li>
+              <li><Link href={`${basePath}/products#iul`} className="hover:text-foreground">IUL Policies</Link></li>
+              <li><Link href={`${basePath}/products#term-life`} className="hover:text-foreground">Term Life</Link></li>
             </ul>
           </div>
 
@@ -67,9 +71,9 @@ export function ReplicatedSiteFooter({ agent }: ReplicatedSiteFooterProps) {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
             <p>&copy; {currentYear} Apex Affinity Group. All rights reserved.</p>
             <div className="flex gap-6">
-              <Link href="#" className="hover:text-foreground">Privacy Policy</Link>
-              <Link href="#" className="hover:text-foreground">Terms of Service</Link>
-              <Link href="#" className="hover:text-foreground">Disclosures</Link>
+              <Link href={`${basePath}/privacy`} className="hover:text-foreground">Privacy Policy</Link>
+              <Link href={`${basePath}/terms`} className="hover:text-foreground">Terms of Service</Link>
+              <Link href={`${basePath}/income-disclaimer`} className="hover:text-foreground">Income Disclosure</Link>
             </div>
           </div>
         </div>
