@@ -70,10 +70,12 @@ export async function middleware(request: NextRequest) {
   // This prevents database queries that cause AbortError
 
   // If user is logged in and trying to access login/signup pages
-  if (user && (pathname === '/login' || pathname === '/signup' || pathname === '/admin-login')) {
+  if (user && (pathname === '/login' || pathname === '/signup')) {
     // Redirect to dashboard - role-based routing happens in dashboard/admin layouts
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
+
+  // For /admin-login, let logged-in users access it - the page will check admin role and redirect appropriately
 
   return response;
 }
