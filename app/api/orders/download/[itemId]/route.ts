@@ -35,7 +35,7 @@ export async function GET(
       .from('agents')
       .select('id')
       .eq('user_id', user.id)
-      .single();
+      .single() as { data: any; error: any };
 
     if (agentError || !agent) {
       return NextResponse.json({ error: 'Agent not found' }, { status: 404 });
@@ -61,7 +61,7 @@ export async function GET(
       `
       )
       .eq('id', itemId)
-      .single();
+      .single() as { data: any; error: any };
 
     if (itemError || !orderItem) {
       return NextResponse.json({ error: 'Order item not found' }, { status: 404 });
@@ -105,7 +105,7 @@ export async function GET(
         .from('order_items')
         .update({
           downloads_remaining: orderItem.downloads_remaining - 1,
-        })
+        } as never)
         .eq('id', itemId);
 
       if (updateError) {

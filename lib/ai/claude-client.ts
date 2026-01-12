@@ -20,7 +20,7 @@ export const anthropic = new Anthropic({
 
 // Default models
 export const CLAUDE_MODELS = {
-  OPUS: 'claude-3-5-sonnet-20241022',
+  OPUS: 'claude-opus-4-5-20251101',
   SONNET: 'claude-3-5-sonnet-20241022',
   HAIKU: 'claude-3-5-haiku-20241022',
 } as const;
@@ -34,7 +34,7 @@ export const TOKEN_LIMITS = {
 
 // Cost per million tokens (as of Jan 2025)
 export const COST_PER_MILLION = {
-  [CLAUDE_MODELS.OPUS]: { input: 3.0, output: 15.0 },
+  [CLAUDE_MODELS.OPUS]: { input: 15.0, output: 75.0 },
   [CLAUDE_MODELS.SONNET]: { input: 3.0, output: 15.0 },
   [CLAUDE_MODELS.HAIKU]: { input: 0.8, output: 4.0 },
 } as const;

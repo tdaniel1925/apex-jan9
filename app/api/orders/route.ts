@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       .from('agents')
       .select('id')
       .eq('user_id', user.id)
-      .single();
+      .single() as { data: any; error: any };
 
     if (agentError || !agent) {
       return NextResponse.json({ error: 'Agent not found' }, { status: 404 });
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
       `
       )
       .eq('agent_id', agent.id)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false }) as { data: any; error: any };
 
     if (ordersError) {
       throw ordersError;

@@ -6,6 +6,9 @@
 import { CARRIERS } from '@/lib/config/carriers';
 import { normalizeCarrier, ParsedCommissionRow } from './csv-parser';
 
+// Re-export ParsedCommissionRow for test files
+export type { ParsedCommissionRow };
+
 export interface ValidationError {
   row: number;
   field: string;

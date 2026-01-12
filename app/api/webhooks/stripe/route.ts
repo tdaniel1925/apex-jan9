@@ -76,7 +76,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       .from('agents')
       .select('*')
       .eq('id', agentId)
-      .single();
+      .single() as { data: any; error: any };
 
     if (agentError || !agent) {
       throw new Error(`Agent not found: ${agentId}`);
@@ -106,9 +106,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         payment_status: 'paid',
         stripe_session_id: session.id,
         stripe_payment_intent_id: session.payment_intent as string | null,
-      })
+      } as never)
       .select()
-      .single();
+      .single() as { data: any; error: any };
 
     if (orderError || !order) {
       throw new Error('Failed to create order');
@@ -128,7 +128,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         .from('products')
         .select('*')
         .eq('id', productId)
-        .single();
+        .single() as { data: any; error: any };
 
       if (productError || !product) {
         console.error(`Product not found: ${productId}`);
@@ -143,7 +143,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         unit_price: product.price,
         total_price: product.price * quantity,
         bonus_volume: bonusVolume,
-      });
+      } as never);
 
       if (itemError) {
         console.error('Failed to create order item:', itemError);
@@ -160,7 +160,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         p_product_id: product.id,
         p_quantity: quantity,
         p_revenue: product.price * quantity,
-      });
+      } as any);
     }
 
     // Calculate and create commission
@@ -169,7 +169,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       agent,
     });
 
-    const { error: commissionError } = await supabase.from('commissions').insert(commission);
+    const { error: commissionError } = await supabase.from('commissions').insert(commission as never);
 
     if (commissionError) {
       console.error('Failed to create commission:', commissionError);
