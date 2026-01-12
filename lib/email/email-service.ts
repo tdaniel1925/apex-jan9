@@ -8,6 +8,7 @@ import { resend, EMAIL_CONFIG } from './resend-client';
 import { CommissionUpdateEmail } from './templates/commission-update';
 import { BonusApprovalEmail } from './templates/bonus-approval';
 import { PayoutNotificationEmail } from './templates/payout-notification';
+import { WelcomeAgentEmail } from './templates/welcome-agent';
 
 export interface EmailResult {
   success: boolean;
@@ -151,6 +152,53 @@ export async function sendPayoutNotification(params: {
     return { success: true, messageId: data?.id };
   } catch (error) {
     console.error('Error sending payout notification email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Send welcome email to new agent
+ */
+export async function sendWelcomeEmail(params: {
+  to: string;
+  agentName: string;
+  agentCode: string;
+  sponsorName: string;
+}): Promise<EmailResult> {
+  try {
+    const { to, agentName, agentCode, sponsorName } = params;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://apexaffinity.com';
+
+    const html = await render(
+      WelcomeAgentEmail({
+        agentName,
+        agentCode,
+        sponsorName,
+        replicatedSiteUrl: `${appUrl}/join/${agentCode}`,
+        dashboardUrl: `${appUrl}/dashboard`,
+        trainingUrl: `${appUrl}/dashboard/training`,
+      })
+    );
+
+    const { data, error } = await resend.emails.send({
+      from: EMAIL_CONFIG.from,
+      to,
+      subject: `Welcome to the Apex Family, ${agentName}!`,
+      html,
+    });
+
+    if (error) {
+      console.error('Failed to send welcome email:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('Welcome email sent:', { to, messageId: data?.id });
+    return { success: true, messageId: data?.id };
+  } catch (error) {
+    console.error('Error sending welcome email:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

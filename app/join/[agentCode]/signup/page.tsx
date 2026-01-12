@@ -126,8 +126,8 @@ export default function ReplicatedSignupPage() {
       return;
     }
 
-    // Redirect to dashboard
-    router.push('/dashboard');
+    // Redirect to success/congratulations page
+    router.push(`/join/${agentCode}/signup/success`);
     router.refresh();
   };
 

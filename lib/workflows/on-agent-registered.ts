@@ -203,13 +203,42 @@ export async function onAgentRegistered(
     // ================================================
     // 5. SEND WELCOME EMAIL
     // ================================================
-    // TODO: Implement email service
-    // await EmailService.sendWelcome(agent);
+    try {
+      const { sendWelcomeEmail } = await import('../email/email-service');
+
+      // Get sponsor name for the email
+      let sponsorName = 'Apex Affinity Group';
+      if (sponsorId) {
+        const { data: sponsorData } = await supabase
+          .from('agents')
+          .select('first_name, last_name')
+          .eq('id', sponsorId)
+          .single();
+
+        if (sponsorData) {
+          const typedSponsor = sponsorData as { first_name: string; last_name: string };
+          sponsorName = `${typedSponsor.first_name} ${typedSponsor.last_name}`;
+        }
+      }
+
+      const emailResult = await sendWelcomeEmail({
+        to: agent.email,
+        agentName: `${agent.first_name} ${agent.last_name}`,
+        agentCode: agent.agent_code,
+        sponsorName,
+      });
+
+      if (!emailResult.success) {
+        errors.push(`Failed to send welcome email: ${emailResult.error}`);
+      }
+    } catch (emailError) {
+      errors.push(`Email service error: ${emailError instanceof Error ? emailError.message : 'Unknown error'}`);
+    }
 
     // ================================================
     // 6. NOTIFY SPONSOR
     // ================================================
-    // TODO: Implement notification service
+    // TODO: Implement notification service for sponsor alerts
     // if (sponsorId) {
     //   await NotificationService.sendNewRecruit(sponsorId, agent);
     // }
