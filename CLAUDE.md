@@ -1,24 +1,15 @@
-# Instructions for Claude
+# CodeBakers
 
-## Before Starting Any Work
+**MANDATORY: Before writing ANY code, call the `discover_patterns` MCP tool.**
 
-**READ THESE FILES FIRST:**
-1. `docs/ARCHITECTURE.md` - The rules for how code should be structured
-2. `docs/PROJECT_STATE.md` - What's currently built and what's next
-3. `docs/DEVLOG.md` - History of all decisions and changes
+```
+Tool: discover_patterns
+Args: { task: "description of what you're building" }
+```
 
-## After Completing Work
+The server will return:
+- All coding patterns and rules you must follow
+- Test requirements
+- Validation instructions
 
-**UPDATE THE DOCS:**
-1. Add an entry to `docs/DEVLOG.md` with what you did and why
-2. Update `docs/PROJECT_STATE.md` with new status
-
-## Key Rules (Summary)
-
-1. **Use workflows** - Never process events inline. Call `/lib/workflows/on-*.ts`
-2. **Use engines** - Never duplicate calculations. Call `/lib/engines/*-engine.ts`
-3. **Use config** - Never hardcode business rules. Read from `/lib/config/*.ts`
-
-## Project Overview
-
-MLM Back Office for insurance agents. See `docs/` for full details.
+**You cannot write code without calling this tool first. The server tracks compliance.**

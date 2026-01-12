@@ -183,6 +183,98 @@ await measureAsync('fetchAgent', async () => { /* fetch */ });
 
 ---
 
+## Agent Recruitment System (Added: 2026-01-12)
+
+A comprehensive system for agents to capture leads, nurture prospects, and convert to AI Copilot subscriptions.
+
+### System Components
+
+```
+/lib
+  /email
+    resend.ts              → Resend API client
+    scheduler.ts           → Process email queue (cron)
+    templates/             → React Email templates
+  /services
+    lead-service.ts        → Lead capture, scoring, pipeline
+    copilot-service.ts     → Subscription management, usage tracking
+  /workflows
+    on-lead-captured.ts    → Start nurturing sequence
+    on-copilot-subscribed.ts → Commission + upline overrides
+```
+
+### New Database Tables
+
+| Table | Purpose |
+|-------|---------|
+| `email_sequences` | Nurturing sequence definitions |
+| `email_sequence_steps` | Individual emails in a sequence |
+| `lead_email_queue` | Scheduled emails pending send |
+| `lead_activities` | Track opens, clicks, page views |
+| `copilot_usage` | Daily message counts per agent |
+| `copilot_subscriptions` | Stripe subscription tracking |
+
+### Email System Pattern
+
+```typescript
+// Send email on agent's behalf
+await sendEmail({
+  to: lead.email,
+  from: {
+    name: `${agent.first_name} ${agent.last_name}`,
+    email: 'noreply@theapexway.net', // System email
+    replyTo: agent.email, // Agent's real email
+  },
+  subject: step.subject,
+  html: renderTemplate(step.body_html, { agent, lead }),
+});
+```
+
+### Lead Scoring
+
+| Activity | Points |
+|----------|--------|
+| Email opened | +10 |
+| Link clicked | +20 |
+| Page viewed | +5 |
+| Copilot demo started | +50 |
+| Form submitted | +30 |
+
+### Copilot Tiers & Commission
+
+| Tier | Price | Agent Commission | Upline Override |
+|------|-------|-----------------|-----------------|
+| Trial | Free | - | - |
+| Basic | $29/mo | 30% ($8.70) | Yes (Gen 1-6) |
+| Pro | $79/mo | 30% ($23.70) | Yes (Gen 1-6) |
+| Agency | $199/mo | 30% ($59.70) | Yes (Gen 1-6) |
+
+### Override Structure (Per Generation)
+
+```typescript
+const COPILOT_OVERRIDES = {
+  1: 0.10,  // 10% - Direct sponsor
+  2: 0.08,  // 8%
+  3: 0.06,  // 6%
+  4: 0.04,  // 4%
+  5: 0.03,  // 3%
+  6: 0.02,  // 2%
+};
+```
+
+### The Rules
+
+1. **Lead capture always triggers nurturing** - No manual intervention needed
+2. **Emails sent on agent's behalf** - Agent's name, system sends
+3. **Trial = limited access** - 5 messages/day, not time-limited
+4. **Commissions flow through genealogy** - Same as insurance overrides
+
+### PRD Location
+
+Full requirements: `docs/PRD-AGENT-RECRUITMENT-SYSTEM.md`
+
+---
+
 ## Anti-Patterns (Never Do These)
 
 | Bad | Good |

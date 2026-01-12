@@ -1,0 +1,9 @@
+# CodeBakers
+
+MANDATORY: Before writing ANY code, call the discover_patterns MCP tool.
+
+Tool: discover_patterns
+Args: { task: "description of what you're building" }
+
+The server returns all patterns, rules, and test requirements.
+You cannot write code without calling this tool first.
