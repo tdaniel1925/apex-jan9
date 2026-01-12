@@ -226,6 +226,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       globalAuthSubscription = null;
     }
 
+    // Safety timeout - if auth doesn't load in 5 seconds, force loading states to false
+    const loadingTimeout = setTimeout(() => {
+      console.warn('Auth context loading timeout - forcing loading to false');
+      setLoading(false);
+      setAgentLoading(false);
+      authStateChangeLock = false; // Clear the lock too
+    }, 5000);
+
     const supabase = createClient();
 
     // Listen for auth changes - this fires immediately with current session
@@ -235,10 +243,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         // Skip if another auth state change is already being processed
         if (authStateChangeLock) {
+          console.warn('Auth state change skipped - lock is held');
           return;
         }
 
         authStateChangeLock = true;
+        clearTimeout(loadingTimeout); // Clear timeout once auth succeeds
 
         try {
           await measureAsync('onAuthStateChange', async () => {
@@ -275,6 +285,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       mounted = false;
+      clearTimeout(loadingTimeout); // Clear timeout on unmount
       if (globalAuthSubscription) {
         globalAuthSubscription.unsubscribe();
         globalAuthSubscription = null;
