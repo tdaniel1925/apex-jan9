@@ -19,6 +19,20 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const { signIn, agent, agentLoading } = useAuth();
 
+  // Check if already logged in on page load (but not during active login attempt)
+  useEffect(() => {
+    if (!agentLoading && agent && !loading) {
+      const agentRank = agent.rank as Rank;
+      const isAdmin = RANK_CONFIG[agentRank]?.order >= RANK_CONFIG.regional_mga.order;
+
+      if (isAdmin) {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
+    }
+  }, [agent, agentLoading, loading, router]);
+
   // After successful login, check admin privileges and redirect
   useEffect(() => {
     if (!agentLoading && agent && loading) {
