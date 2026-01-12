@@ -17,21 +17,17 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { signIn, agent, agentLoading } = useAuth();
+  const { signIn, signOut, agent, agentLoading } = useAuth();
 
-  // Check if already logged in on page load (but not during active login attempt)
+  // Force logout on page load - admin access requires fresh authentication
   useEffect(() => {
-    if (!agentLoading && agent && !loading) {
-      const agentRank = agent.rank as Rank;
-      const isAdmin = RANK_CONFIG[agentRank]?.order >= RANK_CONFIG.regional_mga.order;
-
-      if (isAdmin) {
-        router.push('/admin');
-      } else {
-        router.push('/dashboard');
+    const forceLogout = async () => {
+      if (!agentLoading && agent) {
+        await signOut();
       }
-    }
-  }, [agent, agentLoading, loading, router]);
+    };
+    forceLogout();
+  }, []); // Run once on mount, not when agent changes
 
   // After successful login, check admin privileges and redirect
   useEffect(() => {
