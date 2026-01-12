@@ -58,11 +58,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return await measureAsync('fetchAgent', async () => {
         try {
           const supabase = createClient();
-          const { data: existingAgent } = await supabase
+          const { data: existingAgent, error: fetchError } = await supabase
             .from('agents')
             .select('*')
             .eq('user_id', userId)
             .single();
+
+        // Suppress AbortError - this happens when requests are cancelled (normal behavior)
+        if (fetchError && fetchError.message?.includes('aborted')) {
+          setAgentLoading(false);
+          return;
+        }
 
         if (existingAgent) {
           setAgent(existingAgent as Agent);
@@ -103,12 +109,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .single();
 
         if (error) {
+          // Suppress AbortError during insert
+          if (error.message?.includes('aborted')) {
+            setAgentLoading(false);
+            return;
+          }
+
           // Always try to fetch the agent first - it might already exist
-          const { data: retryAgent } = await supabase
+          const { data: retryAgent, error: retryError } = await supabase
             .from('agents')
             .select('*')
             .eq('user_id', userId)
             .single();
+
+          // Suppress AbortError during retry
+          if (retryError && retryError.message?.includes('aborted')) {
+            setAgentLoading(false);
+            return;
+          }
 
           if (retryAgent) {
             // Agent exists, use it and suppress the error
@@ -151,10 +169,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         setAgentLoading(false);
         } catch (error) {
+          // Suppress AbortError - this happens when requests are cancelled (normal in React)
+          if (error instanceof Error && (error.name === 'AbortError' || error.message?.includes('aborted'))) {
+            setAgentLoading(false);
+            return;
+          }
           console.error('Failed to fetch agent:', error);
           setAgentLoading(false);
         }
       });
+    } catch (error) {
+      // Catch any AbortErrors from measureAsync wrapper
+      if (error instanceof Error && (error.name === 'AbortError' || error.message?.includes('aborted'))) {
+        setAgentLoading(false);
+        return;
+      }
+      throw error;
     } finally {
       // Always release the lock, even if an error occurred
       fetchLockRef.current = false;
