@@ -40,14 +40,21 @@ export default function DashboardPage() {
     const maxRetries = 5;
 
     const fetchData = async () => {
-      const supabase = createClient();
+      try {
+        const supabase = createClient();
 
-      // Get agent (with retry since layout might be creating it)
-      const { data: agentData } = await supabase
-        .from('agents')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+        // Get agent (with retry since layout might be creating it)
+        const { data: agentData, error: agentError } = await supabase
+          .from('agents')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        // Handle AbortError silently
+        if (agentError?.message?.includes('aborted')) {
+          setLoading(false);
+          return;
+        }
 
       if (!agentData && retryCount < maxRetries) {
         // Agent not found yet, layout might be creating it - retry after delay
@@ -111,7 +118,12 @@ export default function DashboardPage() {
         });
       }
 
-      setLoading(false);
+        setLoading(false);
+      } catch (error) {
+        // Catch any errors including AbortError
+        console.error('Dashboard fetch error:', error);
+        setLoading(false);
+      }
     };
 
     fetchData();
