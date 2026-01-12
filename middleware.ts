@@ -44,7 +44,7 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Fast session check without refreshing
+  // Fast session check without refreshing - NO DATABASE QUERIES
   const { data: { user } } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
@@ -65,44 +65,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(redirectUrl, request.url));
   }
 
-  // If admin route, verify admin privileges
-  if (user && isAdminRoute) {
-    const { data: agentData } = await supabase
-      .from('agents')
-      .select('rank')
-      .eq('user_id', user.id)
-      .single();
-
-    if (!agentData) {
-      return NextResponse.redirect(new URL('/admin-login', request.url));
-    }
-
-    // Check if rank has admin privileges (regional_mga or higher)
-    const adminRanks = ['regional_mga', 'national_mga', 'executive'];
-    if (!adminRanks.includes(agentData.rank)) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
-  }
+  // Admin route protection - check happens in admin layout, not here
+  // Middleware only checks if user is authenticated, not their role
+  // This prevents database queries that cause AbortError
 
   // If user is logged in and trying to access login/signup pages
   if (user && (pathname === '/login' || pathname === '/signup' || pathname === '/admin-login')) {
-    // Fetch agent data to determine where to redirect
-    const { data: agentData } = await supabase
-      .from('agents')
-      .select('rank')
-      .eq('user_id', user.id)
-      .single();
-
-    if (agentData) {
-      const adminRanks = ['regional_mga', 'national_mga', 'executive'];
-      const isAdmin = adminRanks.includes(agentData.rank);
-
-      // Redirect admins to admin panel, others to dashboard
-      const redirectUrl = isAdmin ? '/admin' : '/dashboard';
-      return NextResponse.redirect(new URL(redirectUrl, request.url));
-    }
-
-    // If no agent data, redirect to dashboard by default
+    // Redirect to dashboard - role-based routing happens in dashboard/admin layouts
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
