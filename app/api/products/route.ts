@@ -3,7 +3,7 @@
  * GET /api/products - List active products for shop
  */
 
-import { NextRequest, NextResponse } from 'next/response';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/db/supabase-client';
 
 export async function GET(request: NextRequest) {
