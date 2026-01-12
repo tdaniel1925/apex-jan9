@@ -72,7 +72,7 @@ export function Sidebar({ agent }: SidebarProps) {
 
         {/* View Website Link */}
         <a
-          href={`http://localhost:3000/join/${agent.agent_code}`}
+          href={`${process.env.NEXT_PUBLIC_APP_URL}/join/${agent.agent_code}`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-x-3 rounded-md p-2 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
