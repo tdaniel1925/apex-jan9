@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Contact } from '@/lib/types/database';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Search, MoreHorizontal, Mail, Phone, Calendar } from 'lucide-react';
+import { Search, MoreHorizontal, Mail, Phone, Calendar, Star } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ContactsListProps {
   contacts: Contact[];
@@ -42,9 +44,20 @@ const typeColors: Record<string, string> = {
 };
 
 export function ContactsList({ contacts: initialContacts }: ContactsListProps) {
+  const router = useRouter();
   const [contacts] = useState(initialContacts);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
+
+  const handleViewDetails = (contactId: string) => {
+    router.push(`/dashboard/crm/${contactId}`);
+  };
+
+  const getLeadScoreColor = (score: number) => {
+    if (score >= 50) return 'text-green-600';
+    if (score >= 20) return 'text-yellow-600';
+    return 'text-gray-400';
+  };
 
   const filteredContacts = contacts.filter((contact) => {
     const matchesSearch =
@@ -119,6 +132,7 @@ export function ContactsList({ contacts: initialContacts }: ContactsListProps) {
               <TableHead>Name</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Stage</TableHead>
+              <TableHead>Score</TableHead>
               <TableHead>Contact</TableHead>
               <TableHead>Follow-up</TableHead>
               <TableHead className="w-[50px]"></TableHead>
@@ -127,13 +141,17 @@ export function ContactsList({ contacts: initialContacts }: ContactsListProps) {
           <TableBody>
             {filteredContacts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
+                <TableCell colSpan={7} className="text-center py-8">
                   <p className="text-muted-foreground">No contacts found</p>
                 </TableCell>
               </TableRow>
             ) : (
               filteredContacts.map((contact) => (
-                <TableRow key={contact.id}>
+                <TableRow
+                  key={contact.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => handleViewDetails(contact.id)}
+                >
                   <TableCell>
                     <div>
                       <p className="font-medium">
@@ -163,6 +181,14 @@ export function ContactsList({ contacts: initialContacts }: ContactsListProps) {
                     </Badge>
                   </TableCell>
                   <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Star className={cn('h-4 w-4', getLeadScoreColor(contact.lead_score))} />
+                      <span className={cn('text-sm font-medium', getLeadScoreColor(contact.lead_score))}>
+                        {contact.lead_score}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center gap-2">
                       {contact.email && (
                         <a
@@ -190,7 +216,7 @@ export function ContactsList({ contacts: initialContacts }: ContactsListProps) {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
@@ -198,7 +224,9 @@ export function ContactsList({ contacts: initialContacts }: ContactsListProps) {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleViewDetails(contact.id)}>
+                          View Details
+                        </DropdownMenuItem>
                         <DropdownMenuItem>Edit</DropdownMenuItem>
                         <DropdownMenuItem>Update Stage</DropdownMenuItem>
                         <DropdownMenuItem className="text-destructive">
