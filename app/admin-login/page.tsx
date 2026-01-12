@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
+import { createClient } from '@/lib/db/supabase-client';
 import { RANK_CONFIG, Rank } from '@/lib/config/ranks';
 
 export default function AdminLoginPage() {
@@ -59,9 +60,42 @@ export default function AdminLoginPage() {
         return;
       }
 
-      // Agent data will be fetched by auth context
-      // useEffect will handle redirect based on admin status
+      // Wait a moment for auth context to update
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Manually fetch agent to check admin status
+      const supabase = createClient();
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+
+      if (!currentUser) {
+        setError('Authentication failed. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      const { data: agentData, error: agentError } = await supabase
+        .from('agents')
+        .select('rank')
+        .eq('user_id', currentUser.id)
+        .single();
+
+      if (agentError || !agentData) {
+        setError('Failed to verify admin access. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      const agentRank = agentData.rank as Rank;
+      const isAdmin = RANK_CONFIG[agentRank]?.order >= RANK_CONFIG.regional_mga.order;
+
+      if (isAdmin) {
+        router.push('/admin');
+      } else {
+        setError('Access denied. Regional MGA or higher required.');
+        setLoading(false);
+      }
     } catch (err) {
+      console.error('Login error:', err);
       setError('An unexpected error occurred.');
       setLoading(false);
     }
