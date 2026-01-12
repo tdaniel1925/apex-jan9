@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/db/supabase-client';
@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Logo } from '@/components/ui/logo';
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sponsorCode = searchParams.get('ref');
@@ -270,5 +270,17 @@ export default function SignupPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-muted/30">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    }>
+      <SignupForm />
+    </Suspense>
   );
 }
