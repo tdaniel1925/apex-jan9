@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       .from('products')
       .select('*')
       .in('id', productIds)
-      .eq('is_active', true);
+      .eq('is_active', true) as { data: any; error: any };
 
     if (productsError || !products) {
       return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
