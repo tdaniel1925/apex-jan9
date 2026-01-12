@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       .from('agents')
       .select('rank, first_name, personal_premium_90d, team_count, ai_copilot_tier, ai_copilot_subscribed_at')
       .eq('user_id', user.id)
-      .single();
+      .single() as { data: any };
 
     // Check if agent has active AI Copilot subscription
     if (!agent || agent.ai_copilot_tier === 'none') {
