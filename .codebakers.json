@@ -1,0 +1,56 @@
+{
+  "version": "3.1",
+  "projectType": "existing",
+  "createdAt": "2026-01-09T00:00:00Z",
+  "lastUpdated": "2026-01-11T09:20:00Z",
+  "stack": {
+    "framework": "nextjs",
+    "database": "drizzle",
+    "auth": "supabase",
+    "ui": "shadcn",
+    "payments": []
+  },
+  "decisions": {
+    "authLayout": "split",
+    "navigation": "sidebar",
+    "theme": "system",
+    "formStyle": "single"
+  },
+  "build": {
+    "id": "build_apex_admin",
+    "status": "in_progress",
+    "currentPhase": 3,
+    "totalPhases": 5,
+    "phases": [
+      {"name": "Foundation", "status": "completed", "tasks": ["Database schema", "Auth setup", "Project structure"]},
+      {"name": "Admin API Routes", "status": "completed", "tasks": ["Agents API", "Commissions API", "Bonuses API", "Payouts API", "Overrides API", "Analytics API", "Settings API", "Test suite - 69 tests"]},
+      {"name": "Admin Dashboard UI", "status": "pending", "tasks": ["Dashboard layout", "Agent management", "Commission tracking", "Payout processing"]},
+      {"name": "Agent Portal", "status": "pending", "tasks": ["Agent dashboard", "Commission view", "Payout requests", "Team management"]},
+      {"name": "Polish & Deploy", "status": "pending", "tasks": ["E2E tests", "Performance optimization", "Documentation", "Deployment"]}
+    ]
+  },
+  "currentWork": {
+    "lastUpdated": "2026-01-11T09:20:00Z",
+    "activeFeature": null,
+    "status": "ready",
+    "summary": "Admin API test suite complete (69 tests passing). Ready to build admin dashboard UI.",
+    "pendingTasks": ["Build admin dashboard UI", "Connect front-end to API routes"]
+  },
+  "triggers": {
+    "lastAudit": null,
+    "lastSecurityScan": null,
+    "featuresSinceReview": 2,
+    "dismissed": {},
+    "accepted": {}
+  },
+  "analytics": {
+    "modulesUsed": {"00-core": 2, "03-api": 1, "08-testing": 1},
+    "commandsUsed": {},
+    "triggersAccepted": {},
+    "learnTopics": [],
+    "sessionCount": 3,
+    "totalLinesGenerated": 3500,
+    "testsGenerated": 69
+  },
+  "patternGaps": []
+}
