@@ -77,7 +77,7 @@ export default function AdminLoginPage() {
         .from('agents')
         .select('rank')
         .eq('user_id', currentUser.id)
-        .single();
+        .single() as { data: { rank: string } | null; error: any };
 
       if (agentError || !agentData) {
         setError('Failed to verify admin access. Please try again.');
