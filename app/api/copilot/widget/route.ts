@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/db/supabase-server';
 import { DEFAULT_WIDGET_CONFIG, WIDGET_RATE_LIMITS } from '@/lib/copilot/widget-config';
 import { getSubscription, incrementUsage } from '@/lib/copilot/subscription-service';
+import { generateCopilotResponse, sanitizeInput, containsSensitiveInfo } from '@/lib/copilot/ai-service';
 import { z } from 'zod';
 
 // Request schema for widget messages
@@ -254,10 +255,35 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generate AI response
-    // For now, use a simple response template
-    // In production, this would call the actual AI service
-    const aiResponse = await generateWidgetResponse(message, session.messages, agentId);
+    // Sanitize input and check for sensitive info
+    const sanitizedMessage = sanitizeInput(message);
+    if (containsSensitiveInfo(sanitizedMessage)) {
+      return NextResponse.json({
+        sessionId: session.id,
+        response: "For your security, please don't share sensitive information like social security numbers or credit card details in chat. Your agent will collect any necessary information securely during your consultation.",
+        usage: { used: usageResult.used, limit: usageResult.limit },
+      }, { headers: corsHeaders });
+    }
+
+    // Get agent info for context
+    const { data: agentInfo } = await supabase
+      .from('agents')
+      .select('first_name, last_name, email')
+      .eq('id', agentId)
+      .single() as unknown as { data: { first_name: string; last_name: string; email: string } | null; error: unknown };
+
+    // Generate AI response using OpenAI
+    const { response: aiResponse } = await generateCopilotResponse({
+      message: sanitizedMessage,
+      history: session.messages.map((m: { role: string; content: string }) => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content,
+      })),
+      agentContext: agentInfo ? {
+        agentName: `${agentInfo.first_name} ${agentInfo.last_name}`,
+        agentEmail: agentInfo.email,
+      } : undefined,
+    });
 
     // Update session with new messages
     const updatedMessages = [
@@ -310,35 +336,3 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * Generate AI response for widget
- * TODO: Integrate with actual AI service (OpenAI/Anthropic)
- */
-async function generateWidgetResponse(
-  message: string,
-  history: Array<{ role: string; content: string; timestamp: string }>,
-  agentId: string
-): Promise<string> {
-  // Simple response logic for demo
-  // In production, this would call OpenAI/Anthropic API
-  const lowerMessage = message.toLowerCase();
-
-  if (lowerMessage.includes('life insurance') || lowerMessage.includes('coverage')) {
-    return "Life insurance is essential for protecting your loved ones' financial future. We offer several options including term life and whole life policies. Would you like me to explain the differences, or would you prefer to schedule a call with your agent to discuss your specific needs?";
-  }
-
-  if (lowerMessage.includes('quote') || lowerMessage.includes('price') || lowerMessage.includes('cost')) {
-    return "I'd be happy to help you get a quote! To provide accurate pricing, I'll need a few details. Could you share your age, whether you smoke, and approximately how much coverage you're looking for?";
-  }
-
-  if (lowerMessage.includes('contact') || lowerMessage.includes('call') || lowerMessage.includes('appointment')) {
-    return "I can help you schedule a consultation with your agent. Would you prefer a phone call or video meeting? Also, please share your preferred days and times, and I'll find an available slot.";
-  }
-
-  if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-    return "Hello! Welcome! I'm here to help you learn about our insurance solutions and answer any questions you might have. What would you like to know about?";
-  }
-
-  // Default response
-  return "Thank you for your question! I'm here to help you learn about our insurance products and services. Could you tell me a bit more about what you're looking for? For example, are you interested in life insurance, health coverage, or another type of protection?";
-}
