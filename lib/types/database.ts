@@ -534,6 +534,159 @@ export const COPILOT_TIERS = {
 } as const;
 
 // ============================================
+// CLAWBACKS (Commission Reversals)
+// ============================================
+export type ClawbackType =
+  | 'refund'
+  | 'chargeback'
+  | 'subscription_cancelled'
+  | 'order_cancelled'
+  | 'compliance_violation'
+  | 'fraud'
+  | 'policy_lapse'
+  | 'admin_adjustment';
+
+export type ClawbackStatus = 'pending' | 'processed' | 'failed';
+
+export interface Clawback {
+  id: string;
+  commission_id: string;
+  clawback_type: ClawbackType;
+  original_amount: number;
+  clawback_amount: number;
+  reason: string;
+  initiated_by: string;
+  status: ClawbackStatus;
+  processed_at: string | null;
+  created_at: string;
+}
+
+export type ClawbackInsert = Omit<Clawback, 'id' | 'created_at' | 'processed_at'>;
+export type ClawbackUpdate = Partial<ClawbackInsert>;
+
+// ============================================
+// PAY PERIODS (Commission Batching)
+// ============================================
+export type PayPeriodType = 'weekly' | 'biweekly' | 'monthly';
+export type PayPeriodStatus = 'open' | 'closed' | 'processing' | 'paid';
+
+export interface PayPeriod {
+  id: string;
+  period_type: PayPeriodType;
+  period_number: number;
+  year: number;
+  start_date: string;
+  end_date: string;
+  cutoff_date: string;
+  payout_date: string;
+  status: PayPeriodStatus;
+  total_commissions: number;
+  total_overrides: number;
+  total_bonuses: number;
+  total_amount: number;
+  agent_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export type PayPeriodInsert = Omit<PayPeriod, 'id' | 'created_at' | 'updated_at'>;
+export type PayPeriodUpdate = Partial<PayPeriodInsert>;
+
+// ============================================
+// QUALIFICATION SNAPSHOTS (Rank Maintenance)
+// ============================================
+export type QualificationStatus = 'qualified' | 'grace_period' | 'not_qualified' | 'demoted';
+
+export interface QualificationSnapshot {
+  id: string;
+  agent_id: string;
+  period_id: string | null;
+  snapshot_date: string;
+  title_rank: Rank;
+  paid_as_rank: Rank;
+  personal_bonus_volume: number;
+  organization_bonus_volume: number;
+  active_legs: number;
+  personal_recruits: number;
+  meets_pbv: boolean;
+  meets_obv: boolean;
+  meets_legs: boolean;
+  meets_recruits: boolean;
+  qualification_status: QualificationStatus;
+  grace_periods_used: number;
+  notes: string | null;
+  created_at: string;
+}
+
+export type QualificationSnapshotInsert = Omit<QualificationSnapshot, 'id' | 'created_at'>;
+export type QualificationSnapshotUpdate = Partial<QualificationSnapshotInsert>;
+
+// ============================================
+// AGENT STATUS EVENTS (Activity Tracking)
+// ============================================
+export type AgentStatusType = 'active' | 'inactive' | 'at_risk' | 'terminated';
+export type StatusChangeType = 'activation' | 'deactivation' | 'reactivation' | 'termination' | 'warning';
+
+export interface AgentStatusEvent {
+  id: string;
+  agent_id: string;
+  previous_status: AgentStatusType;
+  new_status: AgentStatusType;
+  change_type: StatusChangeType;
+  reason: string;
+  triggered_by: 'system' | 'admin' | 'agent';
+  initiated_by: string | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export type AgentStatusEventInsert = Omit<AgentStatusEvent, 'id' | 'created_at'>;
+
+// ============================================
+// COMPLIANCE HOLDS (Fraud Prevention)
+// ============================================
+export type ComplianceHoldType =
+  | 'new_agent_review'
+  | 'high_volume_threshold'
+  | 'suspicious_activity'
+  | 'documentation_required'
+  | 'regulatory_review'
+  | 'fraud_investigation'
+  | 'family_stacking'
+  | 'circular_sponsorship'
+  | 'rapid_advancement';
+
+export type ComplianceHoldStatus =
+  | 'pending'
+  | 'under_review'
+  | 'approved'
+  | 'rejected'
+  | 'escalated';
+
+export interface ComplianceHold {
+  id: string;
+  agent_id: string;
+  hold_type: ComplianceHoldType;
+  status: ComplianceHoldStatus;
+  reason: string;
+  affected_amount: number;
+  affected_commissions: string[];
+  affected_payouts: string[];
+  documentation_required: string[];
+  documentation_provided: string[];
+  assigned_to: string | null;
+  notes: string;
+  resolution: string | null;
+  created_at: string;
+  updated_at: string;
+  resolved_at: string | null;
+  resolved_by: string | null;
+}
+
+export type ComplianceHoldInsert = Omit<ComplianceHold, 'id' | 'created_at' | 'updated_at' | 'resolved_at' | 'resolved_by'>;
+export type ComplianceHoldUpdate = Partial<ComplianceHoldInsert>;
+
+// ============================================
 // DATABASE SCHEMA TYPE (for Supabase client)
 // ============================================
 export interface Database {

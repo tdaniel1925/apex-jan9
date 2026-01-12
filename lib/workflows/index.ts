@@ -10,8 +10,9 @@
 export { onCommissionCreated } from './on-commission-created';
 export { onRankChanged } from './on-rank-changed';
 export { onAgentRegistered } from './on-agent-registered';
-
-// TODO: Additional workflows to implement
-// export { onSubscriptionStarted } from './on-subscription-started';
-// export { onPayoutProcessed } from './on-payout-processed';
-// export { onPolicyLapsed } from './on-policy-lapsed';
+export {
+  onRefundProcessed,
+  processOrderRefund,
+  processChargeback,
+  processSubscriptionCancellation,
+} from './on-refund-processed';
