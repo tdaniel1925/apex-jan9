@@ -10,7 +10,7 @@
  */
 
 export type PayPeriodType = 'weekly' | 'biweekly' | 'monthly';
-export type PayPeriodStatus = 'open' | 'processing' | 'locked' | 'paid';
+export type PayPeriodStatus = 'open' | 'closed' | 'processing' | 'paid';
 
 export interface PayPeriod {
   id: string;
@@ -25,7 +25,7 @@ export interface PayPeriod {
   total_commissions: number;
   total_overrides: number;
   total_bonuses: number;
-  total_payout: number;
+  total_amount: number;
   agent_count: number;
   created_at?: string;
   updated_at?: string;
@@ -171,7 +171,7 @@ export function getCurrentPayPeriod(
     total_commissions: 0,
     total_overrides: 0,
     total_bonuses: 0,
-    total_payout: 0,
+    total_amount: 0,
     agent_count: 0,
   };
 }
@@ -191,7 +191,7 @@ export function isDateInPayPeriod(date: Date, period: PayPeriod): boolean {
  * Check if commission can be recorded (before cutoff)
  */
 export function canRecordCommission(period: PayPeriod): boolean {
-  if (period.status === 'locked' || period.status === 'paid') {
+  if (period.status === 'closed' || period.status === 'paid') {
     return false;
   }
 
@@ -294,7 +294,7 @@ export function getPreviousPeriod(
     total_commissions: 0,
     total_overrides: 0,
     total_bonuses: 0,
-    total_payout: 0,
+    total_amount: 0,
     agent_count: 0,
   };
 }
@@ -324,7 +324,7 @@ export function getNextPeriod(
     total_commissions: 0,
     total_overrides: 0,
     total_bonuses: 0,
-    total_payout: 0,
+    total_amount: 0,
     agent_count: 0,
   };
 }

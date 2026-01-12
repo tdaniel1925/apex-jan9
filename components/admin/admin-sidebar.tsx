@@ -17,6 +17,9 @@ import {
   Shield,
   ArrowLeft,
   ShoppingBag,
+  RotateCcw,
+  Calendar,
+  AlertTriangle,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 
@@ -29,6 +32,9 @@ const navigation = [
   { name: 'Agents', href: '/admin/agents', icon: Users },
   { name: 'Products', href: '/admin/products', icon: ShoppingBag },
   { name: 'Import Commissions', href: '/admin/commissions', icon: FileSpreadsheet },
+  { name: 'Pay Periods', href: '/admin/pay-periods', icon: Calendar },
+  { name: 'Clawbacks', href: '/admin/clawbacks', icon: RotateCcw },
+  { name: 'Compliance', href: '/admin/compliance', icon: AlertTriangle },
   { name: 'Bonuses', href: '/admin/bonuses', icon: Award },
   { name: 'Payouts', href: '/admin/payouts', icon: Wallet },
   { name: 'Override Report', href: '/admin/overrides', icon: DollarSign },

@@ -102,7 +102,7 @@ describe('Pay Period Engine', () => {
       expect(period.total_commissions).toBe(0);
       expect(period.total_overrides).toBe(0);
       expect(period.total_bonuses).toBe(0);
-      expect(period.total_payout).toBe(0);
+      expect(period.total_amount).toBe(0);
       expect(period.agent_count).toBe(0);
     });
   });
@@ -122,7 +122,7 @@ describe('Pay Period Engine', () => {
         total_commissions: 0,
         total_overrides: 0,
         total_bonuses: 0,
-        total_payout: 0,
+        total_amount: 0,
         agent_count: 0,
       };
 
@@ -130,7 +130,7 @@ describe('Pay Period Engine', () => {
       expect(result).toBe(true);
     });
 
-    it('should not allow recording when period is locked', () => {
+    it('should not allow recording when period is closed', () => {
       const period: PayPeriod = {
         id: 'period-1',
         period_type: 'monthly',
@@ -140,11 +140,11 @@ describe('Pay Period Engine', () => {
         end_date: '2024-01-31T23:59:59Z',
         cutoff_date: '2024-01-29T23:59:59Z',
         payout_date: '2024-02-05T00:00:00Z',
-        status: 'locked',
+        status: 'closed',
         total_commissions: 0,
         total_overrides: 0,
         total_bonuses: 0,
-        total_payout: 0,
+        total_amount: 0,
         agent_count: 0,
       };
 
@@ -166,7 +166,7 @@ describe('Pay Period Engine', () => {
         total_commissions: 0,
         total_overrides: 0,
         total_bonuses: 0,
-        total_payout: 0,
+        total_amount: 0,
         agent_count: 0,
       };
 
@@ -192,7 +192,7 @@ describe('Pay Period Engine', () => {
         total_commissions: 1000,
         total_overrides: 500,
         total_bonuses: 200,
-        total_payout: 1700,
+        total_amount: 1700,
         agent_count: 5,
       };
 
@@ -216,7 +216,7 @@ describe('Pay Period Engine', () => {
         total_commissions: 1000,
         total_overrides: 500,
         total_bonuses: 200,
-        total_payout: 1700,
+        total_amount: 1700,
         agent_count: 5,
       };
 
@@ -240,7 +240,7 @@ describe('Pay Period Engine', () => {
         total_commissions: 1000,
         total_overrides: 500,
         total_bonuses: 200,
-        total_payout: 1700,
+        total_amount: 1700,
         agent_count: 5,
       };
 
@@ -320,7 +320,7 @@ describe('Pay Period Engine', () => {
         total_commissions: 0,
         total_overrides: 0,
         total_bonuses: 0,
-        total_payout: 0,
+        total_amount: 0,
         agent_count: 0,
       };
 
@@ -342,7 +342,7 @@ describe('Pay Period Engine', () => {
         total_commissions: 0,
         total_overrides: 0,
         total_bonuses: 0,
-        total_payout: 0,
+        total_amount: 0,
         agent_count: 0,
       };
 
@@ -364,7 +364,7 @@ describe('Pay Period Engine', () => {
         total_commissions: 0,
         total_overrides: 0,
         total_bonuses: 0,
-        total_payout: 0,
+        total_amount: 0,
         agent_count: 0,
       };
 

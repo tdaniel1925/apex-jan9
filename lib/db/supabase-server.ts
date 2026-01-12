@@ -56,3 +56,23 @@ export { createServerSupabaseClient as createServerClient };
 
 // Alias for service operations (bypasses RLS)
 export { createAdminClient as createServiceClient };
+
+/**
+ * Create untyped admin client for tables not yet in Database type
+ * Use for clawbacks, pay_periods, compliance_holds, qualification_snapshots
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function createUntypedAdminClient(): ReturnType<typeof createServerClient<any>> {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return [];
+        },
+        setAll() {},
+      },
+    }
+  );
+}

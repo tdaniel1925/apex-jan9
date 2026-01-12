@@ -956,6 +956,54 @@ export interface Database {
           referencedColumns: string[];
         }[];
       };
+      clawbacks: {
+        Row: Clawback;
+        Insert: ClawbackInsert;
+        Update: ClawbackUpdate;
+        Relationships: {
+          foreignKeyName: string;
+          columns: string[];
+          isOneToOne: boolean;
+          referencedRelation: string;
+          referencedColumns: string[];
+        }[];
+      };
+      pay_periods: {
+        Row: PayPeriod;
+        Insert: PayPeriodInsert;
+        Update: PayPeriodUpdate;
+        Relationships: {
+          foreignKeyName: string;
+          columns: string[];
+          isOneToOne: boolean;
+          referencedRelation: string;
+          referencedColumns: string[];
+        }[];
+      };
+      compliance_holds: {
+        Row: ComplianceHold;
+        Insert: ComplianceHoldInsert;
+        Update: ComplianceHoldUpdate;
+        Relationships: {
+          foreignKeyName: string;
+          columns: string[];
+          isOneToOne: boolean;
+          referencedRelation: string;
+          referencedColumns: string[];
+        }[];
+      };
+      qualification_snapshots: {
+        Row: QualificationSnapshot;
+        Insert: QualificationSnapshotInsert;
+        Update: QualificationSnapshotUpdate;
+        Relationships: {
+          foreignKeyName: string;
+          columns: string[];
+          isOneToOne: boolean;
+          referencedRelation: string;
+          referencedColumns: string[];
+        }[];
+      };
     };
     Views: {
       [_ in never]: never;
