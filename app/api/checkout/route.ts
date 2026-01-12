@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       .from('agents')
       .select('*')
       .eq('user_id', user.id)
-      .single();
+      .single() as { data: any; error: any };
 
     if (agentError || !agent) {
       return NextResponse.json({ error: 'Agent not found' }, { status: 404 });
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     const orderMetadata: Record<string, string> = {};
 
     items.forEach((item: { product_id: string; quantity: number }, index: number) => {
-      const product = products.find((p) => p.id === item.product_id);
+      const product = products.find((p: any) => p.id === item.product_id);
       if (!product) return;
 
       // Add line item
