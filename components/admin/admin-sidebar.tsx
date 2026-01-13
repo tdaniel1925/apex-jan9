@@ -21,32 +21,80 @@ import {
   Calendar,
   AlertTriangle,
   Database,
+  GraduationCap,
+  Bot,
+  UserCog,
+  ClipboardList,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 
-interface AdminSidebarProps {
-  agent: Agent;
+interface AdminUser {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  roles: Array<{
+    id: string;
+    name: string;
+    display_name: string;
+    level: 'super_admin' | 'department_head' | 'staff';
+  }>;
+  permissions: string[];
 }
 
+interface AdminSidebarProps {
+  agent: Agent;
+  adminUser?: AdminUser | null;
+}
+
+// Navigation items with required permissions
 const navigation = [
-  { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { name: 'Agents', href: '/admin/agents', icon: Users },
-  { name: 'Products', href: '/admin/products', icon: ShoppingBag },
-  { name: 'Import Commissions', href: '/admin/commissions', icon: FileSpreadsheet },
-  { name: 'Pay Periods', href: '/admin/pay-periods', icon: Calendar },
-  { name: 'Clawbacks', href: '/admin/clawbacks', icon: RotateCcw },
-  { name: 'Compliance', href: '/admin/compliance', icon: AlertTriangle },
-  { name: 'Bonuses', href: '/admin/bonuses', icon: Award },
-  { name: 'Payouts', href: '/admin/payouts', icon: Wallet },
-  { name: 'Override Report', href: '/admin/overrides', icon: DollarSign },
-  { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
-  { name: 'SmartOffice', href: '/admin/smartoffice', icon: Database },
-  { name: 'System Settings', href: '/admin/settings', icon: Settings },
+  { name: 'Dashboard', href: '/admin', icon: LayoutDashboard, permission: 'dashboard.view' },
+  { name: 'Agents', href: '/admin/agents', icon: Users, permission: 'agents.view' },
+  { name: 'Products', href: '/admin/products', icon: ShoppingBag, permission: 'products.view' },
+  { name: 'Import Commissions', href: '/admin/commissions', icon: FileSpreadsheet, permission: 'commissions.view' },
+  { name: 'Pay Periods', href: '/admin/pay-periods', icon: Calendar, permission: 'payperiods.view' },
+  { name: 'Clawbacks', href: '/admin/clawbacks', icon: RotateCcw, permission: 'clawbacks.view' },
+  { name: 'Compliance', href: '/admin/compliance', icon: AlertTriangle, permission: 'compliance.view' },
+  { name: 'Bonuses', href: '/admin/bonuses', icon: Award, permission: 'bonuses.view' },
+  { name: 'Payouts', href: '/admin/payouts', icon: Wallet, permission: 'payouts.view' },
+  { name: 'Override Report', href: '/admin/overrides', icon: DollarSign, permission: 'overrides.view' },
+  { name: 'Analytics', href: '/admin/analytics', icon: BarChart3, permission: 'analytics.view' },
+  { name: 'Training', href: '/admin/training', icon: GraduationCap, permission: 'training.view' },
+  { name: 'SmartOffice', href: '/admin/smartoffice', icon: Database, permission: 'smartoffice.view' },
+  { name: 'AI Copilot', href: '/admin/copilot', icon: Bot, permission: 'copilot.view' },
+  { name: 'System Settings', href: '/admin/settings', icon: Settings, permission: 'settings.view' },
+  { name: 'User Management', href: '/admin/users', icon: UserCog, permission: 'users.view' },
+  { name: 'Audit Log', href: '/admin/audit', icon: ClipboardList, permission: 'audit.view' },
 ];
 
-export function AdminSidebar({ agent }: AdminSidebarProps) {
+export function AdminSidebar({ agent, adminUser }: AdminSidebarProps) {
   const pathname = usePathname();
   const rankConfig = RANK_CONFIG[agent.rank];
+
+  // Check if user has permission (for RBAC users)
+  const hasPermission = (permission: string): boolean => {
+    // Agent-based auth (no RBAC) - show all navigation
+    if (!adminUser) return true;
+
+    // Super admin has all permissions
+    if (adminUser.roles.some((r) => r.level === 'super_admin')) return true;
+
+    // Check specific permission
+    return adminUser.permissions.includes(permission);
+  };
+
+  // Filter navigation based on permissions
+  const filteredNavigation = navigation.filter((item) => hasPermission(item.permission));
+
+  // Get display name and role
+  const displayName = adminUser
+    ? `${adminUser.first_name} ${adminUser.last_name}`
+    : `${agent.first_name} ${agent.last_name}`;
+
+  const displayRole = adminUser
+    ? adminUser.roles[0]?.display_name || 'Staff'
+    : rankConfig.name;
 
   return (
     <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
@@ -57,7 +105,7 @@ export function AdminSidebar({ agent }: AdminSidebarProps) {
           <Shield className="h-5 w-5 text-sidebar-primary" />
         </div>
 
-        {/* Agent Info */}
+        {/* User Info */}
         <div className="rounded-lg bg-sidebar-accent p-4">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-sidebar-primary flex items-center justify-center text-sidebar-primary-foreground font-semibold">
@@ -65,10 +113,10 @@ export function AdminSidebar({ agent }: AdminSidebarProps) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-sidebar-foreground truncate">
-                {agent.first_name} {agent.last_name}
+                {displayName}
               </p>
               <p className="text-xs text-sidebar-foreground/70">
-                {rankConfig.name}
+                {displayRole}
               </p>
             </div>
           </div>
@@ -77,7 +125,7 @@ export function AdminSidebar({ agent }: AdminSidebarProps) {
         {/* Navigation */}
         <nav className="flex flex-1 flex-col">
           <ul role="list" className="flex flex-1 flex-col gap-y-1">
-            {navigation.map((item) => {
+            {filteredNavigation.map((item) => {
               const isActive = pathname === item.href ||
                 (item.href !== '/admin' && pathname.startsWith(`${item.href}/`));
               return (

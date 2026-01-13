@@ -3,10 +3,10 @@
  * GET /api/training/lessons/[lessonId]/quiz - Get quiz associated with a lesson
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 import { getQuizWithQuestions } from '@/lib/services/training-service';
-import type { Quiz } from '@/lib/types/training';
+import { ApiErrors, apiSuccess } from '@/lib/api/response';
 
 export async function GET(
   request: NextRequest,
@@ -19,10 +19,7 @@ export async function GET(
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return ApiErrors.unauthorized();
     }
 
     // Get agent by user_id (verify they exist)
@@ -33,10 +30,7 @@ export async function GET(
       .single() as unknown as { data: { id: string } | null; error: unknown };
 
     if (agentError || !agent) {
-      return NextResponse.json(
-        { error: 'Agent not found' },
-        { status: 404 }
-      );
+      return ApiErrors.notFound('Agent');
     }
 
     // Find quiz associated with this lesson
@@ -47,20 +41,14 @@ export async function GET(
       .single() as unknown as { data: { id: string } | null; error: unknown };
 
     if (quizError || !quiz) {
-      return NextResponse.json(
-        { error: 'No quiz found for this lesson' },
-        { status: 404 }
-      );
+      return ApiErrors.notFound('Quiz for this lesson');
     }
 
     // Get full quiz with questions
     const fullQuiz = await getQuizWithQuestions(quiz.id);
 
     if (!fullQuiz) {
-      return NextResponse.json(
-        { error: 'Quiz not found' },
-        { status: 404 }
-      );
+      return ApiErrors.notFound('Quiz');
     }
 
     // Get previous attempts count
@@ -87,13 +75,10 @@ export async function GET(
       })),
     };
 
-    return NextResponse.json({ quiz: sanitizedQuiz });
+    return apiSuccess({ quiz: sanitizedQuiz });
 
   } catch (error) {
     console.error('Error in lesson quiz API:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return ApiErrors.internal();
   }
 }

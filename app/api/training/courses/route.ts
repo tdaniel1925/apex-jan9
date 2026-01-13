@@ -3,9 +3,9 @@
  * GET /api/training/courses - Get all courses with agent progress
  */
 
-import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 import { getCoursesForAgent } from '@/lib/services/training-service';
+import { ApiErrors, apiSuccess } from '@/lib/api/response';
 
 export async function GET() {
   try {
@@ -14,10 +14,7 @@ export async function GET() {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return ApiErrors.unauthorized();
     }
 
     // Get agent by user_id
@@ -28,21 +25,15 @@ export async function GET() {
       .single() as unknown as { data: { id: string } | null; error: unknown };
 
     if (agentError || !agent) {
-      return NextResponse.json(
-        { error: 'Agent not found' },
-        { status: 404 }
-      );
+      return ApiErrors.notFound('Agent');
     }
 
     const courses = await getCoursesForAgent(agent.id);
 
-    return NextResponse.json({ courses });
+    return apiSuccess({ courses });
 
   } catch (error) {
     console.error('Error in training courses API:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return ApiErrors.internal();
   }
 }

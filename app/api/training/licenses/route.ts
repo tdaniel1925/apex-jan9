@@ -4,10 +4,11 @@
  * POST /api/training/licenses - Add/update a license
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 import { getAgentLicenses, upsertAgentLicense } from '@/lib/services/training-service';
+import { ApiErrors, apiSuccess, handleZodError } from '@/lib/api/response';
 
 const licenseSchema = z.object({
   state_code: z.string().length(2).toUpperCase(),
@@ -28,10 +29,7 @@ export async function GET() {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return ApiErrors.unauthorized();
     }
 
     // Get agent by user_id
@@ -42,22 +40,16 @@ export async function GET() {
       .single() as unknown as { data: { id: string } | null; error: unknown };
 
     if (agentError || !agent) {
-      return NextResponse.json(
-        { error: 'Agent not found' },
-        { status: 404 }
-      );
+      return ApiErrors.notFound('Agent');
     }
 
     const licenses = await getAgentLicenses(agent.id);
 
-    return NextResponse.json({ licenses });
+    return apiSuccess({ licenses });
 
   } catch (error) {
     console.error('Error in licenses API:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return ApiErrors.internal();
   }
 }
 
@@ -68,10 +60,7 @@ export async function POST(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return ApiErrors.unauthorized();
     }
 
     // Get agent by user_id
@@ -82,10 +71,7 @@ export async function POST(request: NextRequest) {
       .single() as unknown as { data: { id: string } | null; error: unknown };
 
     if (agentError || !agent) {
-      return NextResponse.json(
-        { error: 'Agent not found' },
-        { status: 404 }
-      );
+      return ApiErrors.notFound('Agent');
     }
 
     // Parse and validate request body
@@ -93,10 +79,7 @@ export async function POST(request: NextRequest) {
     const parseResult = licenseSchema.safeParse(body);
 
     if (!parseResult.success) {
-      return NextResponse.json(
-        { error: 'Validation failed', details: parseResult.error.flatten() },
-        { status: 400 }
-      );
+      return handleZodError(parseResult.error);
     }
 
     // Add default status if not provided
@@ -107,13 +90,10 @@ export async function POST(request: NextRequest) {
 
     const license = await upsertAgentLicense(agent.id, licenseData as never);
 
-    return NextResponse.json({ license });
+    return apiSuccess({ license });
 
   } catch (error) {
     console.error('Error in license update API:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return ApiErrors.internal();
   }
 }

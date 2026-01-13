@@ -1,5 +1,235 @@
 # Development Log
 
+## 2026-01-12 - Admin RBAC Permission Integration (Part 2)
+**Session:** 2026-01-12T21:00:00Z
+**Task Size:** MEDIUM
+**Status:** Completed
+**CodeBakers Compliance:** ✅ FOLLOWED - Tests written and passing
+
+### What was done:
+- Integrated RBAC permission system into admin UI components
+- Created dual authentication admin login page (Corporate Staff + Agent Admin)
+- Built PermissionGate component for page-level access control
+- Updated admin layout to support both auth systems
+- Added permission filtering to admin sidebar navigation
+- Created unauthorized access page
+
+### Files created:
+- `app/admin-login/page.tsx` - Dual-tab login (Corporate RBAC + Agent rank-based)
+- `app/(admin)/admin/unauthorized/page.tsx` - Access denied page
+- `components/admin/permission-gate.tsx` - PermissionGate, RequirePermission, useAdminPermission
+- `tests/pages/admin-login.test.tsx` - 13 comprehensive tests (rewritten)
+
+### Files modified:
+- `app/(admin)/layout.tsx` - Support dual auth (RBAC token + agent session)
+- `components/admin/admin-sidebar.tsx` - Permission-based navigation filtering
+- `components/admin/admin-header.tsx` - Dual logout handling
+- `app/(admin)/admin/commissions/page.tsx` - Added RequirePermission wrapper
+- `app/(admin)/admin/users/page.tsx` - Added RequirePermission wrapper
+
+### Permission Constants (37 permissions):
+- Dashboard, Agents, Commissions, Payouts, Clawbacks, Bonuses
+- Training, Compliance, Products, Analytics, Overrides
+- Settings, SmartOffice, Copilot, Users, Roles, Audit
+
+### Test Results:
+- Before: 673 tests passing
+- After: 686 tests passing (+13 admin login tests)
+- TypeScript: Compiles with no errors
+
+### Authentication Flow:
+1. **Corporate Staff** → `/api/admin/auth/login` → JWT token → localStorage
+2. **Agent Admin** → Supabase auth → rank check (Regional MGA+) → redirect
+
+### Next steps:
+- Run database migration in production
+- Add permission checks to remaining admin pages
+- Consider adding 2FA for admin accounts
+
+---
+
+## 2026-01-12 - Admin User Management System with RBAC
+**Session:** 2026-01-12T22:00:00Z
+**Task Size:** LARGE
+**Status:** Completed
+**CodeBakers Compliance:** ✅ FOLLOWED - discover_patterns called
+
+### What was done:
+- Designed comprehensive RBAC system for corporate back office
+- Created database migration with 7 new tables
+- Implemented admin authentication separate from agent auth
+- Built user management UI with create/edit/delete
+- Added audit logging for all admin actions
+- Created role-based permission system
+
+### Database Tables Created:
+- `admin_users` - Separate admin user accounts
+- `admin_roles` - Role definitions with hierarchy levels
+- `admin_permissions` - Granular permission definitions
+- `admin_role_permissions` - Role-permission mappings
+- `admin_user_roles` - User-role assignments
+- `admin_audit_log` - Action audit trail
+- `admin_sessions` - Admin session management
+
+### Role Hierarchy:
+1. **Super Admin** - Full system access
+2. **Department Heads** - Finance, IT, Memberships, Training
+3. **Staff** - Analytics (read-only)
+
+### Files created:
+- `supabase/migrations/20260112_admin_rbac.sql` - Database schema + seed data
+- `lib/auth/admin-rbac.ts` - RBAC service (789 lines)
+- `lib/auth/admin-middleware.ts` - Permission middleware helpers
+- `app/api/admin/auth/login/route.ts` - Admin login API
+- `app/api/admin/auth/logout/route.ts` - Admin logout API
+- `app/api/admin/auth/me/route.ts` - Current user API
+- `app/api/admin/users/route.ts` - User list/create API
+- `app/api/admin/users/[userId]/route.ts` - User CRUD API
+- `app/api/admin/roles/route.ts` - Roles list API
+- `app/api/admin/audit/route.ts` - Audit log API
+- `app/(admin)/admin/users/page.tsx` - User management UI
+- `app/(admin)/admin/audit/page.tsx` - Audit log UI
+- `components/admin/admin-auth-provider.tsx` - React auth context
+- `tests/api/admin-rbac.test.ts` - 27 RBAC tests
+
+### Files modified:
+- `components/admin/admin-sidebar.tsx` - Added User Management & Audit Log links
+
+### Test Results:
+- Before: 654 tests passing
+- After: 681 tests passing (+27 RBAC tests)
+- TypeScript: Compiles with no errors
+
+### Default Admin Account:
+- Email: admin@theapexway.net
+- Password: ApexAdmin2026!
+- Role: Super Administrator
+
+### Next steps:
+- Run database migration in production
+- Update existing admin pages to check permissions
+- Consider adding 2FA for admin accounts
+
+---
+
+## 2026-01-12 - Training Suite CodeBakers Compliance & Refactoring
+**Session:** 2026-01-12T20:00:00Z
+**Task Size:** MEDIUM
+**Status:** Completed
+**CodeBakers Compliance:** ✅ FOLLOWED - discover_patterns called, validate_complete called
+
+### What was done:
+- Retroactively audited Training Suite for CodeBakers pattern compliance
+- Created standardized API response helper (`lib/api/response.ts`) with error codes
+- Refactored all 13 training API routes to use `ApiErrors` and `apiSuccess`
+- Created 45+ new tests for Training Suite (650 total tests passing)
+- All API routes now return standardized `{ error, code }` format
+
+### Pattern Issues Fixed:
+- API routes returned `{ error: 'message' }` instead of `{ error, code }`
+- Inconsistent error handling across routes
+- Missing standardized response helpers
+
+### Files created:
+- `lib/api/response.ts` - Standardized API response helpers with error codes
+- `tests/api/training-api.test.ts` - 12 API route tests
+- `tests/components/quiz-component.test.tsx` - 11 component tests
+- `tests/services/training-service.test.ts` - 22 service unit tests
+
+### Files modified (13 API routes):
+- `app/api/training/courses/route.ts`
+- `app/api/training/courses/[courseId]/route.ts`
+- `app/api/training/courses/[courseId]/enroll/route.ts`
+- `app/api/training/progress/route.ts`
+- `app/api/training/quizzes/[quizId]/route.ts`
+- `app/api/training/quizzes/[quizId]/submit/route.ts`
+- `app/api/training/tracks/route.ts`
+- `app/api/training/tracks/[trackId]/enroll/route.ts`
+- `app/api/training/certificates/route.ts`
+- `app/api/training/resources/route.ts`
+- `app/api/training/licenses/route.ts`
+- `app/api/training/stats/route.ts`
+- `app/api/training/lessons/[lessonId]/quiz/route.ts`
+
+### Test Results:
+- Before: 605 tests passing
+- After: 650 tests passing (+45 training tests)
+- TypeScript: Compiles with no errors
+
+### Next steps:
+- Commit training refactoring changes
+- Continue with any remaining Training Suite features
+
+---
+
+## 2026-01-12 - Training Suite Complete Implementation
+**Session:** 2026-01-12T12:00:00Z
+**Task Size:** LARGE
+**Status:** Completed
+**CodeBakers Compliance:** ⚠️ NOT FOLLOWED - discover_patterns not called initially
+
+### What was done:
+- Built comprehensive LMS (Learning Management System) for agent training
+- 52 files created, 11,866 lines of code
+- Database migration with 15 new tables for training data
+- Full agent portal with courses, quizzes, certificates, resources
+- Admin management interface for training content
+- Quiz system with grading, attempts tracking, certification exams
+
+### Training System Components:
+
+**Database (Migration: `20260112_training_suite.sql`):**
+- `training_tracks` - Learning paths (new agent, licensing, product, sales, leadership)
+- `track_courses` - Many-to-many track/course relationships
+- `course_sections` - Modules within courses
+- `quizzes` - Quiz/exam definitions with settings
+- `quiz_questions` - Questions with types (multiple choice, true/false, etc.)
+- `quiz_answers` - Answer options with correct flags
+- `quiz_attempts` - Agent quiz attempts with scores
+- `certificates` - Issued certificates with verification
+- `resources` - Downloadable resource library
+- `agent_licenses` - Insurance license tracking
+- `ce_credits` - Continuing education credit tracking
+- `course_enrollments` - Agent course enrollment tracking
+- `track_enrollments` - Agent track enrollment tracking
+- `achievements` - Gamification badges
+- `agent_achievements` - Earned achievements
+- `learning_streaks` - Daily activity streaks
+
+**Agent Portal Pages:**
+- `/dashboard/training` - Training home with stats, featured courses
+- `/dashboard/training/courses` - Course catalog
+- `/dashboard/training/courses/[courseId]` - Course detail with lessons
+- `/dashboard/training/courses/[courseId]/[lessonId]` - Lesson player
+- `/dashboard/training/tracks` - Learning paths
+- `/dashboard/training/resources` - Resource library
+- `/dashboard/training/certificates` - Agent's certificates
+- `/dashboard/training/achievements` - Gamification dashboard
+
+**Admin Pages:**
+- `/admin/training` - Training management dashboard
+- `/admin/training/courses` - Course management
+- `/admin/training/courses/new` - Course creator wizard
+- `/admin/training/courses/[id]` - Course editor with lessons
+- `/admin/training/quizzes` - Quiz management
+- `/admin/training/quizzes/new` - Quiz creator
+- `/admin/training/resources` - Resource management
+- `/admin/training/analytics` - Training analytics
+
+**API Routes (13 agent + 10 admin):**
+- Training courses, progress, enrollments
+- Quiz retrieval and submission
+- Certificates, resources, licenses, stats
+
+**Service Layer:**
+- `lib/services/training-service.ts` - 1017 lines, comprehensive training logic
+- `lib/types/training.ts` - TypeScript types for training data
+
+### Commits:
+- `d44ee1c` - "Complete Training Suite implementation with 6 phases"
+
+---
+
 ## 2026-01-13 - SmartOffice Migration, API Testing & Credential Setup
 **Session:** 2026-01-13T00:15:00Z
 **Task Size:** MEDIUM

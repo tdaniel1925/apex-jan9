@@ -18,19 +18,63 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { AdminMobileSidebar } from './admin-mobile-sidebar';
 import { Badge } from '@/components/ui/badge';
 
-interface AdminHeaderProps {
-  agent: Agent;
+interface AdminUser {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  roles: Array<{
+    id: string;
+    name: string;
+    display_name: string;
+    level: 'super_admin' | 'department_head' | 'staff';
+  }>;
+  permissions: string[];
 }
 
-export function AdminHeader({ agent }: AdminHeaderProps) {
+interface AdminHeaderProps {
+  agent: Agent;
+  adminUser?: AdminUser | null;
+}
+
+const ADMIN_TOKEN_KEY = 'apex_admin_token';
+
+export function AdminHeader({ agent, adminUser }: AdminHeaderProps) {
   const router = useRouter();
   const supabase = createClient();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
+    if (adminUser) {
+      // RBAC admin logout
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      if (token) {
+        try {
+          await fetch('/api/admin/auth/logout', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        } catch (error) {
+          console.error('Logout error:', error);
+        }
+      }
+      localStorage.removeItem(ADMIN_TOKEN_KEY);
+      router.push('/admin-login');
+    } else {
+      // Agent-based logout
+      await supabase.auth.signOut();
+      router.push('/login');
+    }
     router.refresh();
   };
+
+  // Get display info based on auth type
+  const displayName = adminUser
+    ? `${adminUser.first_name} ${adminUser.last_name}`
+    : `${agent.first_name} ${agent.last_name}`;
+
+  const displayEmail = adminUser?.email || agent.email;
+  const avatarUrl = adminUser ? null : agent.avatar_url;
+  const initials = `${agent.first_name[0]}${agent.last_name[0]}`;
 
   return (
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b bg-background px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
@@ -78,9 +122,9 @@ export function AdminHeader({ agent }: AdminHeaderProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={agent.avatar_url || undefined} alt={agent.first_name} />
+                  <AvatarImage src={avatarUrl || undefined} alt={displayName} />
                   <AvatarFallback className="bg-primary text-primary-foreground">
-                    {agent.first_name[0]}{agent.last_name[0]}
+                    {initials}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -89,18 +133,25 @@ export function AdminHeader({ agent }: AdminHeaderProps) {
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">
-                    {agent.first_name} {agent.last_name}
+                    {displayName}
                   </p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    {agent.email}
+                    {displayEmail}
                   </p>
+                  {adminUser && (
+                    <p className="text-xs leading-none text-muted-foreground mt-1">
+                      {adminUser.roles[0]?.display_name || 'Staff'}
+                    </p>
+                  )}
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => router.push('/dashboard')}>
-                <User className="mr-2 h-4 w-4" />
-                Agent Dashboard
-              </DropdownMenuItem>
+              {!adminUser && (
+                <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+                  <User className="mr-2 h-4 w-4" />
+                  Agent Dashboard
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={() => router.push('/admin/settings')}>
                 <Settings className="mr-2 h-4 w-4" />
                 Admin Settings

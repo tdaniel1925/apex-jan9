@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Upload, FileSpreadsheet, Download, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import { CommissionImportDialog } from '@/components/admin/commission-import-dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { RequirePermission, PermissionGate, PERMISSIONS } from '@/components/admin/permission-gate';
 
 type CommissionWithAgent = {
   id: string;
@@ -82,6 +83,7 @@ export default function AdminCommissionsPage() {
   }
 
   return (
+    <RequirePermission permission={PERMISSIONS.COMMISSIONS_VIEW}>
     <div className="space-y-6">
       {error && (
         <Alert variant="destructive">
@@ -144,12 +146,14 @@ export default function AdminCommissionsPage() {
             <p className="mt-2 text-sm text-muted-foreground">
               Bulk import with column mapping, validation, and error reporting.
             </p>
+            <PermissionGate permission={PERMISSIONS.COMMISSIONS_IMPORT}>
             <div className="mt-4 flex justify-center gap-2">
               <Button onClick={() => setShowImportDialog(true)}>
                 <FileSpreadsheet className="mr-2 h-4 w-4" />
                 Import Commissions
               </Button>
             </div>
+            </PermissionGate>
           </div>
         </CardContent>
       </Card>
@@ -238,5 +242,6 @@ export default function AdminCommissionsPage() {
         onSuccess={fetchData}
       />
     </div>
+    </RequirePermission>
   );
 }

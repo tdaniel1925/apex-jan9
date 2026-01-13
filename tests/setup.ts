@@ -1,35 +1,23 @@
-import { expect, afterEach, beforeEach, vi } from 'vitest';
-import { cleanup } from '@testing-library/react';
-import * as matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 
-// Extend vitest's expect with jest-dom matchers
-expect.extend(matchers);
-
-// Cleanup after each test
-afterEach(() => {
-  cleanup();
-});
-
-// Clear all mocks before each test
-beforeEach(() => {
-  vi.clearAllMocks();
-});
-
-// Mock environment variables for testing
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
-process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key';
-
-// Mock next/headers
-vi.mock('next/headers', () => ({
-  cookies: vi.fn(() => ({
-    getAll: vi.fn(() => []),
-    set: vi.fn(),
-    get: vi.fn(),
-    delete: vi.fn(),
-  })),
-  headers: vi.fn(() => ({
-    get: vi.fn(),
-    has: vi.fn(),
-  })),
+// Mock next/navigation
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    back: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+  usePathname: () => '/',
+  useSearchParams: () => new URLSearchParams(),
+  useParams: () => ({}),
 }));
+
+// Mock environment variables
+process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3000';
+process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321';
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+
+// Global test utilities
+global.fetch = vi.fn();

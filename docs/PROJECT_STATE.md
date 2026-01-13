@@ -28,7 +28,7 @@
 | Admin API routes | Complete | 18 routes: agents, commissions, bonuses, payouts, overrides, analytics, settings |
 | Admin API tests | Complete | 69 tests passing (Vitest) |
 | E-commerce API tests | Complete | 18 tests passing (checkout, orders, retail commission) |
-| **Total Test Suite** | **Complete** | **605 tests passing (100% pass rate)** |
+| **Total Test Suite** | **Complete** | **686 tests passing (100% pass rate)** |
 | CRM | Complete | Contact management with add/edit/delete |
 | API routes | Complete | agents, wallet, contacts endpoints |
 | Matrix/Genealogy | Complete | Interactive 7-gen tree with react-flow (client-side fetch) |
@@ -47,6 +47,8 @@
 | **Marketing Site** | **Complete** | **9 pages with SEO, sitemap, legal pages (privacy, terms, income disclaimer)** |
 | **Replicated Site Enhancements** | **Complete** | **Legal pages, social sharing, OG tags, agent notifications** |
 | **SmartOffice CRM Integration** | **Complete** | **XML API client, sync service, 8 admin API routes, Developer Tools UI, 34 tests, migration done, sandbox connected** |
+| **Admin RBAC System** | **Complete** | **7 DB tables, 10 API routes, dual auth (Corporate Staff + Agent Admin), PermissionGate component, 40 tests** |
+| **Training Suite (LMS)** | **Complete** | **15 DB tables, 23 API routes, courses, quizzes, certificates, resources, gamification, 45 tests** |
 
 ---
 
@@ -70,11 +72,15 @@
 9. ✅ ~~Run SmartOffice Supabase migration~~ - COMPLETE (5 tables created)
 10. ✅ ~~Configure SmartOffice credentials~~ - COMPLETE (sandbox credentials active)
 11. ✅ ~~Test SmartOffice sandbox API connection~~ - COMPLETE (verified working)
-12. **Sync agents from SmartOffice** - Use admin UI to pull agents
-13. **Map SmartOffice agents to Apex agents** - By email or manual
-14. **Discover agent hierarchy field** - Check SmartOffice API Dictionary
-15. **Add push notifications** (optional - browser push or mobile)
-16. **Production deployment preparation** (environment setup, monitoring, error tracking)
+12. ✅ ~~Admin RBAC system~~ - COMPLETE (7 tables, 10 API routes, 40 tests)
+13. ✅ ~~Training Suite (LMS)~~ - COMPLETE (15 tables, 23 API routes, 45 tests)
+14. **Run RBAC database migration in production** - Deploy admin_users, admin_roles tables
+15. **Add permission checks to remaining admin pages** - Apply RequirePermission wrappers
+16. **Sync agents from SmartOffice** - Use admin UI to pull agents
+17. **Map SmartOffice agents to Apex agents** - By email or manual
+18. **Discover agent hierarchy field** - Check SmartOffice API Dictionary
+19. **Consider adding 2FA for admin accounts** - Enhanced security for RBAC users
+20. **Production deployment preparation** (environment setup, monitoring, error tracking)
 
 ---
 
@@ -136,4 +142,4 @@
 
 ---
 
-*Last updated: January 13, 2026*
+*Last updated: January 12, 2026 (21:15 UTC)*

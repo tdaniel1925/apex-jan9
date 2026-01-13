@@ -3,9 +3,10 @@
  * GET /api/training/resources - Get downloadable resources library
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 import { getResources, recordResourceDownload } from '@/lib/services/training-service';
+import { ApiErrors, apiSuccess } from '@/lib/api/response';
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,10 +15,7 @@ export async function GET(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return ApiErrors.unauthorized();
     }
 
     // Get agent by user_id
@@ -28,10 +26,7 @@ export async function GET(request: NextRequest) {
       .single() as unknown as { data: { id: string; rank: string } | null; error: unknown };
 
     if (agentError || !agent) {
-      return NextResponse.json(
-        { error: 'Agent not found' },
-        { status: 404 }
-      );
+      return ApiErrors.notFound('Agent');
     }
 
     // Get query params
@@ -46,14 +41,11 @@ export async function GET(request: NextRequest) {
       search,
     });
 
-    return NextResponse.json({ resources });
+    return apiSuccess({ resources });
 
   } catch (error) {
     console.error('Error in resources API:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return ApiErrors.internal();
   }
 }
 
@@ -64,10 +56,7 @@ export async function POST(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return ApiErrors.unauthorized();
     }
 
     // Get agent by user_id
@@ -78,10 +67,7 @@ export async function POST(request: NextRequest) {
       .single() as unknown as { data: { id: string } | null; error: unknown };
 
     if (agentError || !agent) {
-      return NextResponse.json(
-        { error: 'Agent not found' },
-        { status: 404 }
-      );
+      return ApiErrors.notFound('Agent');
     }
 
     // Parse request body
@@ -89,22 +75,16 @@ export async function POST(request: NextRequest) {
     const { resource_id } = body;
 
     if (!resource_id) {
-      return NextResponse.json(
-        { error: 'resource_id is required' },
-        { status: 400 }
-      );
+      return ApiErrors.badRequest('resource_id is required');
     }
 
     // Record download
     await recordResourceDownload(agent.id, resource_id);
 
-    return NextResponse.json({ success: true });
+    return apiSuccess({ success: true });
 
   } catch (error) {
     console.error('Error recording download:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return ApiErrors.internal();
   }
 }

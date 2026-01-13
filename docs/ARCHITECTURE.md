@@ -452,4 +452,330 @@ if (result.success) {
 
 ---
 
-*Last updated: January 13, 2026*
+## Training Suite / LMS (Added: 2026-01-12)
+
+Comprehensive Learning Management System for agent training, onboarding, and certification.
+
+### System Components
+
+```
+/lib
+  /api
+    response.ts              → Standardized API responses with error codes
+  /services
+    training-service.ts      → 1017 lines, comprehensive training logic
+  /types
+    training.ts              → TypeScript types for training data
+
+/app/api
+  /training                  → Agent-facing training APIs (13 routes)
+    /courses
+      route.ts               → GET courses with progress
+      /[courseId]
+        route.ts             → GET course details
+        /enroll/route.ts     → POST enroll in course
+    /progress/route.ts       → POST update lesson progress
+    /quizzes/[quizId]
+      route.ts               → GET quiz with questions
+      /submit/route.ts       → POST submit quiz answers
+    /tracks/route.ts         → GET learning paths
+    /tracks/[trackId]/enroll/route.ts → POST enroll in track
+    /certificates/route.ts   → GET agent certificates
+    /resources/route.ts      → GET/POST resources library
+    /licenses/route.ts       → GET/POST insurance licenses
+    /stats/route.ts          → GET training statistics
+    /lessons/[lessonId]/quiz/route.ts → GET lesson quiz
+
+  /admin/training            → Admin training management (10 routes)
+    route.ts                 → GET training stats
+    /courses                 → Course CRUD
+    /quizzes                 → Quiz management
+    /resources               → Resource management
+    /analytics               → Training analytics
+```
+
+### Database Tables (Migration: `20260112_training_suite.sql`)
+
+| Table | Purpose |
+|-------|---------|
+| `training_tracks` | Learning paths (new_agent, licensing, product, sales, leadership, compliance) |
+| `track_courses` | Many-to-many track/course relationships |
+| `course_sections` | Modules within courses |
+| `quizzes` | Quiz/exam definitions with settings |
+| `quiz_questions` | Questions (multiple_choice, true_false, multiple_select, short_answer) |
+| `quiz_answers` | Answer options with correct flags |
+| `quiz_attempts` | Agent quiz attempts with scores and timing |
+| `certificates` | Issued certificates with verification URLs |
+| `resources` | Downloadable resource library (pdf, video, audio, etc.) |
+| `agent_licenses` | Insurance license tracking by state |
+| `ce_credits` | Continuing education credit tracking |
+| `course_enrollments` | Agent course enrollment and progress |
+| `track_enrollments` | Agent track enrollment and progress |
+| `achievements` | Gamification badges and points |
+| `agent_achievements` | Earned achievements |
+| `learning_streaks` | Daily activity streak tracking |
+
+### API Response Pattern
+
+All training API routes use standardized responses via `lib/api/response.ts`:
+
+```typescript
+// Error responses include error codes
+import { ApiErrors, apiSuccess } from '@/lib/api/response';
+
+// Success: { data: { courses: [...] } }
+return apiSuccess({ courses });
+
+// Error: { error: "Unauthorized", code: "UNAUTHORIZED" }
+return ApiErrors.unauthorized();
+
+// Error: { error: "Course not found", code: "NOT_FOUND" }
+return ApiErrors.notFound('Course');
+
+// Validation: { error: "Validation failed", code: "VALIDATION_ERROR", details: {...} }
+return handleZodError(parseResult.error);
+```
+
+### Agent Portal Pages
+
+```
+/dashboard/training              → Training home (stats, featured, continue learning)
+/dashboard/training/courses      → Course catalog with filters
+/dashboard/training/courses/[id] → Course detail with lessons
+/dashboard/training/courses/[id]/[lessonId] → Lesson player (video/text/quiz)
+/dashboard/training/tracks       → Learning paths overview
+/dashboard/training/resources    → Resource library with categories
+/dashboard/training/certificates → Agent's earned certificates
+/dashboard/training/achievements → Gamification dashboard (streaks, badges)
+```
+
+### Admin Pages
+
+```
+/admin/training                  → Training management dashboard
+/admin/training/courses          → Course list with stats
+/admin/training/courses/new      → Course creation wizard
+/admin/training/courses/[id]     → Course editor with lesson management
+/admin/training/quizzes          → Quiz list with attempt counts
+/admin/training/quizzes/new      → Quiz builder with question types
+/admin/training/resources        → Resource library management
+/admin/training/analytics        → Training analytics and reports
+```
+
+### Quiz System
+
+Quiz types: `multiple_choice`, `true_false`, `multiple_select`, `short_answer`
+
+```typescript
+// Quiz settings
+interface Quiz {
+  passing_score: number;        // Default 70%
+  time_limit_minutes?: number;  // Optional timer
+  max_attempts?: number;        // Default 3
+  shuffle_questions: boolean;   // Randomize order
+  show_correct_answers: boolean; // Show after submission
+  is_certification_exam: boolean; // Issues certificate
+}
+
+// Grading logic
+const isCorrect = correctAnswers.size === selectedAnswers.size &&
+  [...correctAnswers].every(a => selectedAnswers.has(a));
+```
+
+### The Rules
+
+1. **API responses use standardized format** - Always use `ApiErrors` and `apiSuccess`
+2. **Progress tracking is automatic** - Updates on lesson completion
+3. **Certificates are generated on course completion** - If passing score met
+4. **Quizzes hide answers until submission** - `is_correct` stripped from response
+5. **Resources are rank-gated** - Some resources require minimum rank
+6. **Streaks update daily** - Learning activity tracked for gamification
+
+### Tests
+
+Training-specific tests (45+ tests):
+- `tests/api/training-api.test.ts` - 12 API route tests
+- `tests/components/quiz-component.test.tsx` - 11 component tests
+- `tests/services/training-service.test.ts` - 22 service unit tests
+
+---
+
+## Admin RBAC System (Added: 2026-01-12)
+
+Role-based access control for the admin panel with dual authentication paths.
+
+### Dual Authentication Architecture
+
+The admin panel supports two authentication methods:
+
+```
+Corporate Staff (RBAC)           Agent Admin (Rank-based)
+────────────────────────         ────────────────────────
+JWT tokens in localStorage       Supabase session
+admin_users + admin_roles        agents table + rank check
+37 granular permissions          Regional MGA+ = full access
+Database-defined roles           Rank-implied permissions
+```
+
+### Authentication Flow
+
+```
+/admin-login
+    │
+    ├─► Corporate Staff Tab (Default)
+    │   └─► POST /api/admin/auth/login
+    │       └─► Validates credentials against admin_users
+    │       └─► Returns JWT token (stored in localStorage)
+    │       └─► Redirects to /admin
+    │
+    └─► Agent Admin Tab
+        └─► Supabase signIn()
+        └─► Checks agent.rank >= regional_mga
+        └─► Uses existing Supabase session
+        └─► Redirects to /admin
+```
+
+### Database Tables (Migration: `20260112_admin_rbac.sql`)
+
+| Table | Purpose |
+|-------|---------|
+| `admin_users` | Corporate staff accounts (email, password_hash, first_name, last_name) |
+| `admin_roles` | Role definitions (name, display_name, description, level) |
+| `admin_user_roles` | User-role assignments (many-to-many) |
+| `admin_permissions` | Permission definitions (code, name, category) |
+| `admin_role_permissions` | Role-permission assignments (many-to-many) |
+| `admin_sessions` | JWT session tracking (token_hash, expires_at, revoked) |
+| `admin_audit_logs` | Action audit trail (action, resource_type, resource_id, details) |
+
+### Role Hierarchy
+
+```
+super_admin (level 3)    → All permissions, system config, role management
+department_head (level 2) → Department permissions, can assign staff roles
+staff (level 1)          → Specific permissions per role assignment
+```
+
+### Permission Categories (37 Total)
+
+```typescript
+const PERMISSIONS = {
+  // Agents (5)
+  AGENTS_VIEW, AGENTS_EDIT, AGENTS_CREATE, AGENTS_DELETE, AGENTS_EXPORT,
+
+  // Commissions (4)
+  COMMISSIONS_VIEW, COMMISSIONS_EDIT, COMMISSIONS_IMPORT, COMMISSIONS_EXPORT,
+
+  // Bonuses (4)
+  BONUSES_VIEW, BONUSES_CREATE, BONUSES_EDIT, BONUSES_DELETE,
+
+  // Payouts (3)
+  PAYOUTS_VIEW, PAYOUTS_PROCESS, PAYOUTS_APPROVE,
+
+  // Settings (6)
+  SETTINGS_VIEW, SETTINGS_EDIT, SYSTEM_CONFIG, ROLES_MANAGE, USERS_MANAGE, AUDIT_VIEW,
+
+  // Analytics (2)
+  ANALYTICS_VIEW, ANALYTICS_EXPORT,
+
+  // Training (4)
+  TRAINING_VIEW, TRAINING_EDIT, TRAINING_CREATE, TRAINING_DELETE,
+
+  // SmartOffice (4)
+  SMARTOFFICE_VIEW, SMARTOFFICE_SYNC, SMARTOFFICE_CONFIG, SMARTOFFICE_EXPLORER,
+
+  // Support (2)
+  SUPPORT_VIEW, SUPPORT_RESPOND,
+
+  // Email (3)
+  EMAIL_VIEW, EMAIL_SEND, EMAIL_TEMPLATES,
+};
+```
+
+### API Routes
+
+```
+/app/api/admin/auth
+  /login/route.ts           → POST corporate login, returns JWT
+  /logout/route.ts          → POST revoke session
+  /me/route.ts              → GET current admin user with permissions
+
+/app/api/admin/rbac
+  /users/route.ts           → GET/POST admin users
+  /users/[id]/route.ts      → GET/PUT/DELETE admin user
+  /roles/route.ts           → GET/POST roles with permissions
+  /roles/[id]/route.ts      → GET/PUT/DELETE role
+  /permissions/route.ts     → GET all permissions (grouped by category)
+```
+
+### Permission Gate Components
+
+```typescript
+// Client-side permission checking
+import { PermissionGate, RequirePermission, PERMISSIONS } from '@/components/admin/permission-gate';
+
+// Wrap page content that requires permission
+<RequirePermission permission={PERMISSIONS.COMMISSIONS_VIEW}>
+  <CommissionsPage />
+</RequirePermission>
+
+// Conditionally show elements
+<PermissionGate permission={PERMISSIONS.COMMISSIONS_IMPORT}>
+  <ImportButton />
+</PermissionGate>
+
+// Multiple permissions (any of)
+<PermissionGate anyOf={[PERMISSIONS.PAYOUTS_PROCESS, PERMISSIONS.PAYOUTS_APPROVE]}>
+  <PayoutActions />
+</PermissionGate>
+
+// Hook for custom logic
+const { hasPermission } = useAdminPermission();
+if (hasPermission(PERMISSIONS.AGENTS_DELETE)) {
+  // Show delete button
+}
+```
+
+### Admin Layout Authentication Check
+
+```typescript
+// app/(admin)/layout.tsx
+export default function AdminLayout({ children }) {
+  // 1. Check for RBAC admin (JWT in localStorage)
+  const adminToken = localStorage.getItem('apex_admin_token');
+  if (adminToken) {
+    const response = await fetch('/api/admin/auth/me', {
+      headers: { Authorization: `Bearer ${adminToken}` }
+    });
+    if (response.ok) setAuthType('admin');
+  }
+
+  // 2. Fall back to agent rank check
+  if (!adminUser && agent) {
+    const isAdmin = RANK_CONFIG[agent.rank].order >= RANK_CONFIG.regional_mga.order;
+    if (isAdmin) setAuthType('agent');
+  }
+
+  // 3. Redirect if neither auth valid
+  if (!adminUser && !agent) router.push('/admin-login');
+}
+```
+
+### The Rules
+
+1. **Corporate staff use RBAC** - Granular permissions per role
+2. **High-rank agents get implied full access** - Regional MGA+ skip permission checks
+3. **JWT tokens are session-tracked** - Can be revoked via admin_sessions
+4. **All admin actions are audited** - Written to admin_audit_logs
+5. **Permission checks are client + server** - PermissionGate + API route validation
+6. **Sidebar filters by permission** - Only shows accessible menu items
+
+### Tests
+
+RBAC-specific tests (40 tests):
+- `tests/api/rbac-api.test.ts` - 15 API route tests
+- `tests/components/permission-gate.test.tsx` - 12 component tests
+- `tests/pages/admin-login.test.tsx` - 13 page tests
+
+---
+
+*Last updated: January 12, 2026*

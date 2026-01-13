@@ -3,9 +3,9 @@
  * GET /api/training/certificates - Get agent's certificates
  */
 
-import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 import { getAgentCertificates } from '@/lib/services/training-service';
+import { ApiErrors, apiSuccess } from '@/lib/api/response';
 
 export async function GET() {
   try {
@@ -14,10 +14,7 @@ export async function GET() {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return ApiErrors.unauthorized();
     }
 
     // Get agent by user_id
@@ -28,21 +25,15 @@ export async function GET() {
       .single() as unknown as { data: { id: string } | null; error: unknown };
 
     if (agentError || !agent) {
-      return NextResponse.json(
-        { error: 'Agent not found' },
-        { status: 404 }
-      );
+      return ApiErrors.notFound('Agent');
     }
 
     const certificates = await getAgentCertificates(agent.id);
 
-    return NextResponse.json({ certificates });
+    return apiSuccess({ certificates });
 
   } catch (error) {
     console.error('Error in certificates API:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return ApiErrors.internal();
   }
 }

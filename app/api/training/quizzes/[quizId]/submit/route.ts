@@ -3,10 +3,11 @@
  * POST /api/training/quizzes/[quizId]/submit - Submit quiz answers
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 import { submitQuizAttempt, getQuizWithQuestions } from '@/lib/services/training-service';
+import { ApiErrors, apiSuccess, handleZodError } from '@/lib/api/response';
 
 const submitSchema = z.object({
   started_at: z.string().datetime(),
@@ -27,10 +28,7 @@ export async function POST(
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return ApiErrors.unauthorized();
     }
 
     // Get agent by user_id
@@ -41,10 +39,7 @@ export async function POST(
       .single() as unknown as { data: { id: string } | null; error: unknown };
 
     if (agentError || !agent) {
-      return NextResponse.json(
-        { error: 'Agent not found' },
-        { status: 404 }
-      );
+      return ApiErrors.notFound('Agent');
     }
 
     // Parse and validate request body
@@ -52,10 +47,7 @@ export async function POST(
     const parseResult = submitSchema.safeParse(body);
 
     if (!parseResult.success) {
-      return NextResponse.json(
-        { error: 'Validation failed', details: parseResult.error.flatten() },
-        { status: 400 }
-      );
+      return handleZodError(parseResult.error);
     }
 
     const { started_at, answers } = parseResult.data;
@@ -70,7 +62,7 @@ export async function POST(
     // Get quiz details for response (with explanations now visible)
     const quiz = await getQuizWithQuestions(quizId);
 
-    return NextResponse.json({
+    return apiSuccess({
       attempt,
       quiz: quiz ? {
         show_correct_answers: quiz.show_correct_answers,
@@ -90,15 +82,9 @@ export async function POST(
     console.error('Error in quiz submission API:', error);
 
     if (error instanceof Error && error.message === 'Maximum attempts exceeded') {
-      return NextResponse.json(
-        { error: 'Maximum attempts exceeded for this quiz' },
-        { status: 400 }
-      );
+      return ApiErrors.badRequest('Maximum attempts exceeded for this quiz');
     }
 
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return ApiErrors.internal();
   }
 }
