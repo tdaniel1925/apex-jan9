@@ -276,6 +276,12 @@ export function buildInsertRequest(params: {
  * @param filterByAdvisor - If true, only return ClientType = 7 (advisors). Default: false for sandbox compatibility.
  */
 export function buildSearchAgentsRequest(options?: SearchOptions, filterByAdvisor = false): string {
+  // SmartOffice API may require a condition to return results
+  // Use broad condition: Status >= 0 (all agents) or ClientType = 7 (advisors only)
+  const condition = filterByAdvisor
+    ? { property: 'Contact.ClientType', operator: 'eq' as const, value: '7' }
+    : { property: 'Status', operator: 'gte' as const, value: '0' };
+
   return buildSearchRequest({
     object: 'Agent',
     properties: ['Status'],
@@ -289,11 +295,7 @@ export function buildSearchAgentsRequest(options?: SearchOptions, filterByAdviso
       'Contact/WebAddresses/WebAddress': ['Address', 'WebAddressType'],
       'Contact/Phones/Phone': ['AreaCode', 'Number', 'PhoneType'],
     },
-    // Only filter by ClientType 7 if explicitly requested
-    // Most sandboxes don't have contacts marked as advisors (ClientType 7)
-    condition: filterByAdvisor
-      ? { property: 'Contact.ClientType', operator: 'eq', value: '7' }
-      : undefined,
+    condition,
     options,
   });
 }

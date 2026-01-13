@@ -244,14 +244,31 @@ function normalizeArray<T>(value: T | T[] | undefined): T[] {
 }
 
 /**
+ * Get ID from object - handles both _id (from XML attributes) and id
+ * The XML parser uses attributeNamePrefix: '_', so XML attributes become _attr
+ */
+function getId(obj: Record<string, unknown> | undefined): string {
+  if (!obj) return '';
+  // Check _id first (XML attribute), then id (in case it's an element)
+  return (obj._id as string) || (obj.id as string) || '';
+}
+
+/**
  * Normalize agent response to standard format
  */
 function normalizeAgent(agent: SmartOfficeAgentResponse): SmartOfficeAgent {
   const contact = agent.Contact || ({} as SmartOfficeContactResponse);
+  const agentObj = agent as unknown as Record<string, unknown>;
+  const contactObj = contact as unknown as Record<string, unknown>;
 
   // Extract email from WebAddresses (WebAddressType = 1)
   const webAddresses = normalizeArray(contact.WebAddresses?.WebAddress);
-  const emailAddress = webAddresses.find((wa: SmartOfficeWebAddressResponse) => wa.WebAddressType === '1');
+  const emailAddress = webAddresses.find((wa: SmartOfficeWebAddressResponse) => {
+    const waObj = wa as unknown as Record<string, unknown>;
+    // Check both WebAddressType and _WebAddressType
+    const waType = waObj.WebAddressType || waObj._WebAddressType;
+    return waType === '1';
+  });
   const email = emailAddress?.Address || null;
 
   // Extract phone from Phones
@@ -260,8 +277,8 @@ function normalizeAgent(agent: SmartOfficeAgentResponse): SmartOfficeAgent {
   const phone = primaryPhone ? `${primaryPhone.AreaCode || ''}${primaryPhone.Number || ''}` : null;
 
   return {
-    id: agent.id,
-    contactId: contact.id || '',
+    id: getId(agentObj),
+    contactId: getId(contactObj),
     firstName: contact.FirstName || '',
     lastName: contact.LastName || '',
     email,
@@ -279,15 +296,17 @@ function normalizeAgent(agent: SmartOfficeAgentResponse): SmartOfficeAgent {
  */
 function normalizePolicy(policy: SmartOfficePolicyResponse): SmartOfficePolicy {
   const holdingType = parseInt(policy.HoldingType || '0', 10);
+  const policyObj = policy as unknown as Record<string, unknown>;
+  const primaryAdvisorObj = policy.PrimaryAdvisor as unknown as Record<string, unknown> | undefined;
 
   return {
-    id: policy.id,
+    id: getId(policyObj),
     policyNumber: policy.PolicyNumber || '',
     carrierName: policy.CarrierName || '',
     holdingType,
     holdingTypeName: getHoldingTypeName(holdingType),
     annualPremium: parseFloat(policy.AnnualPremium || '0'),
-    primaryAdvisorContactId: policy.PrimaryAdvisor?.id || null,
+    primaryAdvisorContactId: getId(primaryAdvisorObj) || null,
     rawData: policy,
   };
 }
@@ -296,8 +315,10 @@ function normalizePolicy(policy: SmartOfficePolicyResponse): SmartOfficePolicy {
  * Normalize commission response to standard format
  */
 function normalizeCommission(commission: SmartOfficeCommissionResponse): SmartOfficeCommission {
+  const commissionObj = commission as unknown as Record<string, unknown>;
+
   return {
-    id: commission.id,
+    id: getId(commissionObj),
     policyNumber: commission.PolicyNo || '',
     currentRole: commission.CurrentRole || '',
     receivable: parseFloat(commission.Receivable || '0'),
