@@ -1,203 +1,218 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { BookOpen, PlayCircle, FileText, Award, Clock, CheckCircle } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CourseCard, TrackCard, StatsCards } from '@/components/training';
+import { BookOpen, GraduationCap, FileText, Award, ChevronRight } from 'lucide-react';
+import type { CourseWithProgress, TrackWithCourses, AgentTrainingStats } from '@/lib/types/training';
 
 export default function TrainingPage() {
-  // Placeholder training courses
-  const courses = [
-    {
-      id: 1,
-      title: 'Getting Started with Apex',
-      description: 'Learn the basics of the Apex platform and how to get started.',
-      duration: '30 min',
-      lessons: 5,
-      completed: 5,
-      category: 'Onboarding',
-    },
-    {
-      id: 2,
-      title: 'IUL Sales Mastery',
-      description: 'Advanced techniques for selling Indexed Universal Life insurance.',
-      duration: '2 hours',
-      lessons: 12,
-      completed: 4,
-      category: 'Sales',
-    },
-    {
-      id: 3,
-      title: 'Recruiting & Team Building',
-      description: 'How to recruit and build a successful team of agents.',
-      duration: '1.5 hours',
-      lessons: 8,
-      completed: 0,
-      category: 'Leadership',
-    },
-    {
-      id: 4,
-      title: 'Carrier Product Training',
-      description: 'Deep dive into products from Columbus Life, AIG, F+G, and more.',
-      duration: '3 hours',
-      lessons: 15,
-      completed: 2,
-      category: 'Products',
-    },
-    {
-      id: 5,
-      title: 'Compliance Essentials',
-      description: 'Stay compliant with insurance regulations and best practices.',
-      duration: '45 min',
-      lessons: 6,
-      completed: 6,
-      category: 'Compliance',
-    },
-  ];
+  const [courses, setCourses] = useState<CourseWithProgress[]>([]);
+  const [tracks, setTracks] = useState<TrackWithCourses[]>([]);
+  const [stats, setStats] = useState<AgentTrainingStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [coursesRes, tracksRes, statsRes] = await Promise.all([
+          fetch('/api/training/courses'),
+          fetch('/api/training/tracks'),
+          fetch('/api/training/stats'),
+        ]);
+
+        if (coursesRes.ok) {
+          const data = await coursesRes.json();
+          setCourses(data.courses || []);
+        }
+
+        if (tracksRes.ok) {
+          const data = await tracksRes.json();
+          setTracks(data.tracks || []);
+        }
+
+        if (statsRes.ok) {
+          const data = await statsRes.json();
+          setStats(data.stats || null);
+        }
+      } catch (error) {
+        console.error('Error fetching training data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  // Get in-progress courses (enrolled but not completed)
+  const inProgressCourses = courses.filter(
+    c => c.enrollment && !c.enrollment.completed_at
+  );
+
+  // Get featured courses
+  const featuredCourses = courses.filter(c => c.is_featured).slice(0, 3);
+
+  // Get required courses that aren't completed
+  const requiredCourses = courses.filter(
+    c => c.is_required && (!c.enrollment || !c.enrollment.completed_at)
+  );
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Training Portal</h1>
+          <p className="text-muted-foreground">
+            Build your skills and grow your business with our training courses.
+          </p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-24" />
+          ))}
+        </div>
+        <Skeleton className="h-64" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Training Portal</h1>
-        <p className="text-muted-foreground">
-          Build your skills and grow your business with our training courses.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Training Portal</h1>
+          <p className="text-muted-foreground">
+            Build your skills and grow your business with our training courses.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Link href="/dashboard/training/certificates">
+            <Button variant="outline" size="sm">
+              <Award className="h-4 w-4 mr-2" />
+              My Certificates
+            </Button>
+          </Link>
+          <Link href="/dashboard/training/resources">
+            <Button variant="outline" size="sm">
+              <FileText className="h-4 w-4 mr-2" />
+              Resources
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      {/* Progress Overview */}
-      <div className="grid gap-4 md:grid-cols-4">
+      {/* Stats Overview */}
+      {stats && <StatsCards stats={stats} />}
+
+      {/* Continue Learning Section */}
+      {inProgressCourses.length > 0 && (
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Courses Completed</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5" />
+              Continue Learning
+            </CardTitle>
+            <CardDescription>Pick up where you left off</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">1</div>
-            <p className="text-xs text-muted-foreground">of 5 courses</p>
+          <CardContent className="space-y-4">
+            {inProgressCourses.slice(0, 3).map(course => (
+              <CourseCard key={course.id} course={course} />
+            ))}
           </CardContent>
         </Card>
+      )}
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Lessons Completed</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+      {/* Required Courses Alert */}
+      {requiredCourses.length > 0 && (
+        <Card className="border-orange-200 bg-orange-50">
+          <CardHeader>
+            <CardTitle className="text-orange-800">Required Training</CardTitle>
+            <CardDescription className="text-orange-700">
+              Complete these courses to stay compliant
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">17</div>
-            <p className="text-xs text-muted-foreground">of 46 lessons</p>
+          <CardContent className="space-y-4">
+            {requiredCourses.slice(0, 3).map(course => (
+              <CourseCard key={course.id} course={course} />
+            ))}
           </CardContent>
         </Card>
+      )}
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Time Invested</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">2.5 hrs</div>
-            <p className="text-xs text-muted-foreground">learning time</p>
-          </CardContent>
-        </Card>
+      {/* Main Content Tabs */}
+      <Tabs defaultValue="courses" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="courses" className="gap-2">
+            <BookOpen className="h-4 w-4" />
+            Courses
+          </TabsTrigger>
+          <TabsTrigger value="tracks" className="gap-2">
+            <GraduationCap className="h-4 w-4" />
+            Learning Paths
+          </TabsTrigger>
+        </TabsList>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Certificates</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">2</div>
-            <p className="text-xs text-muted-foreground">earned</p>
-          </CardContent>
-        </Card>
-      </div>
+        <TabsContent value="courses" className="space-y-4">
+          {featuredCourses.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Featured Courses</CardTitle>
+                <CardDescription>Recommended training for your success</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {featuredCourses.map(course => (
+                  <CourseCard key={course.id} course={course} />
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
-      {/* Course List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Available Courses</CardTitle>
-          <CardDescription>Continue your learning journey</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {courses.map((course) => {
-            const progress = Math.round((course.completed / course.lessons) * 100);
-            const isComplete = progress === 100;
-
-            return (
-              <div
-                key={course.id}
-                className="flex items-center gap-4 rounded-lg border p-4 hover:bg-muted/50 transition-colors"
-              >
-                <div className="rounded-lg bg-primary/10 p-3">
-                  {isComplete ? (
-                    <CheckCircle className="h-6 w-6 text-green-600" />
-                  ) : (
-                    <PlayCircle className="h-6 w-6 text-primary" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold">{course.title}</h3>
-                    <Badge variant="outline">{course.category}</Badge>
-                    {isComplete && (
-                      <Badge variant="default" className="bg-green-600">
-                        Completed
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {course.description}
-                  </p>
-                  <div className="flex items-center gap-4 mt-2">
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {course.duration}
-                    </span>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <FileText className="h-3 w-3" />
-                      {course.lessons} lessons
-                    </span>
-                  </div>
-                  {!isComplete && (
-                    <div className="mt-2">
-                      <div className="flex items-center justify-between text-xs mb-1">
-                        <span>{course.completed} of {course.lessons} completed</span>
-                        <span>{progress}%</span>
-                      </div>
-                      <Progress value={progress} className="h-2" />
-                    </div>
-                  )}
-                </div>
-                <Button variant={isComplete ? 'outline' : 'default'}>
-                  {isComplete ? 'Review' : progress > 0 ? 'Continue' : 'Start'}
-                </Button>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>All Courses</CardTitle>
+                <CardDescription>{courses.length} courses available</CardDescription>
               </div>
-            );
-          })}
-        </CardContent>
-      </Card>
+              <Link href="/dashboard/training/courses">
+                <Button variant="outline" size="sm">
+                  View All
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </Link>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {courses.slice(0, 5).map(course => (
+                <CourseCard key={course.id} course={course} />
+              ))}
+              {courses.length === 0 && (
+                <p className="text-center text-muted-foreground py-8">
+                  No courses available yet. Check back soon!
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      {/* Coming Soon */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Coming Soon</CardTitle>
-          <CardDescription>New courses being developed</CardDescription>
-        </CardHeader>
-        <CardContent>
+        <TabsContent value="tracks" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-lg border border-dashed p-4 text-center">
-              <BookOpen className="h-8 w-8 mx-auto text-muted-foreground/50" />
-              <h4 className="mt-2 font-medium">Advanced Annuity Strategies</h4>
-              <p className="text-sm text-muted-foreground">Coming Q2 2026</p>
-            </div>
-            <div className="rounded-lg border border-dashed p-4 text-center">
-              <BookOpen className="h-8 w-8 mx-auto text-muted-foreground/50" />
-              <h4 className="mt-2 font-medium">AI Copilot Mastery</h4>
-              <p className="text-sm text-muted-foreground">Coming Q2 2026</p>
-            </div>
+            {tracks.map(track => (
+              <TrackCard key={track.id} track={track} />
+            ))}
+            {tracks.length === 0 && (
+              <Card className="md:col-span-2">
+                <CardContent className="py-8 text-center text-muted-foreground">
+                  No learning paths available yet. Check back soon!
+                </CardContent>
+              </Card>
+            )}
           </div>
-        </CardContent>
-      </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
