@@ -61,7 +61,7 @@ export function buildSearchRequest(params: {
   object: string;
   properties: string[];
   nestedProperties?: Record<string, string[]>;
-  condition: SearchCondition;
+  condition?: SearchCondition;
   options?: SearchOptions;
 }): string {
   const { object, properties, nestedProperties, condition, options } = params;
@@ -94,6 +94,14 @@ export function buildSearchRequest(params: {
 
   const searchAttrStr = searchAttrs.length > 0 ? ' ' + searchAttrs.join(' ') : '';
 
+  // Build condition section (optional - if no condition, returns all records)
+  const conditionXml = condition
+    ? `
+    <condition>
+      ${buildConditionExpr(condition)}
+    </condition>`
+    : '';
+
   return `<?xml version="1.0" encoding="UTF-8"?>
 <request version="1.0">
   ${buildHeader(options?.keepSession)}
@@ -102,10 +110,7 @@ export function buildSearchRequest(params: {
       <${object}>
         ${propertiesXml}
       </${object}>
-    </object>
-    <condition>
-      ${buildConditionExpr(condition)}
-    </condition>
+    </object>${conditionXml}
   </search>
 </request>`;
 }
@@ -266,9 +271,11 @@ export function buildInsertRequest(params: {
 // ============================================
 
 /**
- * Build search request for agents (ClientType = 7)
+ * Build search request for agents
+ * @param options - Search options (pagination, searchId, etc.)
+ * @param filterByAdvisor - If true, only return ClientType = 7 (advisors). Default: false for sandbox compatibility.
  */
-export function buildSearchAgentsRequest(options?: SearchOptions): string {
+export function buildSearchAgentsRequest(options?: SearchOptions, filterByAdvisor = false): string {
   return buildSearchRequest({
     object: 'Agent',
     properties: ['Status'],
@@ -282,7 +289,11 @@ export function buildSearchAgentsRequest(options?: SearchOptions): string {
       'Contact/WebAddresses/WebAddress': ['Address', 'WebAddressType'],
       'Contact/Phones/Phone': ['AreaCode', 'Number', 'PhoneType'],
     },
-    condition: { property: 'Contact.ClientType', operator: 'eq', value: '7' },
+    // Only filter by ClientType 7 if explicitly requested
+    // Most sandboxes don't have contacts marked as advisors (ClientType 7)
+    condition: filterByAdvisor
+      ? { property: 'Contact.ClientType', operator: 'eq', value: '7' }
+      : undefined,
     options,
   });
 }

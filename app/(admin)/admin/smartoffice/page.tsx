@@ -61,9 +61,19 @@ interface SyncStats {
 interface SmartOfficeAgent {
   id: string;
   smartoffice_id: string;
+  contact_id: string | null;
   first_name: string | null;
   last_name: string | null;
   email: string | null;
+  phone: string | null;
+  tax_id: string | null;
+  client_type: string | null;
+  status: string | null;
+  hierarchy_id: string | null;
+  raw_data: Record<string, unknown> | null;
+  synced_at: string | null;
+  created_at: string;
+  updated_at: string;
   apex_agent_id: string | null;
   apex_agent?: {
     id: string;
@@ -72,6 +82,24 @@ interface SmartOfficeAgent {
     email: string;
     agent_code: string;
   } | null;
+}
+
+interface SmartOfficePolicy {
+  id: string;
+  smartoffice_id: string;
+  policy_number: string | null;
+  product_name: string | null;
+  carrier: string | null;
+  status: string | null;
+  agent_id: string | null;
+  writing_agent_smartoffice_id: string | null;
+  premium: number | null;
+  issue_date: string | null;
+  effective_date: string | null;
+  raw_data: Record<string, unknown> | null;
+  synced_at: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 interface SyncLog {
@@ -83,8 +111,21 @@ interface SyncLog {
   duration_ms: number | null;
   agents_synced: number;
   agents_created: number;
+  agents_updated: number;
   policies_synced: number;
+  policies_created: number;
+  policies_updated: number;
+  commissions_synced: number;
   error_count: number;
+  error_messages: string[] | null;
+  triggered_by: string | null;
+}
+
+interface PaginationState {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
 
 export default function SmartOfficePage() {
@@ -95,9 +136,34 @@ export default function SmartOfficePage() {
   const [stats, setStats] = useState<SyncStats | null>(null);
   const [recentLogs, setRecentLogs] = useState<SyncLog[]>([]);
   const [agents, setAgents] = useState<SmartOfficeAgent[]>([]);
+  const [policies, setPolicies] = useState<SmartOfficePolicy[]>([]);
   const [agentFilter, setAgentFilter] = useState<'all' | 'mapped' | 'unmapped'>('all');
+  const [agentSearch, setAgentSearch] = useState('');
+  const [policySearch, setPolicySearch] = useState('');
   const [mappingAgent, setMappingAgent] = useState<SmartOfficeAgent | null>(null);
   const [apexAgents, setApexAgents] = useState<{ id: string; first_name: string; last_name: string; email: string }[]>([]);
+  const [selectedAgent, setSelectedAgent] = useState<SmartOfficeAgent | null>(null);
+  const [selectedPolicy, setSelectedPolicy] = useState<SmartOfficePolicy | null>(null);
+
+  // Pagination state
+  const [agentsPagination, setAgentsPagination] = useState<PaginationState>({
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 0,
+  });
+  const [policiesPagination, setPoliciesPagination] = useState<PaginationState>({
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 0,
+  });
+  const [logsPagination, setLogsPagination] = useState<PaginationState>({
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 0,
+  });
 
   // Config form state
   const [config, setConfig] = useState({
@@ -136,17 +202,84 @@ export default function SmartOfficePage() {
     }
   }, []);
 
-  const fetchAgents = useCallback(async () => {
+  const fetchAgents = useCallback(async (page = agentsPagination.page) => {
     try {
-      const response = await fetch(`/api/admin/smartoffice/agents?filter=${agentFilter}&limit=50`);
+      const params = new URLSearchParams({
+        filter: agentFilter,
+        page: String(page),
+        limit: String(agentsPagination.limit),
+      });
+      if (agentSearch) {
+        params.set('search', agentSearch);
+      }
+      const response = await fetch(`/api/admin/smartoffice/agents?${params}`);
       if (response.ok) {
         const data = await response.json();
         setAgents(data.agents || []);
+        // Handle both direct total and pagination object formats
+        const total = data.pagination?.total ?? data.total ?? 0;
+        setAgentsPagination(prev => ({
+          ...prev,
+          page,
+          total,
+          totalPages: data.pagination?.totalPages ?? Math.ceil(total / prev.limit),
+        }));
       }
     } catch (error) {
       console.error('Failed to fetch agents:', error);
     }
-  }, [agentFilter]);
+  }, [agentFilter, agentSearch, agentsPagination.page, agentsPagination.limit]);
+
+  const fetchPolicies = useCallback(async (page = policiesPagination.page) => {
+    try {
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(policiesPagination.limit),
+      });
+      if (policySearch) {
+        params.set('search', policySearch);
+      }
+      const response = await fetch(`/api/admin/smartoffice/policies?${params}`);
+      if (response.ok) {
+        const data = await response.json();
+        setPolicies(data.policies || []);
+        // Handle both direct total and pagination object formats
+        const total = data.pagination?.total ?? data.total ?? 0;
+        setPoliciesPagination(prev => ({
+          ...prev,
+          page,
+          total,
+          totalPages: data.pagination?.totalPages ?? Math.ceil(total / prev.limit),
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch policies:', error);
+    }
+  }, [policySearch, policiesPagination.page, policiesPagination.limit]);
+
+  const fetchLogs = useCallback(async (page = logsPagination.page) => {
+    try {
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(logsPagination.limit),
+      });
+      const response = await fetch(`/api/admin/smartoffice/logs?${params}`);
+      if (response.ok) {
+        const data = await response.json();
+        setRecentLogs(data.logs || []);
+        // Handle both direct total and pagination object formats
+        const total = data.pagination?.total ?? data.total ?? 0;
+        setLogsPagination(prev => ({
+          ...prev,
+          page,
+          total,
+          totalPages: data.pagination?.totalPages ?? Math.ceil(total / prev.limit),
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch logs:', error);
+    }
+  }, [logsPagination.page, logsPagination.limit]);
 
   const fetchApexAgents = async () => {
     try {
@@ -166,9 +299,24 @@ export default function SmartOfficePage() {
 
   useEffect(() => {
     if (isConfigured) {
-      fetchAgents();
+      fetchAgents(1);
     }
-  }, [isConfigured, agentFilter, fetchAgents]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConfigured, agentFilter, agentSearch]);
+
+  useEffect(() => {
+    if (isConfigured) {
+      fetchPolicies(1);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConfigured, policySearch]);
+
+  useEffect(() => {
+    if (isConfigured) {
+      fetchLogs(1);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConfigured]);
 
   // Save config
   const handleSaveConfig = async () => {
@@ -284,7 +432,8 @@ export default function SmartOfficePage() {
       <Tabs defaultValue={isConfigured ? 'overview' : 'config'}>
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="agents">Agents</TabsTrigger>
+          <TabsTrigger value="agents">Agents ({agentsPagination.total})</TabsTrigger>
+          <TabsTrigger value="policies">Policies ({policiesPagination.total})</TabsTrigger>
           <TabsTrigger value="logs">Sync Logs</TabsTrigger>
           <TabsTrigger value="config">Configuration</TabsTrigger>
           <TabsTrigger value="devtools" className="flex items-center gap-1">
@@ -444,88 +593,254 @@ export default function SmartOfficePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>SmartOffice Agents</CardTitle>
-                  <CardDescription>Map SmartOffice agents to Apex agents</CardDescription>
+                  <CardDescription>Map SmartOffice agents to Apex agents. Showing {agents.length} of {agentsPagination.total} agents.</CardDescription>
                 </div>
-                <Select value={agentFilter} onValueChange={(v) => setAgentFilter(v as typeof agentFilter)}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Filter" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Agents</SelectItem>
-                    <SelectItem value="mapped">Mapped Only</SelectItem>
-                    <SelectItem value="unmapped">Unmapped Only</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Search by name or email..."
+                    value={agentSearch}
+                    onChange={(e) => setAgentSearch(e.target.value)}
+                    className="w-[250px]"
+                  />
+                  <Select value={agentFilter} onValueChange={(v) => setAgentFilter(v as typeof agentFilter)}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Filter" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Agents</SelectItem>
+                      <SelectItem value="mapped">Mapped Only</SelectItem>
+                      <SelectItem value="unmapped">Unmapped Only</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>SmartOffice Agent</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Mapped To</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {agents.length === 0 ? (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center text-muted-foreground">
-                        {isConfigured ? 'No agents found. Run a sync first.' : 'Configure SmartOffice first.'}
-                      </TableCell>
+                      <TableHead>SO ID</TableHead>
+                      <TableHead>Contact ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Tax ID</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Hierarchy</TableHead>
+                      <TableHead>Synced At</TableHead>
+                      <TableHead>Mapped To</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
-                  ) : (
-                    agents.map((agent) => (
-                      <TableRow key={agent.id}>
-                        <TableCell>
-                          <div className="font-medium">
-                            {agent.first_name} {agent.last_name}
-                          </div>
-                          <div className="text-xs text-muted-foreground">{agent.smartoffice_id}</div>
-                        </TableCell>
-                        <TableCell>{agent.email || '-'}</TableCell>
-                        <TableCell>
-                          {agent.apex_agent ? (
-                            <div>
-                              <span className="font-medium">
-                                {agent.apex_agent.first_name} {agent.apex_agent.last_name}
-                              </span>
-                              <Badge variant="outline" className="ml-2">
-                                {agent.apex_agent.agent_code}
-                              </Badge>
-                            </div>
-                          ) : (
-                            <Badge variant="secondary">Unmapped</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setMappingAgent(agent);
-                              fetchApexAgents();
-                            }}
-                          >
-                            {agent.apex_agent_id ? (
-                              <>
-                                <Unlink className="h-3 w-3 mr-1" />
-                                Change
-                              </>
-                            ) : (
-                              <>
-                                <Link className="h-3 w-3 mr-1" />
-                                Map
-                              </>
-                            )}
-                          </Button>
+                  </TableHeader>
+                  <TableBody>
+                    {agents.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={12} className="text-center text-muted-foreground">
+                          {isConfigured ? 'No agents found. Run a sync first.' : 'Configure SmartOffice first.'}
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+                    ) : (
+                      agents.map((agent) => (
+                        <TableRow key={agent.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedAgent(agent)}>
+                          <TableCell className="font-mono text-xs">{agent.smartoffice_id}</TableCell>
+                          <TableCell className="font-mono text-xs">{agent.contact_id || '-'}</TableCell>
+                          <TableCell>
+                            <div className="font-medium whitespace-nowrap">
+                              {agent.first_name} {agent.last_name}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-sm">{agent.email || '-'}</TableCell>
+                          <TableCell className="text-sm">{agent.phone || '-'}</TableCell>
+                          <TableCell className="font-mono text-xs">{agent.tax_id ? `***${agent.tax_id.slice(-4)}` : '-'}</TableCell>
+                          <TableCell>
+                            {agent.client_type && <Badge variant="outline">{agent.client_type}</Badge>}
+                          </TableCell>
+                          <TableCell>
+                            {agent.status && (
+                              <Badge variant={agent.status === 'Active' ? 'default' : 'secondary'}>
+                                {agent.status}
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="font-mono text-xs">{agent.hierarchy_id || '-'}</TableCell>
+                          <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                            {agent.synced_at ? new Date(agent.synced_at).toLocaleString() : '-'}
+                          </TableCell>
+                          <TableCell>
+                            {agent.apex_agent ? (
+                              <div className="whitespace-nowrap">
+                                <span className="font-medium text-sm">
+                                  {agent.apex_agent.first_name} {agent.apex_agent.last_name}
+                                </span>
+                                <Badge variant="outline" className="ml-1 text-xs">
+                                  {agent.apex_agent.agent_code}
+                                </Badge>
+                              </div>
+                            ) : (
+                              <Badge variant="secondary">Unmapped</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setMappingAgent(agent);
+                                fetchApexAgents();
+                              }}
+                            >
+                              {agent.apex_agent_id ? (
+                                <>
+                                  <Unlink className="h-3 w-3 mr-1" />
+                                  Change
+                                </>
+                              ) : (
+                                <>
+                                  <Link className="h-3 w-3 mr-1" />
+                                  Map
+                                </>
+                              )}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+              {/* Pagination Controls */}
+              {agentsPagination.totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                  <div className="text-sm text-muted-foreground">
+                    Page {agentsPagination.page} of {agentsPagination.totalPages} ({agentsPagination.total} total)
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={agentsPagination.page <= 1}
+                      onClick={() => fetchAgents(agentsPagination.page - 1)}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={agentsPagination.page >= agentsPagination.totalPages}
+                      onClick={() => fetchAgents(agentsPagination.page + 1)}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Policies Tab */}
+        <TabsContent value="policies" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>SmartOffice Policies</CardTitle>
+                  <CardDescription>Showing {policies.length} of {policiesPagination.total} policies.</CardDescription>
+                </div>
+                <Input
+                  placeholder="Search by policy number or product..."
+                  value={policySearch}
+                  onChange={(e) => setPolicySearch(e.target.value)}
+                  className="w-[300px]"
+                />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>SO ID</TableHead>
+                      <TableHead>Policy Number</TableHead>
+                      <TableHead>Product</TableHead>
+                      <TableHead>Carrier</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Premium</TableHead>
+                      <TableHead>Issue Date</TableHead>
+                      <TableHead>Effective Date</TableHead>
+                      <TableHead>Writing Agent</TableHead>
+                      <TableHead>Synced At</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {policies.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={10} className="text-center text-muted-foreground">
+                          {isConfigured ? 'No policies found. Run a sync first.' : 'Configure SmartOffice first.'}
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      policies.map((policy) => (
+                        <TableRow key={policy.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedPolicy(policy)}>
+                          <TableCell className="font-mono text-xs">{policy.smartoffice_id}</TableCell>
+                          <TableCell className="font-medium">{policy.policy_number || '-'}</TableCell>
+                          <TableCell>{policy.product_name || '-'}</TableCell>
+                          <TableCell>{policy.carrier || '-'}</TableCell>
+                          <TableCell>
+                            {policy.status && (
+                              <Badge variant={policy.status === 'Active' || policy.status === 'In Force' ? 'default' : 'secondary'}>
+                                {policy.status}
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right font-mono">
+                            {policy.premium ? `$${policy.premium.toLocaleString()}` : '-'}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {policy.issue_date ? new Date(policy.issue_date).toLocaleDateString() : '-'}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {policy.effective_date ? new Date(policy.effective_date).toLocaleDateString() : '-'}
+                          </TableCell>
+                          <TableCell className="font-mono text-xs">{policy.writing_agent_smartoffice_id || '-'}</TableCell>
+                          <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                            {policy.synced_at ? new Date(policy.synced_at).toLocaleString() : '-'}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+              {/* Pagination Controls */}
+              {policiesPagination.totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                  <div className="text-sm text-muted-foreground">
+                    Page {policiesPagination.page} of {policiesPagination.totalPages} ({policiesPagination.total} total)
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={policiesPagination.page <= 1}
+                      onClick={() => fetchPolicies(policiesPagination.page - 1)}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={policiesPagination.page >= policiesPagination.totalPages}
+                      onClick={() => fetchPolicies(policiesPagination.page + 1)}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -535,55 +850,117 @@ export default function SmartOfficePage() {
           <Card>
             <CardHeader>
               <CardTitle>Sync History</CardTitle>
-              <CardDescription>Complete synchronization log</CardDescription>
+              <CardDescription>
+                Complete synchronization log. Showing {recentLogs.length} of {logsPagination.total} logs.
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Started</TableHead>
-                    <TableHead>Completed</TableHead>
-                    <TableHead>Duration</TableHead>
-                    <TableHead>Agents</TableHead>
-                    <TableHead>Policies</TableHead>
-                    <TableHead>Errors</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentLogs.map((log) => (
-                    <TableRow key={log.id}>
-                      <TableCell>
-                        <Badge variant="outline">{log.sync_type}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        {log.status === 'completed' && <Badge className="bg-green-500">Completed</Badge>}
-                        {log.status === 'failed' && <Badge variant="destructive">Failed</Badge>}
-                        {log.status === 'running' && <Badge variant="secondary">Running</Badge>}
-                      </TableCell>
-                      <TableCell>{new Date(log.started_at).toLocaleString()}</TableCell>
-                      <TableCell>
-                        {log.completed_at ? new Date(log.completed_at).toLocaleString() : '-'}
-                      </TableCell>
-                      <TableCell>
-                        {log.duration_ms ? `${(log.duration_ms / 1000).toFixed(1)}s` : '-'}
-                      </TableCell>
-                      <TableCell>
-                        {log.agents_synced} ({log.agents_created} new)
-                      </TableCell>
-                      <TableCell>{log.policies_synced}</TableCell>
-                      <TableCell>
-                        {log.error_count > 0 ? (
-                          <Badge variant="destructive">{log.error_count}</Badge>
-                        ) : (
-                          <span className="text-muted-foreground">0</span>
-                        )}
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Triggered By</TableHead>
+                      <TableHead>Started</TableHead>
+                      <TableHead>Completed</TableHead>
+                      <TableHead>Duration</TableHead>
+                      <TableHead>Agents Synced</TableHead>
+                      <TableHead>Agents New</TableHead>
+                      <TableHead>Agents Updated</TableHead>
+                      <TableHead>Policies Synced</TableHead>
+                      <TableHead>Policies New</TableHead>
+                      <TableHead>Policies Updated</TableHead>
+                      <TableHead>Commissions</TableHead>
+                      <TableHead>Errors</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {recentLogs.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={14} className="text-center text-muted-foreground">
+                          No sync logs yet. Run a sync to see history.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      recentLogs.map((log) => (
+                        <TableRow key={log.id}>
+                          <TableCell>
+                            <Badge variant="outline">{log.sync_type}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            {log.status === 'completed' && <Badge className="bg-green-500">Completed</Badge>}
+                            {log.status === 'failed' && <Badge variant="destructive">Failed</Badge>}
+                            {log.status === 'running' && <Badge variant="secondary">Running</Badge>}
+                          </TableCell>
+                          <TableCell className="text-sm">{log.triggered_by || 'Manual'}</TableCell>
+                          <TableCell className="whitespace-nowrap text-xs">
+                            {new Date(log.started_at).toLocaleString()}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap text-xs">
+                            {log.completed_at ? new Date(log.completed_at).toLocaleString() : '-'}
+                          </TableCell>
+                          <TableCell>
+                            {log.duration_ms ? `${(log.duration_ms / 1000).toFixed(1)}s` : '-'}
+                          </TableCell>
+                          <TableCell className="text-center">{log.agents_synced}</TableCell>
+                          <TableCell className="text-center text-green-600">{log.agents_created}</TableCell>
+                          <TableCell className="text-center text-blue-600">{log.agents_updated}</TableCell>
+                          <TableCell className="text-center">{log.policies_synced}</TableCell>
+                          <TableCell className="text-center text-green-600">{log.policies_created}</TableCell>
+                          <TableCell className="text-center text-blue-600">{log.policies_updated}</TableCell>
+                          <TableCell className="text-center">{log.commissions_synced}</TableCell>
+                          <TableCell>
+                            {log.error_count > 0 ? (
+                              <div className="flex items-center gap-1">
+                                <Badge variant="destructive">{log.error_count}</Badge>
+                                {log.error_messages && log.error_messages.length > 0 && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 px-1"
+                                    onClick={() => alert(log.error_messages?.join('\n'))}
+                                  >
+                                    <AlertCircle className="h-3 w-3" />
+                                  </Button>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground">0</span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+              {/* Pagination Controls */}
+              {logsPagination.totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                  <div className="text-sm text-muted-foreground">
+                    Page {logsPagination.page} of {logsPagination.totalPages} ({logsPagination.total} total)
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={logsPagination.page <= 1}
+                      onClick={() => fetchLogs(logsPagination.page - 1)}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={logsPagination.page >= logsPagination.totalPages}
+                      onClick={() => fetchLogs(logsPagination.page + 1)}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -748,6 +1125,195 @@ export default function SmartOfficePage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setMappingAgent(null)}>
               Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Agent Detail Dialog */}
+      <Dialog open={!!selectedAgent} onOpenChange={() => setSelectedAgent(null)}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Agent Details</DialogTitle>
+            <DialogDescription>
+              SmartOffice agent information for {selectedAgent?.first_name} {selectedAgent?.last_name}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedAgent && (
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-xs text-muted-foreground">SmartOffice ID</Label>
+                  <div className="font-mono text-sm">{selectedAgent.smartoffice_id}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Contact ID</Label>
+                  <div className="font-mono text-sm">{selectedAgent.contact_id || '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Name</Label>
+                  <div className="font-medium">{selectedAgent.first_name} {selectedAgent.last_name}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Email</Label>
+                  <div className="text-sm">{selectedAgent.email || '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Phone</Label>
+                  <div className="text-sm">{selectedAgent.phone || '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Tax ID</Label>
+                  <div className="font-mono text-sm">{selectedAgent.tax_id || '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Client Type</Label>
+                  <div>{selectedAgent.client_type || '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Status</Label>
+                  <div>
+                    {selectedAgent.status ? (
+                      <Badge variant={selectedAgent.status === 'Active' ? 'default' : 'secondary'}>
+                        {selectedAgent.status}
+                      </Badge>
+                    ) : '-'}
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Hierarchy ID</Label>
+                  <div className="font-mono text-sm">{selectedAgent.hierarchy_id || '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Synced At</Label>
+                  <div className="text-sm">{selectedAgent.synced_at ? new Date(selectedAgent.synced_at).toLocaleString() : '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Created At</Label>
+                  <div className="text-sm">{new Date(selectedAgent.created_at).toLocaleString()}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Updated At</Label>
+                  <div className="text-sm">{new Date(selectedAgent.updated_at).toLocaleString()}</div>
+                </div>
+              </div>
+              {selectedAgent.apex_agent && (
+                <div className="p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+                  <Label className="text-xs text-muted-foreground">Mapped to Apex Agent</Label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="font-medium">{selectedAgent.apex_agent.first_name} {selectedAgent.apex_agent.last_name}</span>
+                    <Badge variant="outline">{selectedAgent.apex_agent.agent_code}</Badge>
+                    <span className="text-sm text-muted-foreground">({selectedAgent.apex_agent.email})</span>
+                  </div>
+                </div>
+              )}
+              {selectedAgent.raw_data && (
+                <div>
+                  <Label className="text-xs text-muted-foreground">Raw Data from SmartOffice</Label>
+                  <pre className="mt-1 p-3 bg-muted rounded-lg text-xs overflow-x-auto max-h-60">
+                    {JSON.stringify(selectedAgent.raw_data, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSelectedAgent(null)}>
+              Close
+            </Button>
+            <Button onClick={() => {
+              if (selectedAgent) {
+                setMappingAgent(selectedAgent);
+                setSelectedAgent(null);
+                fetchApexAgents();
+              }
+            }}>
+              {selectedAgent?.apex_agent_id ? 'Change Mapping' : 'Map Agent'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Policy Detail Dialog */}
+      <Dialog open={!!selectedPolicy} onOpenChange={() => setSelectedPolicy(null)}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Policy Details</DialogTitle>
+            <DialogDescription>
+              SmartOffice policy information for {selectedPolicy?.policy_number || 'Unknown Policy'}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedPolicy && (
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-xs text-muted-foreground">SmartOffice ID</Label>
+                  <div className="font-mono text-sm">{selectedPolicy.smartoffice_id}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Policy Number</Label>
+                  <div className="font-medium">{selectedPolicy.policy_number || '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Product Name</Label>
+                  <div>{selectedPolicy.product_name || '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Carrier</Label>
+                  <div>{selectedPolicy.carrier || '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Status</Label>
+                  <div>
+                    {selectedPolicy.status ? (
+                      <Badge variant={selectedPolicy.status === 'Active' || selectedPolicy.status === 'In Force' ? 'default' : 'secondary'}>
+                        {selectedPolicy.status}
+                      </Badge>
+                    ) : '-'}
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Premium</Label>
+                  <div className="font-mono">{selectedPolicy.premium ? `$${selectedPolicy.premium.toLocaleString()}` : '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Issue Date</Label>
+                  <div className="text-sm">{selectedPolicy.issue_date ? new Date(selectedPolicy.issue_date).toLocaleDateString() : '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Effective Date</Label>
+                  <div className="text-sm">{selectedPolicy.effective_date ? new Date(selectedPolicy.effective_date).toLocaleDateString() : '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Writing Agent (SmartOffice ID)</Label>
+                  <div className="font-mono text-sm">{selectedPolicy.writing_agent_smartoffice_id || '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Linked Agent ID</Label>
+                  <div className="font-mono text-sm">{selectedPolicy.agent_id || '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Synced At</Label>
+                  <div className="text-sm">{selectedPolicy.synced_at ? new Date(selectedPolicy.synced_at).toLocaleString() : '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Created At</Label>
+                  <div className="text-sm">{new Date(selectedPolicy.created_at).toLocaleString()}</div>
+                </div>
+              </div>
+              {selectedPolicy.raw_data && (
+                <div>
+                  <Label className="text-xs text-muted-foreground">Raw Data from SmartOffice</Label>
+                  <pre className="mt-1 p-3 bg-muted rounded-lg text-xs overflow-x-auto max-h-60">
+                    {JSON.stringify(selectedPolicy.raw_data, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSelectedPolicy(null)}>
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
