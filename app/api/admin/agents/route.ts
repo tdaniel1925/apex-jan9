@@ -56,10 +56,10 @@ export async function GET(request: NextRequest) {
 
     const { limit, offset, rank, status, sponsor_id, search, sort_by, sort_order } = parseResult.data;
 
-    // Build query
+    // Build query - use simple select without explicit FK name
     let query = supabase
       .from('agents')
-      .select('*, sponsor:agents!agents_sponsor_id_fkey(id, first_name, last_name, agent_code)', { count: 'exact' })
+      .select('*, sponsor:sponsor_id(id, first_name, last_name, agent_code)', { count: 'exact' })
       .order(sort_by, { ascending: sort_order === 'asc' })
       .range(offset, offset + limit - 1);
 

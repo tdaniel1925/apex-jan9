@@ -41,7 +41,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     // Get agent with sponsor info
     const { data: agentData, error } = await supabase
       .from('agents')
-      .select('*, sponsor:agents!agents_sponsor_id_fkey(id, first_name, last_name, agent_code, rank)')
+      .select('*, sponsor:sponsor_id(id, first_name, last_name, agent_code, rank)')
       .eq('id', id)
       .single();
 
@@ -148,7 +148,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       .from('agents')
       .update({ ...updates, updated_at: new Date().toISOString() } as never)
       .eq('id', id)
-      .select('*, sponsor:agents!agents_sponsor_id_fkey(id, first_name, last_name, agent_code)')
+      .select('*, sponsor:sponsor_id(id, first_name, last_name, agent_code)')
       .single();
 
     if (error) {
