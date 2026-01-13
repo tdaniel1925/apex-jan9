@@ -46,7 +46,7 @@
 | **Performance Optimization** | **Complete** | **Middleware auth protection, agent data caching, 83% fewer DB queries, <1s navigation** |
 | **Marketing Site** | **Complete** | **9 pages with SEO, sitemap, legal pages (privacy, terms, income disclaimer)** |
 | **Replicated Site Enhancements** | **Complete** | **Legal pages, social sharing, OG tags, agent notifications** |
-| **SmartOffice CRM Integration** | **Complete** | **XML API client, sync service, 8 admin API routes, Developer Tools UI, 34 tests** |
+| **SmartOffice CRM Integration** | **Complete** | **XML API client, sync service, 8 admin API routes, Developer Tools UI, 34 tests, migration done, sandbox connected** |
 
 ---
 
@@ -67,12 +67,14 @@
 6. ✅ ~~Integrate email notifications into workflows~~ - COMPLETE
 7. ✅ ~~Polish & optimization (caching, performance, final testing)~~ - COMPLETE
 8. ✅ ~~SmartOffice CRM integration~~ - COMPLETE
-9. **Run SmartOffice Supabase migration** - Database tables pending
-10. **Configure SmartOffice credentials** - Via admin UI
-11. **Test SmartOffice sync with sandbox API** - Verify data flows correctly
-12. **Discover agent hierarchy field** - Check SmartOffice API Dictionary
-13. **Add push notifications** (optional - browser push or mobile)
-14. **Production deployment preparation** (environment setup, monitoring, error tracking)
+9. ✅ ~~Run SmartOffice Supabase migration~~ - COMPLETE (5 tables created)
+10. ✅ ~~Configure SmartOffice credentials~~ - COMPLETE (sandbox credentials active)
+11. ✅ ~~Test SmartOffice sandbox API connection~~ - COMPLETE (verified working)
+12. **Sync agents from SmartOffice** - Use admin UI to pull agents
+13. **Map SmartOffice agents to Apex agents** - By email or manual
+14. **Discover agent hierarchy field** - Check SmartOffice API Dictionary
+15. **Add push notifications** (optional - browser push or mobile)
+16. **Production deployment preparation** (environment setup, monitoring, error tracking)
 
 ---
 
@@ -134,4 +136,4 @@
 
 ---
 
-*Last updated: January 12, 2026*
+*Last updated: January 13, 2026*

@@ -398,14 +398,14 @@ External CRM integration to sync agent hierarchy, policies, and commissions from
     smartoffice-sync/route.ts → Scheduled sync endpoint
 ```
 
-### Database Tables (Migration Pending)
+### Database Tables (Migration Complete ✅)
 
 | Table | Purpose |
 |-------|---------|
-| `smartoffice_sync_config` | API credentials and settings |
+| `smartoffice_sync_config` | API credentials and settings (sandbox configured) |
 | `smartoffice_agents` | Imported agents with Apex mapping |
 | `smartoffice_policies` | Imported policy data |
-| `smartoffice_commissions` | Imported commission data |
+| `smartoffice_commissions` | Imported commission data (`commission_role` column) |
 | `smartoffice_sync_logs` | Sync history and audit trail |
 
 ### SmartOffice XML API Pattern
@@ -452,4 +452,4 @@ if (result.success) {
 
 ---
 
-*Last updated: January 12, 2026*
+*Last updated: January 13, 2026*

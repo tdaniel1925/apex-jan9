@@ -1,5 +1,46 @@
 # Development Log
 
+## 2026-01-13 - SmartOffice Migration, API Testing & Credential Setup
+**Session:** 2026-01-13T00:15:00Z
+**Task Size:** MEDIUM
+**Status:** Completed
+**CodeBakers Compliance:** ✅ FOLLOWED - discover_patterns called
+
+### What was done:
+- Fixed SQL migration error: renamed `current_role` to `commission_role` (PostgreSQL reserved keyword)
+- Successfully ran Supabase migration - all 5 SmartOffice tables created
+- Tested SmartOffice sandbox API connection - SUCCESS
+- Verified API returns agent data (Tim Abel + others with ClientType=7)
+- Inserted SmartOffice credentials into database via script
+- Cleaned up test scripts after verification
+
+### Migration fix:
+- `supabase/migrations/20260112100000_smartoffice_integration.sql` - Renamed column
+- `lib/smartoffice/types.ts` - Updated TypeScript types
+- `lib/types/database.ts` - Updated database types
+
+### API Test Results:
+```
+Response Status: 200 OK
+Server Time: 2026-01-13T00:16:24
+Status: OK
+Agents returned: 5 (including Tim Abel, ClientType=7)
+```
+
+### Database Config:
+- Config ID: `a67d936c-11c9-447c-bda2-8545d991650e`
+- Sandbox credentials active and working
+
+### Commits:
+- `40ee782` - "Fix SQL migration: rename current_role to commission_role"
+
+### Next steps:
+- Use admin UI at `/admin/smartoffice` to sync agents
+- Map SmartOffice agents to Apex agents
+- Discover agent hierarchy field in API Dictionary
+
+---
+
 ## 2026-01-12 - SmartOffice Test Suite
 **Session:** 2026-01-12T21:00:00Z
 **Task Size:** MEDIUM
