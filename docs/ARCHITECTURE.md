@@ -368,4 +368,88 @@ export const metadata: Metadata = {
 
 ---
 
+## SmartOffice CRM Integration (Added: 2026-01-12)
+
+External CRM integration to sync agent hierarchy, policies, and commissions from SmartOffice.
+
+### System Components
+
+```
+/lib
+  /smartoffice
+    client.ts              → SmartOffice API client (lazy-loaded singleton)
+    types.ts               → TypeScript types for SmartOffice data
+    xml-builder.ts         → Build XML request bodies
+    xml-parser.ts          → Parse XML responses (fast-xml-parser)
+    sync-service.ts        → Main sync orchestration
+    index.ts               → Public exports
+
+/app/api
+  /admin/smartoffice
+    route.ts               → GET/POST config
+    sync/route.ts          → POST trigger sync
+    agents/route.ts        → GET/POST agent mapping
+    policies/route.ts      → GET imported policies
+    logs/route.ts          → GET sync history
+    explorer/route.ts      → POST execute raw XML
+    dictionary/route.ts    → GET/POST known objects
+    samples/route.ts       → GET sample requests
+  /cron
+    smartoffice-sync/route.ts → Scheduled sync endpoint
+```
+
+### Database Tables (Migration Pending)
+
+| Table | Purpose |
+|-------|---------|
+| `smartoffice_sync_config` | API credentials and settings |
+| `smartoffice_agents` | Imported agents with Apex mapping |
+| `smartoffice_policies` | Imported policy data |
+| `smartoffice_commissions` | Imported commission data |
+| `smartoffice_sync_logs` | Sync history and audit trail |
+
+### SmartOffice XML API Pattern
+
+```typescript
+// Building requests
+const xml = buildSearchRequest({
+  object: 'Agent',
+  properties: ['Status'],
+  condition: { property: 'Contact.ClientType', operator: 'eq', value: '7' },
+  options: { pageSize: 50, keepSession: true },
+});
+
+// Parsing responses
+const result = parseSmartOfficeXML(responseXml);
+if (result.success) {
+  // result.data contains parsed response
+}
+```
+
+### Sync Flow
+
+1. **Full Sync** - Fetches all agents, policies, commissions
+2. **Incremental Sync** - Only changes since last sync
+3. **Agent Mapping** - Match SmartOffice agents to Apex agents (by email or manual)
+4. **Cron Sync** - Scheduled via external scheduler (every 6 hours)
+
+### The Rules
+
+1. **SmartOffice client is lazy-loaded** - Only instantiated when needed
+2. **Credentials stored in database** - Not in environment variables
+3. **Agent mapping is explicit** - Must map SmartOffice → Apex agents
+4. **All syncs are logged** - Full audit trail in sync_logs table
+5. **XML responses are validated** - Parser handles errors gracefully
+
+### Developer Tools (Admin UI)
+
+| Tab | Purpose |
+|-----|---------|
+| API Explorer | Test raw XML requests |
+| Dictionary | Browse known objects and properties |
+| Samples | Pre-built request examples |
+| Discover | Test if properties exist in API |
+
+---
+
 *Last updated: January 12, 2026*

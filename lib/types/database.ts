@@ -687,6 +687,149 @@ export type ComplianceHoldInsert = Omit<ComplianceHold, 'id' | 'created_at' | 'u
 export type ComplianceHoldUpdate = Partial<ComplianceHoldInsert>;
 
 // ============================================
+// SMARTOFFICE SYNC CONFIG
+// ============================================
+export interface SmartOfficeSyncConfig {
+  id: string;
+  api_url: string;
+  sitename: string;
+  username: string;
+  api_key: string;
+  api_secret: string;
+  is_active: boolean;
+  sync_frequency_hours: number;
+  last_sync_at: string | null;
+  next_sync_at: string | null;
+  webhook_enabled: boolean;
+  webhook_secret: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type SmartOfficeSyncConfigInsert = Omit<SmartOfficeSyncConfig, 'id' | 'created_at' | 'updated_at' | 'last_sync_at' | 'next_sync_at'> & {
+  last_sync_at?: string | null;
+  next_sync_at?: string | null;
+};
+export type SmartOfficeSyncConfigUpdate = Partial<SmartOfficeSyncConfigInsert>;
+
+// ============================================
+// SMARTOFFICE AGENTS
+// ============================================
+export interface SmartOfficeAgentRow {
+  id: string;
+  smartoffice_id: string;
+  contact_id: string | null;
+  apex_agent_id: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
+  phone: string | null;
+  client_type: number | null;
+  status: number | null;
+  tax_id: string | null;
+  raw_data: Record<string, unknown> | null;
+  synced_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export type SmartOfficeAgentRowInsert = Omit<SmartOfficeAgentRow, 'id' | 'created_at' | 'updated_at' | 'synced_at'> & {
+  synced_at?: string;
+};
+export type SmartOfficeAgentRowUpdate = Partial<SmartOfficeAgentRowInsert>;
+
+// ============================================
+// SMARTOFFICE POLICIES
+// ============================================
+export interface SmartOfficePolicyRow {
+  id: string;
+  smartoffice_id: string;
+  smartoffice_agent_id: string | null;
+  primary_advisor_contact_id: string | null;
+  policy_number: string;
+  carrier_name: string | null;
+  holding_type: number | null;
+  holding_type_name: string | null;
+  annual_premium: number | null;
+  raw_data: Record<string, unknown> | null;
+  synced_at: string;
+  created_at: string;
+}
+
+export type SmartOfficePolicyRowInsert = Omit<SmartOfficePolicyRow, 'id' | 'created_at' | 'synced_at'> & {
+  synced_at?: string;
+};
+export type SmartOfficePolicyRowUpdate = Partial<SmartOfficePolicyRowInsert>;
+
+// ============================================
+// SMARTOFFICE COMMISSIONS
+// ============================================
+export interface SmartOfficeCommissionRow {
+  id: string;
+  smartoffice_id: string;
+  smartoffice_agent_id: string | null;
+  policy_number: string | null;
+  current_role: string | null;
+  receivable: number | null;
+  receivable_percent: number | null;
+  receivable_percent_of: string | null;
+  payable_due_date: string | null;
+  paid_amount: number | null;
+  status: string | null;
+  comm_type: string | null;
+  component_premium: number | null;
+  raw_data: Record<string, unknown> | null;
+  synced_at: string;
+  created_at: string;
+}
+
+export type SmartOfficeCommissionRowInsert = Omit<SmartOfficeCommissionRow, 'id' | 'created_at' | 'synced_at'> & {
+  synced_at?: string;
+};
+export type SmartOfficeCommissionRowUpdate = Partial<SmartOfficeCommissionRowInsert>;
+
+// ============================================
+// SMARTOFFICE SYNC LOGS
+// ============================================
+export type SmartOfficeSyncType = 'full' | 'incremental' | 'agents' | 'policies' | 'commissions' | 'webhook';
+export type SmartOfficeSyncStatus = 'running' | 'completed' | 'failed';
+
+export interface SmartOfficeSyncLog {
+  id: string;
+  sync_type: SmartOfficeSyncType;
+  status: SmartOfficeSyncStatus;
+  triggered_by: string;
+  triggered_by_user_id: string | null;
+  started_at: string;
+  completed_at: string | null;
+  duration_ms: number | null;
+  agents_synced: number;
+  agents_created: number;
+  agents_updated: number;
+  commissions_synced: number;
+  commissions_created: number;
+  policies_synced: number;
+  policies_created: number;
+  errors: Record<string, unknown>[] | null;
+  error_count: number;
+  created_at: string;
+}
+
+export type SmartOfficeSyncLogInsert = Omit<SmartOfficeSyncLog, 'id' | 'created_at' | 'started_at' | 'completed_at' | 'duration_ms' | 'agents_synced' | 'agents_created' | 'agents_updated' | 'commissions_synced' | 'commissions_created' | 'policies_synced' | 'policies_created' | 'errors' | 'error_count'> & {
+  started_at?: string;
+  agents_synced?: number;
+  agents_created?: number;
+  agents_updated?: number;
+  commissions_synced?: number;
+  commissions_created?: number;
+  policies_synced?: number;
+  policies_created?: number;
+  errors?: Record<string, unknown>[] | null;
+  error_count?: number;
+};
+export type SmartOfficeSyncLogUpdate = Partial<Omit<SmartOfficeSyncLog, 'id' | 'created_at'>>;
+
+// ============================================
 // DATABASE SCHEMA TYPE (for Supabase client)
 // ============================================
 export interface Database {
@@ -1003,6 +1146,54 @@ export interface Database {
           referencedRelation: string;
           referencedColumns: string[];
         }[];
+      };
+      smartoffice_sync_config: {
+        Row: SmartOfficeSyncConfig;
+        Insert: SmartOfficeSyncConfigInsert;
+        Update: SmartOfficeSyncConfigUpdate;
+        Relationships: [];
+      };
+      smartoffice_agents: {
+        Row: SmartOfficeAgentRow;
+        Insert: SmartOfficeAgentRowInsert;
+        Update: SmartOfficeAgentRowUpdate;
+        Relationships: {
+          foreignKeyName: string;
+          columns: string[];
+          isOneToOne: boolean;
+          referencedRelation: string;
+          referencedColumns: string[];
+        }[];
+      };
+      smartoffice_policies: {
+        Row: SmartOfficePolicyRow;
+        Insert: SmartOfficePolicyRowInsert;
+        Update: SmartOfficePolicyRowUpdate;
+        Relationships: {
+          foreignKeyName: string;
+          columns: string[];
+          isOneToOne: boolean;
+          referencedRelation: string;
+          referencedColumns: string[];
+        }[];
+      };
+      smartoffice_commissions: {
+        Row: SmartOfficeCommissionRow;
+        Insert: SmartOfficeCommissionRowInsert;
+        Update: SmartOfficeCommissionRowUpdate;
+        Relationships: {
+          foreignKeyName: string;
+          columns: string[];
+          isOneToOne: boolean;
+          referencedRelation: string;
+          referencedColumns: string[];
+        }[];
+      };
+      smartoffice_sync_logs: {
+        Row: SmartOfficeSyncLog;
+        Insert: SmartOfficeSyncLogInsert;
+        Update: SmartOfficeSyncLogUpdate;
+        Relationships: [];
       };
     };
     Views: {

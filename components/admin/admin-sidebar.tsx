@@ -20,6 +20,7 @@ import {
   RotateCcw,
   Calendar,
   AlertTriangle,
+  Database,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 
@@ -39,6 +40,7 @@ const navigation = [
   { name: 'Payouts', href: '/admin/payouts', icon: Wallet },
   { name: 'Override Report', href: '/admin/overrides', icon: DollarSign },
   { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
+  { name: 'SmartOffice', href: '/admin/smartoffice', icon: Database },
   { name: 'System Settings', href: '/admin/settings', icon: Settings },
 ];
 
