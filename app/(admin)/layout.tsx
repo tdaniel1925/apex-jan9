@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { RANK_CONFIG, Rank } from '@/lib/config/ranks';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
 import { AdminHeader } from '@/components/admin/admin-header';
+import { AdminAuthProvider } from '@/components/admin/admin-auth-provider';
 import { useAuth } from '@/lib/auth/auth-context';
 import { Agent } from '@/lib/types/database';
 
@@ -159,12 +160,14 @@ export default function AdminLayout({
     : agent;
 
   return (
-    <div className="min-h-screen bg-background">
-      <AdminSidebar agent={displayUser!} adminUser={adminUser} />
-      <div className="lg:pl-64">
-        <AdminHeader agent={displayUser!} adminUser={adminUser} />
-        <main className="p-6">{children}</main>
+    <AdminAuthProvider>
+      <div className="min-h-screen bg-background">
+        <AdminSidebar agent={displayUser!} adminUser={adminUser} />
+        <div className="lg:pl-64">
+          <AdminHeader agent={displayUser!} adminUser={adminUser} />
+          <main className="p-6">{children}</main>
+        </div>
       </div>
-    </div>
+    </AdminAuthProvider>
   );
 }
