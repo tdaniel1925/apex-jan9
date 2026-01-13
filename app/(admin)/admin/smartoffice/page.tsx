@@ -180,7 +180,7 @@ export default function SmartOfficePage() {
   const [selectedAgent, setSelectedAgent] = useState<SmartOfficeAgent | null>(null);
   const [selectedPolicy, setSelectedPolicy] = useState<SmartOfficePolicy | null>(null);
   const [syncProgress, setSyncProgress] = useState<SyncProgress | null>(null);
-  const [showProgressModal, setShowProgressModal] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
 
   // Pagination state
   const [agentsPagination, setAgentsPagination] = useState<PaginationState>({
@@ -367,13 +367,13 @@ export default function SmartOfficePage() {
 
       if (response.ok) {
         await fetchData();
-        alert('SmartOffice configuration saved successfully!');
+        setStatusMessage({ type: 'success', message: 'SmartOffice configuration saved successfully!' });
       } else {
         const error = await response.json();
-        alert(`Error: ${error.message || 'Failed to save configuration'}`);
+        setStatusMessage({ type: 'error', message: error.message || 'Failed to save configuration' });
       }
-    } catch (error) {
-      alert('Failed to save configuration');
+    } catch {
+      setStatusMessage({ type: 'error', message: 'Failed to save configuration' });
     } finally {
       setSaving(false);
     }
@@ -395,13 +395,13 @@ export default function SmartOfficePage() {
           const result = await response.json();
           await fetchData();
           await fetchAgents();
-          alert(`Auto-mapping complete! Mapped: ${result.result?.mapped || 0}, Unmatched: ${result.result?.unmatched?.length || 0}`);
+          setStatusMessage({ type: 'success', message: `Auto-mapping complete! Mapped: ${result.result?.mapped || 0}, Unmatched: ${result.result?.unmatched?.length || 0}` });
         } else {
           const error = await response.json();
-          alert(`Auto-map failed: ${error.message || 'Unknown error'}`);
+          setStatusMessage({ type: 'error', message: `Auto-map failed: ${error.message || 'Unknown error'}` });
         }
       } catch {
-        alert('Auto-map failed');
+        setStatusMessage({ type: 'error', message: 'Auto-map failed' });
       } finally {
         setSyncing(false);
       }
@@ -410,7 +410,7 @@ export default function SmartOfficePage() {
 
     // For full sync, use streaming endpoint with progress
     setSyncing(true);
-    setShowProgressModal(true);
+    setStatusMessage(null); // Clear any previous status messages
     setSyncProgress({
       stage: 'init',
       message: 'Starting sync...',
@@ -500,11 +500,12 @@ export default function SmartOfficePage() {
         setMappingAgent(null);
         await fetchAgents();
         await fetchData();
+        setStatusMessage({ type: 'success', message: 'Agent mapping updated successfully!' });
       } else {
-        alert('Failed to map agent');
+        setStatusMessage({ type: 'error', message: 'Failed to map agent' });
       }
-    } catch (error) {
-      alert('Failed to map agent');
+    } catch {
+      setStatusMessage({ type: 'error', message: 'Failed to map agent' });
     }
   };
 
@@ -542,6 +543,127 @@ export default function SmartOfficePage() {
           </div>
         )}
       </div>
+
+      {/* Inline Status Message */}
+      {statusMessage && (
+        <div className={`p-4 rounded-lg border flex items-center justify-between ${
+          statusMessage.type === 'success'
+            ? 'bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200'
+            : statusMessage.type === 'error'
+            ? 'bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200'
+            : 'bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200'
+        }`}>
+          <div className="flex items-center gap-2">
+            {statusMessage.type === 'success' && <CheckCircle className="h-5 w-5" />}
+            {statusMessage.type === 'error' && <XCircle className="h-5 w-5" />}
+            {statusMessage.type === 'info' && <AlertCircle className="h-5 w-5" />}
+            <p className="text-sm whitespace-pre-wrap">{statusMessage.message}</p>
+          </div>
+          <Button variant="ghost" size="sm" onClick={() => setStatusMessage(null)} className="h-6 w-6 p-0">
+            <XCircle className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+
+      {/* Inline Sync Progress */}
+      {syncProgress && syncProgress.stage !== 'complete' && syncProgress.stage !== 'error' && (
+        <Card className="border-primary/50 bg-primary/5">
+          <CardContent className="pt-4">
+            <div className="space-y-4">
+              {/* Header with spinner */}
+              <div className="flex items-center gap-3">
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{syncProgress.message}</span>
+                    <span className="text-sm text-muted-foreground">{syncProgress.percentage}%</span>
+                  </div>
+                  <Progress value={syncProgress.percentage} className="h-2 mt-2" />
+                </div>
+              </div>
+
+              {/* Time info */}
+              {syncProgress.stage !== 'init' && (
+                <div className="flex items-center gap-6 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Timer className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Elapsed:</span>
+                    <span className="font-mono">{formatDuration(syncProgress.elapsed_ms)}</span>
+                  </div>
+                  {syncProgress.eta_ms !== null && syncProgress.eta_ms > 0 && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">ETA:</span>
+                      <span className="font-mono">{formatDuration(syncProgress.eta_ms)}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Stats Grid */}
+              {syncProgress.details && (
+                <div className="grid grid-cols-3 gap-4 pt-2 border-t">
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-primary">
+                      {syncProgress.details.agents_synced ?? 0}
+                    </div>
+                    <div className="text-xs text-muted-foreground">Agents Synced</div>
+                    {(syncProgress.details.agents_created ?? 0) > 0 && (
+                      <div className="text-xs text-green-600">+{syncProgress.details.agents_created} new</div>
+                    )}
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-primary">
+                      {syncProgress.details.policies_synced ?? 0}
+                    </div>
+                    <div className="text-xs text-muted-foreground">Policies Synced</div>
+                    {(syncProgress.details.policies_created ?? 0) > 0 && (
+                      <div className="text-xs text-green-600">+{syncProgress.details.policies_created} new</div>
+                    )}
+                  </div>
+                  <div className="text-center">
+                    <div className={`text-xl font-bold ${(syncProgress.details.errors ?? 0) > 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                      {syncProgress.details.errors ?? 0}
+                    </div>
+                    <div className="text-xs text-muted-foreground">Errors</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Sync Complete/Error Summary */}
+      {syncProgress && (syncProgress.stage === 'complete' || syncProgress.stage === 'error') && (
+        <Card className={syncProgress.stage === 'complete' ? 'border-green-500/50 bg-green-50 dark:bg-green-950' : 'border-red-500/50 bg-red-50 dark:bg-red-950'}>
+          <CardContent className="pt-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {syncProgress.stage === 'complete' ? (
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                ) : (
+                  <XCircle className="h-5 w-5 text-red-500" />
+                )}
+                <div>
+                  <p className={`font-medium ${syncProgress.stage === 'complete' ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}`}>
+                    {syncProgress.stage === 'complete' ? 'Sync Complete' : 'Sync Failed'}
+                  </p>
+                  <p className={`text-sm ${syncProgress.stage === 'complete' ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
+                    {syncProgress.stage === 'complete'
+                      ? `Synced ${syncProgress.details?.agents_synced ?? 0} agents and ${syncProgress.details?.policies_synced ?? 0} policies in ${formatDuration(syncProgress.elapsed_ms)}`
+                      : syncProgress.message
+                    }
+                  </p>
+                </div>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => setSyncProgress(null)}>
+                Dismiss
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs defaultValue={isConfigured ? 'overview' : 'config'}>
         <TabsList>
@@ -1033,7 +1155,8 @@ export default function SmartOfficePage() {
                                     variant="ghost"
                                     size="sm"
                                     className="h-6 px-1"
-                                    onClick={() => alert(log.error_messages?.join('\n'))}
+                                    onClick={() => setStatusMessage({ type: 'error', message: log.error_messages?.join('\n') || 'Unknown errors' })}
+                                    title="View error details"
                                   >
                                     <AlertCircle className="h-3 w-3" />
                                   </Button>
@@ -1433,132 +1556,6 @@ export default function SmartOfficePage() {
         </DialogContent>
       </Dialog>
 
-      {/* Sync Progress Modal */}
-      <Dialog open={showProgressModal} onOpenChange={(open) => {
-        // Only allow closing if sync is complete or errored
-        if (!open && (syncProgress?.stage === 'complete' || syncProgress?.stage === 'error')) {
-          setShowProgressModal(false);
-          setSyncProgress(null);
-        }
-      }}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              {syncProgress?.stage === 'complete' ? (
-                <CheckCircle className="h-5 w-5 text-green-500" />
-              ) : syncProgress?.stage === 'error' ? (
-                <XCircle className="h-5 w-5 text-red-500" />
-              ) : (
-                <Loader2 className="h-5 w-5 animate-spin text-primary" />
-              )}
-              SmartOffice Sync
-            </DialogTitle>
-            <DialogDescription>
-              {syncProgress?.stage === 'complete'
-                ? 'Synchronization completed successfully!'
-                : syncProgress?.stage === 'error'
-                ? 'Synchronization encountered an error.'
-                : 'Synchronizing data from SmartOffice...'}
-            </DialogDescription>
-          </DialogHeader>
-
-          {syncProgress && (
-            <div className="space-y-6 py-4">
-              {/* Current Stage */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium">{syncProgress.message}</span>
-                  <span className="text-muted-foreground">{syncProgress.percentage}%</span>
-                </div>
-                <Progress value={syncProgress.percentage} className="h-3" />
-              </div>
-
-              {/* Progress Details */}
-              {syncProgress.stage !== 'init' && syncProgress.stage !== 'error' && (
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Timer className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Elapsed:</span>
-                    <span className="font-mono">{formatDuration(syncProgress.elapsed_ms)}</span>
-                  </div>
-                  {syncProgress.eta_ms !== null && syncProgress.eta_ms > 0 && (
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">ETA:</span>
-                      <span className="font-mono">{formatDuration(syncProgress.eta_ms)}</span>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Stats */}
-              {syncProgress.details && (
-                <div className="border rounded-lg p-4 bg-muted/50">
-                  <h4 className="font-medium text-sm mb-3">Sync Progress</h4>
-                  <div className="grid grid-cols-3 gap-4 text-center">
-                    <div>
-                      <div className="text-2xl font-bold text-primary">
-                        {syncProgress.details.agents_synced ?? 0}
-                      </div>
-                      <div className="text-xs text-muted-foreground">Agents Synced</div>
-                      {(syncProgress.details.agents_created ?? 0) > 0 && (
-                        <div className="text-xs text-green-600">
-                          +{syncProgress.details.agents_created} new
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold text-primary">
-                        {syncProgress.details.policies_synced ?? 0}
-                      </div>
-                      <div className="text-xs text-muted-foreground">Policies Synced</div>
-                      {(syncProgress.details.policies_created ?? 0) > 0 && (
-                        <div className="text-xs text-green-600">
-                          +{syncProgress.details.policies_created} new
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <div className={`text-2xl font-bold ${(syncProgress.details.errors ?? 0) > 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
-                        {syncProgress.details.errors ?? 0}
-                      </div>
-                      <div className="text-xs text-muted-foreground">Errors</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Error Message */}
-              {syncProgress.stage === 'error' && (
-                <div className="p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
-                  <p className="text-sm text-red-700 dark:text-red-300">{syncProgress.message}</p>
-                </div>
-              )}
-
-              {/* Success Summary */}
-              {syncProgress.stage === 'complete' && (
-                <div className="p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
-                  <p className="text-sm text-green-700 dark:text-green-300">
-                    Successfully synced {syncProgress.details?.agents_synced ?? 0} agents and{' '}
-                    {syncProgress.details?.policies_synced ?? 0} policies in {formatDuration(syncProgress.elapsed_ms)}.
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-
-          <DialogFooter>
-            {(syncProgress?.stage === 'complete' || syncProgress?.stage === 'error') && (
-              <Button onClick={() => {
-                setShowProgressModal(false);
-                setSyncProgress(null);
-              }}>
-                Close
-              </Button>
-            )}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
