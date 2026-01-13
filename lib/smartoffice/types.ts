@@ -227,7 +227,7 @@ export interface SmartOfficeCommissionRow {
   smartoffice_agent_id: string;
   apex_commission_id: string | null;
   policy_number: string;
-  current_role: string | null;
+  commission_role: string | null;
   receivable: number;
   payable_due_date: string | null;
   paid_amount: number;
@@ -246,7 +246,7 @@ export interface SmartOfficeCommissionRowInsert {
   smartoffice_agent_id: string;
   apex_commission_id?: string | null;
   policy_number: string;
-  current_role?: string | null;
+  commission_role?: string | null;
   receivable?: number;
   payable_due_date?: string | null;
   paid_amount?: number;

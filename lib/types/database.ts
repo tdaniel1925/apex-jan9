@@ -769,7 +769,7 @@ export interface SmartOfficeCommissionRow {
   smartoffice_id: string;
   smartoffice_agent_id: string | null;
   policy_number: string | null;
-  current_role: string | null;
+  commission_role: string | null;
   receivable: number | null;
   receivable_percent: number | null;
   receivable_percent_of: string | null;

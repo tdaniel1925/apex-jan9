@@ -100,7 +100,7 @@ CREATE TABLE smartoffice_commissions (
 
   -- Commission data from SmartOffice
   policy_number TEXT NOT NULL,
-  current_role TEXT, -- e.g., "Primary Advisor"
+  commission_role TEXT, -- e.g., "Primary Advisor" (renamed from current_role which is a reserved keyword)
   receivable DECIMAL(12,2) NOT NULL DEFAULT 0,
   payable_due_date DATE,
   paid_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
