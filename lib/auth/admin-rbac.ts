@@ -606,7 +606,7 @@ export async function listPermissions(): Promise<AdminPermission[]> {
 // AUDIT LOGGING
 // ============================================
 
-export type AuditAction = 'create' | 'update' | 'delete' | 'login' | 'logout' | 'view';
+export type AuditAction = 'create' | 'update' | 'delete' | 'login' | 'logout' | 'view' | 'magic_link_requested' | 'magic_link_login';
 
 export async function logAdminAction(params: {
   userId: string | null;

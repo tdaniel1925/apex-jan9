@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/db/supabase-server';
+import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 import { z } from 'zod';
 
 interface Contact {
@@ -50,7 +50,7 @@ const importRowSchema = z.object({
 // Export contacts
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -145,7 +145,7 @@ export async function GET(request: NextRequest) {
 // Import contacts
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
       if (!result.success) {
         errors.push({
           row: i + 1,
-          errors: result.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`),
+          errors: result.error.issues.map((e) => `${e.path.join('.')}: ${e.message}`),
         });
         continue;
       }

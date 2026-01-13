@@ -178,9 +178,11 @@ async function deliverWebhook(
         .eq('id', endpoint.id);
 
       // Increment success count
-      await supabase.rpc('increment_webhook_success', { endpoint_id: endpoint.id });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any).rpc('increment_webhook_success', { endpoint_id: endpoint.id });
     } else {
-      await supabase.rpc('increment_webhook_failure', { endpoint_id: endpoint.id });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any).rpc('increment_webhook_failure', { endpoint_id: endpoint.id });
 
       // Retry if not successful and attempts remaining
       if (attemptNumber < endpoint.retry_count) {
@@ -206,7 +208,8 @@ async function deliverWebhook(
       attempt_number: attemptNumber,
     } as never);
 
-    await supabase.rpc('increment_webhook_failure', { endpoint_id: endpoint.id });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any).rpc('increment_webhook_failure', { endpoint_id: endpoint.id });
 
     // Retry if attempts remaining
     if (attemptNumber < endpoint.retry_count) {

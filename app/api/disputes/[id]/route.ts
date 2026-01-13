@@ -5,10 +5,10 @@
  * DELETE - Withdraw dispute
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { createClient } from '@/lib/db/supabase-server';
-import { getCurrentAgent } from '@/lib/auth/session';
+import { createServerSupabaseClient } from '@/lib/db/supabase-server';
+import { ApiErrors, apiSuccess, handleZodError } from '@/lib/api/response';
 
 interface Dispute {
   id: string;
@@ -63,51 +63,64 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const agent = await getCurrentAgent();
+    const supabase = await createServerSupabaseClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return ApiErrors.unauthorized();
+    }
+
+    // Get agent by user_id
+    const { data: agent } = await supabase
+      .from('agents')
+      .select('id')
+      .eq('user_id', user.id)
+      .single() as unknown as { data: { id: string } | null };
+
     if (!agent) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return ApiErrors.notFound('Agent');
     }
 
     const { id } = await params;
-    const supabase = await createClient();
 
     // Get dispute
-    const { data: disputeData, error: disputeError } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: disputeData, error: disputeError } = await (supabase as any)
       .from('disputes')
       .select('*')
       .eq('id', id)
       .eq('agent_id', agent.id)
-      .single();
+      .single() as { data: Dispute | null; error: unknown };
 
     if (disputeError || !disputeData) {
-      return NextResponse.json({ error: 'Dispute not found' }, { status: 404 });
+      return ApiErrors.notFound('Dispute');
     }
 
-    const dispute = disputeData as unknown as Dispute;
-
     // Get comments (non-internal only)
-    const { data: commentsData } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: commentsData } = await (supabase as any)
       .from('dispute_comments')
       .select('*')
       .eq('dispute_id', id)
       .eq('is_internal', false)
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: true }) as { data: DisputeComment[] | null };
 
-    const comments = (commentsData || []) as unknown as DisputeComment[];
+    const comments = commentsData || [];
 
     // Get history
-    const { data: historyData } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: historyData } = await (supabase as any)
       .from('dispute_history')
       .select('*')
       .eq('dispute_id', id)
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: true }) as { data: DisputeHistory[] | null };
 
-    const history = (historyData || []) as unknown as DisputeHistory[];
+    const history = historyData || [];
 
-    return NextResponse.json({ dispute, comments, history });
+    return apiSuccess({ dispute: disputeData, comments, history });
   } catch (error) {
     console.error('Dispute GET error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return ApiErrors.internal();
   }
 }
 
@@ -116,9 +129,22 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const agent = await getCurrentAgent();
+    const supabase = await createServerSupabaseClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return ApiErrors.unauthorized();
+    }
+
+    // Get agent by user_id
+    const { data: agent } = await supabase
+      .from('agents')
+      .select('id')
+      .eq('user_id', user.id)
+      .single() as unknown as { data: { id: string } | null };
+
     if (!agent) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return ApiErrors.notFound('Agent');
     }
 
     const { id } = await params;
@@ -126,35 +152,30 @@ export async function POST(
     const parseResult = commentSchema.safeParse(body);
 
     if (!parseResult.success) {
-      return NextResponse.json(
-        { error: 'Validation failed', details: parseResult.error.flatten() },
-        { status: 400 }
-      );
+      return handleZodError(parseResult.error);
     }
 
-    const supabase = await createClient();
-
     // Verify dispute belongs to agent
-    const { data: disputeData, error: disputeError } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: disputeData, error: disputeError } = await (supabase as any)
       .from('disputes')
       .select('id, status')
       .eq('id', id)
       .eq('agent_id', agent.id)
-      .single();
+      .single() as { data: { id: string; status: string } | null; error: unknown };
 
     if (disputeError || !disputeData) {
-      return NextResponse.json({ error: 'Dispute not found' }, { status: 404 });
+      return ApiErrors.notFound('Dispute');
     }
 
-    const dispute = disputeData as unknown as { id: string; status: string };
-
     // Can't comment on closed disputes
-    if (['approved', 'denied', 'withdrawn'].includes(dispute.status)) {
-      return NextResponse.json({ error: 'Cannot comment on closed disputes' }, { status: 400 });
+    if (['approved', 'denied', 'withdrawn'].includes(disputeData.status)) {
+      return ApiErrors.validation({ _errors: ['Cannot comment on closed disputes'] });
     }
 
     // Add comment
-    const { data: comment, error: commentError } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: comment, error: commentError } = await (supabase as any)
       .from('dispute_comments')
       .insert({
         dispute_id: id,
@@ -162,19 +183,19 @@ export async function POST(
         content: parseResult.data.content,
         attachments: parseResult.data.attachments || [],
         is_internal: false,
-      } as never)
+      })
       .select()
-      .single();
+      .single() as { data: DisputeComment | null; error: unknown };
 
-    if (commentError) {
+    if (commentError || !comment) {
       console.error('Comment create error:', commentError);
-      return NextResponse.json({ error: 'Failed to add comment' }, { status: 500 });
+      return ApiErrors.internal('Failed to add comment');
     }
 
-    return NextResponse.json({ comment }, { status: 201 });
+    return apiSuccess({ comment }, 201);
   } catch (error) {
     console.error('Dispute POST error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return ApiErrors.internal();
   }
 }
 
@@ -183,63 +204,73 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const agent = await getCurrentAgent();
+    const supabase = await createServerSupabaseClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return ApiErrors.unauthorized();
+    }
+
+    // Get agent by user_id
+    const { data: agent } = await supabase
+      .from('agents')
+      .select('id')
+      .eq('user_id', user.id)
+      .single() as unknown as { data: { id: string } | null };
+
     if (!agent) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return ApiErrors.notFound('Agent');
     }
 
     const { id } = await params;
-    const supabase = await createClient();
 
     // Verify dispute belongs to agent and is pending
-    const { data: disputeData, error: disputeError } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: disputeData, error: disputeError } = await (supabase as any)
       .from('disputes')
       .select('id, status')
       .eq('id', id)
       .eq('agent_id', agent.id)
-      .single();
+      .single() as { data: { id: string; status: string } | null; error: unknown };
 
     if (disputeError || !disputeData) {
-      return NextResponse.json({ error: 'Dispute not found' }, { status: 404 });
+      return ApiErrors.notFound('Dispute');
     }
 
-    const dispute = disputeData as unknown as { id: string; status: string };
-
     // Can only withdraw pending disputes
-    if (dispute.status !== 'pending') {
-      return NextResponse.json(
-        { error: 'Can only withdraw pending disputes' },
-        { status: 400 }
-      );
+    if (disputeData.status !== 'pending') {
+      return ApiErrors.validation({ _errors: ['Can only withdraw pending disputes'] });
     }
 
     // Update status to withdrawn
-    const { error: updateError } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: updateError } = await (supabase as any)
       .from('disputes')
       .update({
         status: 'withdrawn',
         updated_at: new Date().toISOString(),
-      } as never)
+      })
       .eq('id', id);
 
     if (updateError) {
       console.error('Dispute withdraw error:', updateError);
-      return NextResponse.json({ error: 'Failed to withdraw dispute' }, { status: 500 });
+      return ApiErrors.internal('Failed to withdraw dispute');
     }
 
     // Add history entry
-    await supabase.from('dispute_history').insert({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any).from('dispute_history').insert({
       dispute_id: id,
       action: 'status_changed',
       old_value: 'pending',
       new_value: 'withdrawn',
       notes: 'Withdrawn by agent',
       agent_id: agent.id,
-    } as never);
+    });
 
-    return NextResponse.json({ success: true, message: 'Dispute withdrawn' });
+    return apiSuccess({ success: true, message: 'Dispute withdrawn' });
   } catch (error) {
     console.error('Dispute DELETE error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return ApiErrors.internal();
   }
 }

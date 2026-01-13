@@ -4,10 +4,10 @@
  * POST - Create a new dispute
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { createClient } from '@/lib/db/supabase-server';
-import { getCurrentAgent } from '@/lib/auth/session';
+import { createServerSupabaseClient } from '@/lib/db/supabase-server';
+import { ApiErrors, apiSuccess, handleZodError } from '@/lib/api/response';
 
 const DISPUTE_TYPES = ['commission', 'clawback', 'bonus', 'override', 'rank', 'policy', 'other'] as const;
 
@@ -51,16 +51,29 @@ const createDisputeSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const agent = await getCurrentAgent();
-    if (!agent) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const supabase = await createServerSupabaseClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return ApiErrors.unauthorized();
     }
 
-    const supabase = await createClient();
+    // Get agent by user_id
+    const { data: agent } = await supabase
+      .from('agents')
+      .select('id')
+      .eq('user_id', user.id)
+      .single() as unknown as { data: { id: string } | null };
+
+    if (!agent) {
+      return ApiErrors.notFound('Agent');
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get('status');
 
-    let query = supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let query = (supabase as any)
       .from('disputes')
       .select('*')
       .eq('agent_id', agent.id)
@@ -70,14 +83,14 @@ export async function GET(request: NextRequest) {
       query = query.eq('status', status);
     }
 
-    const { data, error } = await query;
+    const { data, error } = await query as { data: Dispute[] | null; error: unknown };
 
     if (error) {
       console.error('Disputes fetch error:', error);
-      return NextResponse.json({ error: 'Failed to fetch disputes' }, { status: 500 });
+      return ApiErrors.internal('Failed to fetch disputes');
     }
 
-    const disputes = (data || []) as unknown as Dispute[];
+    const disputes = data || [];
 
     // Get stats
     const stats = {
@@ -87,35 +100,45 @@ export async function GET(request: NextRequest) {
       resolved: disputes.filter((d) => ['approved', 'denied', 'withdrawn'].includes(d.status)).length,
     };
 
-    return NextResponse.json({ disputes, stats });
+    return apiSuccess({ disputes, stats });
   } catch (error) {
     console.error('Disputes GET error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return ApiErrors.internal();
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const agent = await getCurrentAgent();
+    const supabase = await createServerSupabaseClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return ApiErrors.unauthorized();
+    }
+
+    // Get agent by user_id
+    const { data: agent } = await supabase
+      .from('agents')
+      .select('id')
+      .eq('user_id', user.id)
+      .single() as unknown as { data: { id: string } | null };
+
     if (!agent) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return ApiErrors.notFound('Agent');
     }
 
     const body = await request.json();
     const parseResult = createDisputeSchema.safeParse(body);
 
     if (!parseResult.success) {
-      return NextResponse.json(
-        { error: 'Validation failed', details: parseResult.error.flatten() },
-        { status: 400 }
-      );
+      return handleZodError(parseResult.error);
     }
 
     const disputeData = parseResult.data;
-    const supabase = await createClient();
 
     // Create dispute
-    const { data: dispute, error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: dispute, error } = await (supabase as any)
       .from('disputes')
       .insert({
         agent_id: agent.id,
@@ -129,26 +152,27 @@ export async function POST(request: NextRequest) {
         attachments: disputeData.attachments || [],
         status: 'pending',
         priority: 'normal',
-      } as never)
+      })
       .select()
-      .single();
+      .single() as { data: Dispute | null; error: unknown };
 
-    if (error) {
+    if (error || !dispute) {
       console.error('Dispute create error:', error);
-      return NextResponse.json({ error: 'Failed to create dispute' }, { status: 500 });
+      return ApiErrors.internal('Failed to create dispute');
     }
 
     // Add history entry
-    await supabase.from('dispute_history').insert({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any).from('dispute_history').insert({
       dispute_id: dispute.id,
       action: 'created',
       new_value: 'pending',
       agent_id: agent.id,
-    } as never);
+    });
 
-    return NextResponse.json({ dispute }, { status: 201 });
+    return apiSuccess({ dispute }, 201);
   } catch (error) {
     console.error('Disputes POST error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return ApiErrors.internal();
   }
 }
