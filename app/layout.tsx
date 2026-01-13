@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AuthProvider } from "@/lib/auth/auth-context";
 import { ErrorHandler } from "@/components/error-handler";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://apexaffinity.com';
@@ -83,6 +84,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-background text-foreground" suppressHydrationWarning>
         <ErrorHandler />
         <AuthProvider>{children}</AuthProvider>
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   );
