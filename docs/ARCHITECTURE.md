@@ -450,6 +450,89 @@ if (result.success) {
 | Samples | Pre-built request examples |
 | Discover | Test if properties exist in API |
 
+### Streaming Sync with Progress (Added: 2026-01-12)
+
+Real-time sync progress tracking using Server-Sent Events (SSE).
+
+#### API Endpoint
+
+```
+POST /api/admin/smartoffice/sync/stream
+```
+
+Returns SSE stream with progress updates.
+
+#### Progress Stages
+
+```
+init → fetching_agents → syncing_agents → fetching_policies → syncing_policies → complete
+```
+
+#### Progress Update Interface
+
+```typescript
+interface ProgressUpdate {
+  stage: 'init' | 'fetching_agents' | 'syncing_agents' | 'fetching_policies' | 'syncing_policies' | 'complete' | 'error';
+  message: string;
+  current: number;
+  total: number;
+  percentage: number;
+  elapsed_ms: number;
+  eta_ms: number | null;
+  details?: {
+    agents_synced?: number;
+    agents_created?: number;
+    agents_updated?: number;
+    policies_synced?: number;
+    policies_created?: number;
+    errors?: number;
+  };
+}
+```
+
+#### Client-Side Usage
+
+```typescript
+const response = await fetch('/api/admin/smartoffice/sync/stream', {
+  method: 'POST',
+});
+
+const reader = response.body!.getReader();
+const decoder = new TextDecoder();
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+
+  const text = decoder.decode(value);
+  const lines = text.split('\n');
+  for (const line of lines) {
+    if (line.startsWith('data: ')) {
+      const update: ProgressUpdate = JSON.parse(line.slice(6));
+      setProgress(update);
+    }
+  }
+}
+```
+
+#### ETA Calculation
+
+```typescript
+// Rate = items synced / elapsed time
+const rate = itemsSynced / (elapsedMs / 1000);
+
+// ETA = remaining items / rate
+const eta = rate > 0 ? (remaining / rate) * 1000 : null;
+```
+
+#### The Rules
+
+1. **Full sync uses streaming endpoint** - For progress visibility
+2. **Other sync types use regular endpoint** - Agents-only, policies-only, automap
+3. **Progress updates batched** - Every 5 agents or 10 policies
+4. **Modal cannot be dismissed during sync** - Prevents accidental cancellation
+5. **Error handling included** - Stream closes cleanly on error
+
 ---
 
 ## Training Suite / LMS (Added: 2026-01-12)
@@ -778,4 +861,4 @@ RBAC-specific tests (40 tests):
 
 ---
 
-*Last updated: January 12, 2026*
+*Last updated: January 12, 2026 (SmartOffice streaming sync added)*
