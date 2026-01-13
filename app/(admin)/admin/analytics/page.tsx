@@ -13,6 +13,19 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import {
   TrendingUp,
@@ -25,6 +38,15 @@ import {
   Calendar,
 } from 'lucide-react';
 import { createClient } from '@/lib/db/supabase-client';
+import { toast } from 'sonner';
+
+const DATE_RANGES = [
+  { value: 'this_month', label: 'This Month' },
+  { value: 'last_month', label: 'Last Month' },
+  { value: 'last_90_days', label: 'Last 90 Days' },
+  { value: 'this_quarter', label: 'This Quarter' },
+  { value: 'this_year', label: 'This Year' },
+];
 
 interface RankDistribution {
   rank: string;
@@ -55,6 +77,8 @@ export default function AdminAnalyticsPage() {
   const [rankDistribution, setRankDistribution] = useState<RankDistribution[]>([]);
   const [topProducers, setTopProducers] = useState<TopProducer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dateRange, setDateRange] = useState<string>('this_month');
+  const [isDateRangeOpen, setIsDateRangeOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -172,6 +196,53 @@ export default function AdminAnalyticsPage() {
     fetchData();
   }, []);
 
+  // Export analytics report as CSV
+  const handleExportReport = () => {
+    const selectedRange = DATE_RANGES.find(r => r.value === dateRange)?.label || 'This Month';
+    const rows = [
+      ['Apex Analytics Report'],
+      [`Date Range: ${selectedRange}`],
+      [`Generated: ${new Date().toLocaleString()}`],
+      [''],
+      ['Key Metrics'],
+      ['Monthly Premium', formatCurrency(stats.monthlyPremium)],
+      ['Commissions Paid', formatCurrency(stats.monthlyCommissions)],
+      ['Bonuses Paid', formatCurrency(stats.monthlyBonuses)],
+      ['AI Copilot Revenue', formatCurrency(stats.aiCopilotRevenue)],
+      ['AI Copilot Adoption', `${stats.aiCopilotAdoption.toFixed(1)}%`],
+      [''],
+      ['Agent Metrics'],
+      ['Total Agents', stats.totalAgents],
+      ['Active Agents', stats.activeAgents],
+      [''],
+      ['Rank Distribution'],
+      ['Rank', 'Count', 'Percentage'],
+      ...rankDistribution.map(item => [
+        RANK_CONFIG[item.rank as Rank]?.name || item.rank,
+        item.count,
+        `${item.percentage.toFixed(1)}%`,
+      ]),
+      [''],
+      ['Top Producers (90-Day Premium)'],
+      ['Name', 'Rank', '90-Day Premium'],
+      ...topProducers.slice(0, 10).map(producer => [
+        `${producer.first_name} ${producer.last_name}`,
+        RANK_CONFIG[producer.rank as Rank]?.shortName || producer.rank,
+        formatCurrency(producer.premium_90_days || 0),
+      ]),
+    ];
+
+    const csvContent = rows.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `apex-analytics-${dateRange}-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success('Analytics report exported successfully');
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -194,11 +265,36 @@ export default function AdminAnalyticsPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
-            <Calendar className="mr-2 h-4 w-4" />
-            Date Range
-          </Button>
-          <Button variant="outline">
+          <Popover open={isDateRangeOpen} onOpenChange={setIsDateRangeOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline">
+                <Calendar className="mr-2 h-4 w-4" />
+                {DATE_RANGES.find(r => r.value === dateRange)?.label || 'Date Range'}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56" align="end">
+              <div className="space-y-2">
+                <Label>Select Period</Label>
+                <Select value={dateRange} onValueChange={(value) => {
+                  setDateRange(value);
+                  setIsDateRangeOpen(false);
+                  toast.info(`Date range updated to: ${DATE_RANGES.find(r => r.value === value)?.label}`);
+                }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DATE_RANGES.map((range) => (
+                      <SelectItem key={range.value} value={range.value}>
+                        {range.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <Button variant="outline" onClick={handleExportReport}>
             <Download className="mr-2 h-4 w-4" />
             Export Report
           </Button>

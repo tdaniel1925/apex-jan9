@@ -14,10 +14,30 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { Wallet, CheckCircle, Clock, XCircle, Filter, AlertTriangle, AlertCircle } from 'lucide-react';
 import { PayoutActions } from '@/components/admin/payout-actions';
 import { BulkPayoutDialog } from '@/components/admin/bulk-payout-dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+
+const PAYOUT_METHODS = [
+  { value: 'all', label: 'All Methods' },
+  { value: 'ach', label: 'ACH Transfer' },
+  { value: 'check', label: 'Check' },
+  { value: 'wire', label: 'Wire Transfer' },
+];
 
 type PayoutWithAgent = {
   id: string;
@@ -43,6 +63,8 @@ export default function AdminPayoutsPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showBulkDialog, setShowBulkDialog] = useState(false);
+  const [filterMethod, setFilterMethod] = useState<string>('all');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -107,6 +129,11 @@ export default function AdminPayoutsPage() {
     setShowBulkDialog(false);
     fetchData();
   };
+
+  // Filter pending payouts by method
+  const filteredPendingPayouts = filterMethod === 'all'
+    ? pendingPayouts
+    : pendingPayouts.filter(payout => payout.method === filterMethod);
 
   if (loading) {
     return (
@@ -206,10 +233,52 @@ export default function AdminPayoutsPage() {
                 Withdrawal requests awaiting processing
               </CardDescription>
             </div>
-            <Button variant="outline" size="sm">
-              <Filter className="mr-2 h-4 w-4" />
-              Filter
-            </Button>
+            <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Filter className="mr-2 h-4 w-4" />
+                  Filter
+                  {filterMethod !== 'all' && (
+                    <Badge variant="secondary" className="ml-2">1</Badge>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64" align="end">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Payment Method</Label>
+                    <Select value={filterMethod} onValueChange={(value) => {
+                      setFilterMethod(value);
+                      setIsFilterOpen(false);
+                    }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select method" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PAYOUT_METHODS.map((method) => (
+                          <SelectItem key={method.value} value={method.value}>
+                            {method.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {filterMethod !== 'all' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => {
+                        setFilterMethod('all');
+                        setIsFilterOpen(false);
+                      }}
+                    >
+                      Clear Filter
+                    </Button>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </CardHeader>
         <CardContent>
@@ -230,15 +299,17 @@ export default function AdminPayoutsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {pendingPayouts.length === 0 ? (
+              {filteredPendingPayouts.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8">
                     <Wallet className="mx-auto h-12 w-12 text-muted-foreground/50" />
-                    <p className="mt-2 text-muted-foreground">No pending payouts</p>
+                    <p className="mt-2 text-muted-foreground">
+                      {filterMethod !== 'all' ? 'No payouts match this filter' : 'No pending payouts'}
+                    </p>
                   </TableCell>
                 </TableRow>
               ) : (
-                pendingPayouts.map((payout) => (
+                filteredPendingPayouts.map((payout) => (
                   <TableRow key={payout.id}>
                     <TableCell>
                       <Checkbox

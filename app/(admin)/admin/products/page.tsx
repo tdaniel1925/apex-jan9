@@ -225,7 +225,7 @@ export default function AdminProductsPage() {
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-8">
                     <p className="text-muted-foreground">No products found</p>
-                    <Button className="mt-4">
+                    <Button className="mt-4" onClick={() => handleOpenDialog()}>
                       <Plus className="mr-2 h-4 w-4" />
                       Create Your First Product
                     </Button>

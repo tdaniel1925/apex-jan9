@@ -307,9 +307,9 @@ export default function ReplicatedSignupPage() {
                     />
                     <Label htmlFor="terms" className="text-sm text-muted-foreground leading-tight">
                       I agree to the{' '}
-                      <Link href="#" className="text-primary hover:underline">Terms of Service</Link>
+                      <Link href={`/join/${agentCode}/terms`} className="text-primary hover:underline" target="_blank">Terms of Service</Link>
                       {' '}and{' '}
-                      <Link href="#" className="text-primary hover:underline">Privacy Policy</Link>.
+                      <Link href={`/join/${agentCode}/privacy`} className="text-primary hover:underline" target="_blank">Privacy Policy</Link>.
                       I understand that I will need to obtain proper licensing to sell insurance.
                     </Label>
                   </div>

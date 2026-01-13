@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { RANK_CONFIG, Rank } from '@/lib/config/ranks';
+import { useRouter } from 'next/navigation';
+import { RANK_CONFIG, Rank, RANKS } from '@/lib/config/ranks';
 import { formatCurrency } from '@/lib/engines/wallet-engine';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Table,
   TableBody,
@@ -21,39 +23,61 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Search, Filter, Download, UserPlus, X, AlertCircle } from 'lucide-react';
+import { Search, Download, UserPlus, X, AlertCircle, Eye, Loader2 } from 'lucide-react';
 import { useTableSearch } from '@/lib/hooks/use-table-search';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from 'sonner';
 
 export default function AdminAgentsPage() {
+  const router = useRouter();
   const [agents, setAgents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    first_name: '',
+    last_name: '',
+    phone: '',
+    rank: 'pre_associate',
+    status: 'pending',
+    sponsor_id: '',
+  });
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch('/api/admin/agents');
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch agents: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setAgents(data.agents || []);
+    } catch (err) {
+      console.error('Error fetching agents:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load agents');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await fetch('/api/admin/agents');
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch agents: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        setAgents(data.agents || []);
-      } catch (err) {
-        console.error('Error fetching agents:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load agents');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -64,6 +88,76 @@ export default function AdminAgentsPage() {
       filterKeys: ['status', 'rank'],
       enableUrlParams: true,
     });
+
+  // Export agents to CSV
+  const handleExport = () => {
+    const headers = ['Name', 'Email', 'Rank', 'Status', 'Sponsor ID', '90-Day Premium', 'Recruits', 'Joined'];
+    const rows = filtered.map(agent => [
+      `${agent.first_name} ${agent.last_name}`,
+      agent.email,
+      RANK_CONFIG[agent.rank as Rank]?.shortName || agent.rank,
+      agent.status,
+      agent.sponsor_id || 'None',
+      agent.premium_90_days || 0,
+      agent.personal_recruits_count || 0,
+      new Date(agent.created_at).toLocaleDateString(),
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `agents-export-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success('Agents exported successfully');
+  };
+
+  // Handle add agent form submission
+  const handleAddAgent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/admin/agents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          sponsor_id: formData.sponsor_id || undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to create agent');
+      }
+
+      toast.success('Agent created successfully');
+      setIsAddDialogOpen(false);
+      setFormData({
+        email: '',
+        first_name: '',
+        last_name: '',
+        phone: '',
+        rank: 'pre_associate',
+        status: 'pending',
+        sponsor_id: '',
+      });
+      fetchData();
+    } catch (err) {
+      console.error('Error creating agent:', err);
+      toast.error(err instanceof Error ? err.message : 'Failed to create agent');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // View agent details
+  const handleViewAgent = (agentId: string) => {
+    router.push(`/admin/agents/${agentId}`);
+  };
 
   if (loading) {
     return (
@@ -88,10 +182,119 @@ export default function AdminAgentsPage() {
             View and manage all agents in the system.
           </p>
         </div>
-        <Button>
-          <UserPlus className="mr-2 h-4 w-4" />
-          Add Agent
-        </Button>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <UserPlus className="mr-2 h-4 w-4" />
+              Add Agent
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Add New Agent</DialogTitle>
+              <DialogDescription>
+                Create a new agent account. They will receive an email with login instructions.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleAddAgent}>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="first_name">First Name</Label>
+                    <Input
+                      id="first_name"
+                      value={formData.first_name}
+                      onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="last_name">Last Name</Label>
+                    <Input
+                      id="last_name"
+                      value={formData.last_name}
+                      onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone (optional)</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="rank">Rank</Label>
+                    <Select
+                      value={formData.rank}
+                      onValueChange={(value) => setFormData({ ...formData, rank: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {RANKS.map((rank) => (
+                          <SelectItem key={rank} value={rank}>
+                            {RANK_CONFIG[rank]?.name || rank}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="status">Status</Label>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(value) => setFormData({ ...formData, status: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="sponsor_id">Sponsor ID (optional)</Label>
+                  <Input
+                    id="sponsor_id"
+                    value={formData.sponsor_id}
+                    onChange={(e) => setFormData({ ...formData, sponsor_id: e.target.value })}
+                    placeholder="Enter sponsor's ID or leave blank"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Create Agent
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Filters */}
@@ -137,7 +340,7 @@ export default function AdminAgentsPage() {
                   <SelectItem value="national_director">National Director</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="outline">
+              <Button variant="outline" onClick={handleExport}>
                 <Download className="mr-2 h-4 w-4" />
                 Export
               </Button>
@@ -239,7 +442,8 @@ export default function AdminAgentsPage() {
                       {new Date(agent.created_at).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" onClick={() => handleViewAgent(agent.id)}>
+                        <Eye className="mr-1 h-4 w-4" />
                         View
                       </Button>
                     </TableCell>
