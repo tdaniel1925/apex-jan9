@@ -45,7 +45,10 @@ import {
   Play,
   Database,
   Code2,
+  Loader2,
+  Timer,
 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 import { SmartOfficeDeveloperTools } from '@/components/admin/smartoffice/developer-tools';
 
 interface SyncStats {
@@ -128,6 +131,38 @@ interface PaginationState {
   totalPages: number;
 }
 
+interface SyncProgress {
+  stage: 'init' | 'fetching_agents' | 'syncing_agents' | 'fetching_policies' | 'syncing_policies' | 'complete' | 'error';
+  message: string;
+  current: number;
+  total: number;
+  percentage: number;
+  elapsed_ms: number;
+  eta_ms: number | null;
+  details?: {
+    agents_synced?: number;
+    agents_created?: number;
+    agents_updated?: number;
+    policies_synced?: number;
+    policies_created?: number;
+    errors?: number;
+  };
+}
+
+function formatDuration(ms: number): string {
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
+  if (hours > 0) {
+    return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
+  } else if (minutes > 0) {
+    return `${minutes}m ${seconds % 60}s`;
+  } else {
+    return `${seconds}s`;
+  }
+}
+
 export default function SmartOfficePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -144,6 +179,8 @@ export default function SmartOfficePage() {
   const [apexAgents, setApexAgents] = useState<{ id: string; first_name: string; last_name: string; email: string }[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<SmartOfficeAgent | null>(null);
   const [selectedPolicy, setSelectedPolicy] = useState<SmartOfficePolicy | null>(null);
+  const [syncProgress, setSyncProgress] = useState<SyncProgress | null>(null);
+  const [showProgressModal, setShowProgressModal] = useState(false);
 
   // Pagination state
   const [agentsPagination, setAgentsPagination] = useState<PaginationState>({
@@ -342,27 +379,104 @@ export default function SmartOfficePage() {
     }
   };
 
-  // Run sync
+  // Run sync with progress streaming
   const handleSync = async (type: 'full' | 'agents' | 'policies' | 'automap') => {
+    // For automap, use the old endpoint (quick operation)
+    if (type === 'automap') {
+      setSyncing(true);
+      try {
+        const response = await fetch('/api/admin/smartoffice/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          await fetchData();
+          await fetchAgents();
+          alert(`Auto-mapping complete! Mapped: ${result.result?.mapped || 0}, Unmatched: ${result.result?.unmatched?.length || 0}`);
+        } else {
+          const error = await response.json();
+          alert(`Auto-map failed: ${error.message || 'Unknown error'}`);
+        }
+      } catch {
+        alert('Auto-map failed');
+      } finally {
+        setSyncing(false);
+      }
+      return;
+    }
+
+    // For full sync, use streaming endpoint with progress
     setSyncing(true);
+    setShowProgressModal(true);
+    setSyncProgress({
+      stage: 'init',
+      message: 'Starting sync...',
+      current: 0,
+      total: 100,
+      percentage: 0,
+      elapsed_ms: 0,
+      eta_ms: null,
+    });
+
     try {
-      const response = await fetch('/api/admin/smartoffice/sync', {
+      const response = await fetch('/api/admin/smartoffice/sync/stream', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type }),
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        await fetchData();
-        await fetchAgents();
-        alert(`Sync completed! ${JSON.stringify(result.result, null, 2)}`);
-      } else {
-        const error = await response.json();
-        alert(`Sync failed: ${error.message || 'Unknown error'}`);
+      if (!response.ok) {
+        throw new Error('Failed to start sync');
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6)) as SyncProgress;
+              setSyncProgress(data);
+
+              if (data.stage === 'complete') {
+                // Refresh data after sync completes
+                setTimeout(async () => {
+                  await fetchData();
+                  await fetchAgents(1);
+                  await fetchPolicies(1);
+                  await fetchLogs(1);
+                }, 500);
+              }
+            } catch {
+              // Ignore parse errors
+            }
+          }
+        }
       }
     } catch (error) {
-      alert('Sync failed');
+      setSyncProgress({
+        stage: 'error',
+        message: error instanceof Error ? error.message : 'Sync failed',
+        current: 0,
+        total: 100,
+        percentage: 0,
+        elapsed_ms: 0,
+        eta_ms: null,
+      });
     } finally {
       setSyncing(false);
     }
@@ -1315,6 +1429,133 @@ export default function SmartOfficePage() {
             <Button variant="outline" onClick={() => setSelectedPolicy(null)}>
               Close
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Sync Progress Modal */}
+      <Dialog open={showProgressModal} onOpenChange={(open) => {
+        // Only allow closing if sync is complete or errored
+        if (!open && (syncProgress?.stage === 'complete' || syncProgress?.stage === 'error')) {
+          setShowProgressModal(false);
+          setSyncProgress(null);
+        }
+      }}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {syncProgress?.stage === 'complete' ? (
+                <CheckCircle className="h-5 w-5 text-green-500" />
+              ) : syncProgress?.stage === 'error' ? (
+                <XCircle className="h-5 w-5 text-red-500" />
+              ) : (
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              )}
+              SmartOffice Sync
+            </DialogTitle>
+            <DialogDescription>
+              {syncProgress?.stage === 'complete'
+                ? 'Synchronization completed successfully!'
+                : syncProgress?.stage === 'error'
+                ? 'Synchronization encountered an error.'
+                : 'Synchronizing data from SmartOffice...'}
+            </DialogDescription>
+          </DialogHeader>
+
+          {syncProgress && (
+            <div className="space-y-6 py-4">
+              {/* Current Stage */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-medium">{syncProgress.message}</span>
+                  <span className="text-muted-foreground">{syncProgress.percentage}%</span>
+                </div>
+                <Progress value={syncProgress.percentage} className="h-3" />
+              </div>
+
+              {/* Progress Details */}
+              {syncProgress.stage !== 'init' && syncProgress.stage !== 'error' && (
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Timer className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Elapsed:</span>
+                    <span className="font-mono">{formatDuration(syncProgress.elapsed_ms)}</span>
+                  </div>
+                  {syncProgress.eta_ms !== null && syncProgress.eta_ms > 0 && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">ETA:</span>
+                      <span className="font-mono">{formatDuration(syncProgress.eta_ms)}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Stats */}
+              {syncProgress.details && (
+                <div className="border rounded-lg p-4 bg-muted/50">
+                  <h4 className="font-medium text-sm mb-3">Sync Progress</h4>
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                      <div className="text-2xl font-bold text-primary">
+                        {syncProgress.details.agents_synced ?? 0}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Agents Synced</div>
+                      {(syncProgress.details.agents_created ?? 0) > 0 && (
+                        <div className="text-xs text-green-600">
+                          +{syncProgress.details.agents_created} new
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-primary">
+                        {syncProgress.details.policies_synced ?? 0}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Policies Synced</div>
+                      {(syncProgress.details.policies_created ?? 0) > 0 && (
+                        <div className="text-xs text-green-600">
+                          +{syncProgress.details.policies_created} new
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <div className={`text-2xl font-bold ${(syncProgress.details.errors ?? 0) > 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                        {syncProgress.details.errors ?? 0}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Errors</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Error Message */}
+              {syncProgress.stage === 'error' && (
+                <div className="p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-sm text-red-700 dark:text-red-300">{syncProgress.message}</p>
+                </div>
+              )}
+
+              {/* Success Summary */}
+              {syncProgress.stage === 'complete' && (
+                <div className="p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+                  <p className="text-sm text-green-700 dark:text-green-300">
+                    Successfully synced {syncProgress.details?.agents_synced ?? 0} agents and{' '}
+                    {syncProgress.details?.policies_synced ?? 0} policies in {formatDuration(syncProgress.elapsed_ms)}.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            {(syncProgress?.stage === 'complete' || syncProgress?.stage === 'error') && (
+              <Button onClick={() => {
+                setShowProgressModal(false);
+                setSyncProgress(null);
+              }}>
+                Close
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

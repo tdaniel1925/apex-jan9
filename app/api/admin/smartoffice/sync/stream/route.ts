@@ -1,0 +1,381 @@
+/**
+ * SmartOffice Sync Stream API
+ * POST - Trigger a sync with real-time progress updates via SSE
+ */
+
+import { NextRequest } from 'next/server';
+import { verifyAdmin } from '@/lib/auth/admin-auth';
+import { getSmartOfficeClient, getSmartOfficeSyncService } from '@/lib/smartoffice';
+import { createUntypedAdminClient } from '@/lib/db/supabase-server';
+import type { SmartOfficeAgent, SmartOfficePolicy, SyncResult, SyncError } from '@/lib/smartoffice/types';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+interface ProgressUpdate {
+  stage: 'init' | 'fetching_agents' | 'syncing_agents' | 'fetching_policies' | 'syncing_policies' | 'complete' | 'error';
+  message: string;
+  current: number;
+  total: number;
+  percentage: number;
+  elapsed_ms: number;
+  eta_ms: number | null;
+  details?: {
+    agents_synced?: number;
+    agents_created?: number;
+    agents_updated?: number;
+    policies_synced?: number;
+    policies_created?: number;
+    errors?: number;
+  };
+}
+
+export async function POST(request: NextRequest) {
+  const admin = await verifyAdmin();
+  if (!admin) {
+    return new Response(JSON.stringify({ error: 'Forbidden' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const encoder = new TextEncoder();
+  const stream = new TransformStream();
+  const writer = stream.writable.getWriter();
+
+  const sendProgress = async (update: ProgressUpdate) => {
+    try {
+      await writer.write(encoder.encode(`data: ${JSON.stringify(update)}\n\n`));
+    } catch {
+      // Stream closed
+    }
+  };
+
+  // Start sync in background
+  (async () => {
+    const startTime = Date.now();
+    const supabase = createUntypedAdminClient();
+
+    const result: SyncResult = {
+      agents: { synced: 0, created: 0, updated: 0, errors: [] },
+      commissions: { synced: 0, created: 0, errors: [] },
+      policies: { synced: 0, created: 0, errors: [] },
+      duration_ms: 0,
+      log_id: '',
+    };
+
+    try {
+      // Create sync log
+      const { data: log } = await supabase
+        .from('smartoffice_sync_logs')
+        .insert({
+          sync_type: 'full',
+          status: 'running',
+          triggered_by: 'manual',
+          triggered_by_user_id: admin.userId || null,
+        })
+        .select('id')
+        .single();
+
+      result.log_id = log?.id || '';
+
+      await sendProgress({
+        stage: 'init',
+        message: 'Initializing sync...',
+        current: 0,
+        total: 100,
+        percentage: 0,
+        elapsed_ms: Date.now() - startTime,
+        eta_ms: null,
+      });
+
+      const client = await getSmartOfficeClient();
+
+      // Stage 1: Fetch agents from SmartOffice
+      await sendProgress({
+        stage: 'fetching_agents',
+        message: 'Fetching agents from SmartOffice...',
+        current: 0,
+        total: 100,
+        percentage: 5,
+        elapsed_ms: Date.now() - startTime,
+        eta_ms: null,
+      });
+
+      const agents = await client.getAllAgents();
+      const totalAgents = agents.length;
+
+      // Stage 2: Sync agents to database
+      let agentsSynced = 0;
+      for (const agent of agents) {
+        try {
+          const upsertResult = await upsertAgent(supabase, agent);
+          result.agents.synced++;
+          if (upsertResult.created) result.agents.created++;
+          if (upsertResult.updated) result.agents.updated++;
+        } catch (error) {
+          result.agents.errors.push({
+            type: 'AGENT_SYNC_ERROR',
+            message: error instanceof Error ? error.message : 'Unknown error',
+            entity: 'agent',
+            entityId: agent.id,
+            timestamp: new Date().toISOString(),
+          });
+        }
+
+        agentsSynced++;
+        const agentProgress = (agentsSynced / totalAgents) * 40; // Agents = 5-45%
+        const elapsed = Date.now() - startTime;
+        const rate = agentsSynced / (elapsed / 1000); // agents per second
+        const remaining = totalAgents - agentsSynced;
+        const eta = rate > 0 ? (remaining / rate) * 1000 : null;
+
+        if (agentsSynced % 5 === 0 || agentsSynced === totalAgents) {
+          await sendProgress({
+            stage: 'syncing_agents',
+            message: `Syncing agents... ${agentsSynced} of ${totalAgents}`,
+            current: agentsSynced,
+            total: totalAgents,
+            percentage: Math.round(5 + agentProgress),
+            elapsed_ms: elapsed,
+            eta_ms: eta,
+            details: {
+              agents_synced: result.agents.synced,
+              agents_created: result.agents.created,
+              agents_updated: result.agents.updated,
+              errors: result.agents.errors.length,
+            },
+          });
+        }
+      }
+
+      // Stage 3: Fetch policies from SmartOffice
+      await sendProgress({
+        stage: 'fetching_policies',
+        message: 'Fetching policies from SmartOffice...',
+        current: 0,
+        total: 100,
+        percentage: 50,
+        elapsed_ms: Date.now() - startTime,
+        eta_ms: null,
+        details: {
+          agents_synced: result.agents.synced,
+          agents_created: result.agents.created,
+          agents_updated: result.agents.updated,
+        },
+      });
+
+      const policies = await client.getAllPolicies();
+      const totalPolicies = policies.length;
+
+      // Stage 4: Sync policies to database
+      let policiesSynced = 0;
+      for (const policy of policies) {
+        try {
+          const created = await upsertPolicy(supabase, policy);
+          result.policies.synced++;
+          if (created) result.policies.created++;
+        } catch (error) {
+          result.policies.errors.push({
+            type: 'POLICY_SYNC_ERROR',
+            message: error instanceof Error ? error.message : 'Unknown error',
+            entity: 'policy',
+            entityId: policy.id,
+            timestamp: new Date().toISOString(),
+          });
+        }
+
+        policiesSynced++;
+        const policyProgress = (policiesSynced / Math.max(totalPolicies, 1)) * 45; // Policies = 50-95%
+        const elapsed = Date.now() - startTime;
+        const agentTime = elapsed * 0.5; // Approximate time agents took
+        const policyTime = elapsed - agentTime;
+        const rate = policiesSynced / Math.max(policyTime / 1000, 0.1);
+        const remaining = totalPolicies - policiesSynced;
+        const eta = rate > 0 ? (remaining / rate) * 1000 : null;
+
+        if (policiesSynced % 10 === 0 || policiesSynced === totalPolicies) {
+          await sendProgress({
+            stage: 'syncing_policies',
+            message: `Syncing policies... ${policiesSynced} of ${totalPolicies}`,
+            current: policiesSynced,
+            total: totalPolicies,
+            percentage: Math.round(50 + policyProgress),
+            elapsed_ms: elapsed,
+            eta_ms: eta,
+            details: {
+              agents_synced: result.agents.synced,
+              agents_created: result.agents.created,
+              agents_updated: result.agents.updated,
+              policies_synced: result.policies.synced,
+              policies_created: result.policies.created,
+              errors: result.agents.errors.length + result.policies.errors.length,
+            },
+          });
+        }
+      }
+
+      // Complete
+      result.duration_ms = Date.now() - startTime;
+
+      // Update sync log
+      await supabase
+        .from('smartoffice_sync_logs')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+          duration_ms: result.duration_ms,
+          agents_synced: result.agents.synced,
+          agents_created: result.agents.created,
+          agents_updated: result.agents.updated,
+          policies_synced: result.policies.synced,
+          policies_created: result.policies.created,
+          error_count: result.agents.errors.length + result.policies.errors.length,
+          errors: [...result.agents.errors, ...result.policies.errors],
+        })
+        .eq('id', result.log_id);
+
+      // Update last sync time
+      await supabase.rpc('update_smartoffice_last_sync');
+
+      await sendProgress({
+        stage: 'complete',
+        message: 'Sync complete!',
+        current: 100,
+        total: 100,
+        percentage: 100,
+        elapsed_ms: result.duration_ms,
+        eta_ms: 0,
+        details: {
+          agents_synced: result.agents.synced,
+          agents_created: result.agents.created,
+          agents_updated: result.agents.updated,
+          policies_synced: result.policies.synced,
+          policies_created: result.policies.created,
+          errors: result.agents.errors.length + result.policies.errors.length,
+        },
+      });
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+
+      // Update sync log with failure
+      if (result.log_id) {
+        await supabase
+          .from('smartoffice_sync_logs')
+          .update({
+            status: 'failed',
+            completed_at: new Date().toISOString(),
+            duration_ms: Date.now() - startTime,
+            error_count: 1,
+            errors: [{ type: 'SYNC_ERROR', message: errorMsg, timestamp: new Date().toISOString() }],
+          })
+          .eq('id', result.log_id);
+      }
+
+      await sendProgress({
+        stage: 'error',
+        message: `Sync failed: ${errorMsg}`,
+        current: 0,
+        total: 100,
+        percentage: 0,
+        elapsed_ms: Date.now() - startTime,
+        eta_ms: null,
+      });
+    } finally {
+      try {
+        await writer.close();
+      } catch {
+        // Already closed
+      }
+    }
+  })();
+
+  return new Response(stream.readable, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  });
+}
+
+// Helper functions
+async function upsertAgent(
+  supabase: ReturnType<typeof createUntypedAdminClient>,
+  agent: SmartOfficeAgent
+): Promise<{ created: boolean; updated: boolean }> {
+  const row = {
+    smartoffice_id: agent.id,
+    contact_id: agent.contactId,
+    first_name: agent.firstName,
+    last_name: agent.lastName,
+    email: agent.email,
+    phone: agent.phone,
+    tax_id: agent.taxId,
+    client_type: agent.clientType,
+    status: agent.status,
+    hierarchy_id: agent.hierarchyId,
+    raw_data: agent.rawData,
+  };
+
+  const { data: existing } = await supabase
+    .from('smartoffice_agents')
+    .select('id')
+    .eq('smartoffice_id', agent.id)
+    .single();
+
+  if (existing) {
+    await supabase
+      .from('smartoffice_agents')
+      .update({ ...row, synced_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+      .eq('smartoffice_id', agent.id);
+    return { created: false, updated: true };
+  } else {
+    await supabase.from('smartoffice_agents').insert(row);
+    return { created: true, updated: false };
+  }
+}
+
+async function upsertPolicy(
+  supabase: ReturnType<typeof createUntypedAdminClient>,
+  policy: SmartOfficePolicy
+): Promise<boolean> {
+  let smartofficeAgentId: string | null = null;
+  if (policy.primaryAdvisorContactId) {
+    const { data: agent } = await supabase
+      .from('smartoffice_agents')
+      .select('id')
+      .eq('contact_id', policy.primaryAdvisorContactId)
+      .single();
+    smartofficeAgentId = agent?.id || null;
+  }
+
+  const row = {
+    smartoffice_id: policy.id,
+    smartoffice_agent_id: smartofficeAgentId,
+    primary_advisor_contact_id: policy.primaryAdvisorContactId,
+    policy_number: policy.policyNumber,
+    carrier_name: policy.carrierName,
+    holding_type: policy.holdingType,
+    holding_type_name: policy.holdingTypeName,
+    annual_premium: policy.annualPremium,
+    raw_data: policy.rawData,
+  };
+
+  const { data: existing } = await supabase
+    .from('smartoffice_policies')
+    .select('id')
+    .eq('smartoffice_id', policy.id)
+    .single();
+
+  if (existing) {
+    await supabase
+      .from('smartoffice_policies')
+      .update({ ...row, synced_at: new Date().toISOString() })
+      .eq('smartoffice_id', policy.id);
+    return false;
+  } else {
+    await supabase.from('smartoffice_policies').insert(row);
+    return true;
+  }
+}
