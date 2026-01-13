@@ -25,6 +25,7 @@ import {
   Bot,
   UserCog,
   ClipboardList,
+  Mail,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 
@@ -63,6 +64,7 @@ const navigation = [
   { name: 'Training', href: '/admin/training', icon: GraduationCap, permission: 'training.view' },
   { name: 'SmartOffice', href: '/admin/smartoffice', icon: Database, permission: 'smartoffice.view' },
   { name: 'AI Copilot', href: '/admin/copilot', icon: Bot, permission: 'copilot.view' },
+  { name: 'Email Templates', href: '/admin/email-templates', icon: Mail, permission: 'settings.view' },
   { name: 'System Settings', href: '/admin/settings', icon: Settings, permission: 'settings.view' },
   { name: 'User Management', href: '/admin/users', icon: UserCog, permission: 'users.view' },
   { name: 'Audit Log', href: '/admin/audit', icon: ClipboardList, permission: 'audit.view' },
