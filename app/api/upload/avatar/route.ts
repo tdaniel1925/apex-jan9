@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cloudinary, AVATAR_TRANSFORMATION } from '@/lib/cloudinary';
-import { createServerSupabaseClient } from '@/lib/db/supabase-server';
+import { createServerSupabaseClient, createAdminClient } from '@/lib/db/supabase-server';
 import type { Agent } from '@/lib/types/database';
 
 // Constants for validation
@@ -54,31 +53,55 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Convert file to base64
+    // Use admin client for storage operations (bypasses RLS)
+    const adminSupabase = createAdminClient();
+
+    // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const base64 = buffer.toString('base64');
-    const dataUri = `data:${file.type};base64,${base64}`;
 
-    // Upload to Cloudinary with AI enhancement transformations
-    const result = await cloudinary.uploader.upload(dataUri, {
-      folder: `apex/avatars/${agent.agent_code}`,
-      public_id: `avatar_${Date.now()}`,
-      transformation: [
-        AVATAR_TRANSFORMATION,
-      ],
-      // Additional AI enhancements
-      eager: [
-        // Create a thumbnail version
-        { width: 100, height: 100, crop: 'fill', gravity: 'face', quality: 'auto' },
-      ],
-      eager_async: true,
-    });
+    // Generate unique filename
+    const fileExt = file.name.split('.').pop() || 'jpg';
+    const fileName = `${agent.agent_code}/avatar_${Date.now()}.${fileExt}`;
+
+    // Upload to Supabase Storage
+    const { data: uploadData, error: uploadError } = await adminSupabase
+      .storage
+      .from('avatars')
+      .upload(fileName, buffer, {
+        contentType: file.type,
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.error('Storage upload error:', uploadError);
+
+      // Check if bucket doesn't exist
+      if (uploadError.message?.includes('Bucket not found')) {
+        return NextResponse.json(
+          { error: 'Storage not configured. Please create the "avatars" bucket in Supabase.' },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json(
+        { error: 'Upload failed. Please try again.' },
+        { status: 500 }
+      );
+    }
+
+    // Get public URL
+    const { data: urlData } = adminSupabase
+      .storage
+      .from('avatars')
+      .getPublicUrl(uploadData.path);
+
+    const avatarUrl = urlData.publicUrl;
 
     // Update agent's avatar_url in database
-    const { error: updateError } = await supabase
+    const { error: updateError } = await adminSupabase
       .from('agents')
-      .update({ avatar_url: result.secure_url } as never)
+      .update({ avatar_url: avatarUrl } as never)
       .eq('id', agent.id);
 
     if (updateError) {
@@ -91,8 +114,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      url: result.secure_url,
-      thumbnail: result.eager?.[0]?.secure_url || result.secure_url,
+      url: avatarUrl,
+      thumbnail: avatarUrl, // Supabase doesn't auto-generate thumbnails
     });
   } catch (error) {
     console.error('Upload error:', error);
