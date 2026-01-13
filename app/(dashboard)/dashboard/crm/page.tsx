@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { ContactsList } from '@/components/crm/contacts-list';
 import { AddContactDialog } from '@/components/crm/add-contact-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, UserPlus, Clock, CheckCircle } from 'lucide-react';
+import { Users, UserPlus, Clock, CheckCircle, FileSpreadsheet, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { createClient } from '@/lib/db/supabase-client';
 
@@ -114,6 +115,26 @@ export default function CRMPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Import/Export Link */}
+      <Link href="/dashboard/crm/import-export">
+        <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
+          <CardContent className="flex items-center justify-between p-6">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center">
+                <FileSpreadsheet className="h-6 w-6 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Import / Export</h3>
+                <p className="text-sm text-muted-foreground">
+                  Bulk import contacts from CSV or export your contact list
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </Link>
 
       {/* Contacts List */}
       <ContactsList contacts={contacts} />

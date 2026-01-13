@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { RANK_CONFIG, Rank } from '@/lib/config/ranks';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
 import { AdminHeader } from '@/components/admin/admin-header';
@@ -31,19 +31,39 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { agent, loading: authLoading, agentLoading } = useAuth();
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const [adminLoading, setAdminLoading] = useState(true);
   const [authType, setAuthType] = useState<'agent' | 'admin' | null>(null);
 
+  // Check for magic link token in URL and store it
+  useEffect(() => {
+    const urlToken = searchParams.get('token');
+    if (urlToken) {
+      // Store the token from magic link
+      localStorage.setItem(ADMIN_TOKEN_KEY, urlToken);
+      // Clean the URL (remove token param)
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
+    }
+  }, [searchParams]);
+
   // Check for RBAC admin auth (corporate staff)
   useEffect(() => {
     const checkAdminAuth = async () => {
-      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      // Check URL first for magic link token
+      const urlToken = searchParams.get('token');
+      const token = urlToken || localStorage.getItem(ADMIN_TOKEN_KEY);
 
       if (!token) {
         setAdminLoading(false);
         return;
+      }
+
+      // If we got token from URL, store it
+      if (urlToken) {
+        localStorage.setItem(ADMIN_TOKEN_KEY, urlToken);
       }
 
       try {
@@ -68,7 +88,7 @@ export default function AdminLayout({
     };
 
     checkAdminAuth();
-  }, []);
+  }, [searchParams]);
 
   // Check for agent rank-based auth
   useEffect(() => {

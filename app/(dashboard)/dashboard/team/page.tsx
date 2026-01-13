@@ -14,7 +14,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users, TrendingUp, Award, UserPlus } from 'lucide-react';
+import { Users, TrendingUp, Award, UserPlus, BarChart3, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth/auth-context';
 import { createClient } from '@/lib/db/supabase-client';
 
@@ -135,6 +137,26 @@ export default function TeamPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Team Metrics Link */}
+      <Link href="/dashboard/team/metrics">
+        <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
+          <CardContent className="flex items-center justify-between p-6">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center">
+                <BarChart3 className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Team Metrics</h3>
+                <p className="text-sm text-muted-foreground">
+                  View detailed production metrics, growth trends, and top performers
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </Link>
 
       {/* Team List */}
       <Card>

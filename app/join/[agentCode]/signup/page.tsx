@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Agent } from '@/lib/types/database';
 import { RANK_CONFIG } from '@/lib/config/ranks';
-import { CheckCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 
 export default function ReplicatedSignupPage() {
   const router = useRouter();
@@ -84,20 +84,41 @@ export default function ReplicatedSignupPage() {
 
     const supabase = createClient();
 
-    // Create auth user
+    // Check for duplicate email in agents table
+    const { data: existingAgent } = await supabase
+      .from('agents')
+      .select('id, email')
+      .eq('email', formData.email.toLowerCase())
+      .maybeSingle();
+
+    if (existingAgent) {
+      setError('An account with this email already exists. Please sign in instead.');
+      setSubmitting(false);
+      return;
+    }
+
+    // Create auth user with email verification
+    const siteUrl = typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_APP_URL;
     const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: formData.email,
+      email: formData.email.toLowerCase(),
       password: formData.password,
       options: {
+        emailRedirectTo: `${siteUrl}/auth/callback?next=/join/${agentCode}/signup/success`,
         data: {
           first_name: formData.firstName,
           last_name: formData.lastName,
+          sponsor_agent_code: agentCode,
         },
       },
     });
 
     if (authError) {
-      setError(authError.message);
+      // Handle specific Supabase errors
+      if (authError.message.includes('already registered')) {
+        setError('An account with this email already exists. Please sign in instead.');
+      } else {
+        setError(authError.message);
+      }
       setSubmitting(false);
       return;
     }
@@ -108,13 +129,13 @@ export default function ReplicatedSignupPage() {
       return;
     }
 
-    // Create agent record with sponsor pre-filled
+    // Create agent record with sponsor pre-filled (status pending_verification until email confirmed)
     const { error: agentError } = await supabase.from('agents').insert({
       user_id: authData.user.id,
       sponsor_id: agent?.id || null,
       first_name: formData.firstName,
       last_name: formData.lastName,
-      email: formData.email,
+      email: formData.email.toLowerCase(),
       phone: formData.phone || null,
       status: 'pending',
       rank: 'pre_associate',
@@ -126,9 +147,8 @@ export default function ReplicatedSignupPage() {
       return;
     }
 
-    // Redirect to success/congratulations page
-    router.push(`/join/${agentCode}/signup/success`);
-    router.refresh();
+    // Redirect to verify email page
+    router.push(`/join/${agentCode}/signup/verify-email?email=${encodeURIComponent(formData.email)}`);
   };
 
   if (loading) {

@@ -786,3 +786,150 @@ export async function logoutAdminUser(
     });
   }
 }
+
+// ============================================
+// MAGIC LINK AUTHENTICATION
+// ============================================
+
+const MAGIC_LINK_EXPIRY_MINUTES = 15;
+
+interface MagicLinkResult {
+  success: boolean;
+  token?: string;
+  error?: string;
+}
+
+interface MagicLinkVerifyResult extends LoginResult {
+  // Inherits success, token, expiresAt, user, error
+}
+
+/**
+ * Create a magic link token for passwordless admin login
+ */
+export async function createMagicLink(
+  email: string,
+  ipAddress?: string,
+  userAgent?: string
+): Promise<MagicLinkResult> {
+  const supabase = await createServerSupabaseClient();
+
+  // Get user by email
+  const user = await getAdminUserByEmail(email);
+
+  if (!user) {
+    // Don't reveal if email exists or not for security
+    return { success: true }; // Silently succeed
+  }
+
+  if (!user.is_active) {
+    return { success: true }; // Silently succeed
+  }
+
+  // Generate token
+  const token = randomBytes(32).toString('hex');
+  const tokenHash = hashToken(token);
+  const expiresAt = new Date(Date.now() + MAGIC_LINK_EXPIRY_MINUTES * 60 * 1000);
+
+  // Invalidate any existing magic links for this user
+  await supabase
+    .from('admin_magic_links' as never)
+    .delete()
+    .eq('user_id', user.id);
+
+  // Create new magic link
+  const { error } = await supabase.from('admin_magic_links' as never).insert({
+    user_id: user.id,
+    token_hash: tokenHash,
+    email: email.toLowerCase(),
+    expires_at: expiresAt.toISOString(),
+    ip_address: ipAddress || null,
+    user_agent: userAgent || null,
+  } as never) as DbResult<unknown>;
+
+  if (error) {
+    console.error('Failed to create magic link:', error);
+    return { success: false, error: 'Failed to create magic link' };
+  }
+
+  // Log the action
+  await logAdminAction({
+    userId: user.id,
+    action: 'magic_link_requested',
+    resourceType: 'auth',
+    ipAddress,
+    userAgent,
+  });
+
+  return { success: true, token };
+}
+
+/**
+ * Verify a magic link token and create a session
+ */
+export async function verifyMagicLink(
+  token: string,
+  ipAddress?: string,
+  userAgent?: string
+): Promise<MagicLinkVerifyResult> {
+  const supabase = await createServerSupabaseClient();
+  const tokenHash = hashToken(token);
+
+  // Find valid magic link
+  const { data: magicLink, error: findError } = await supabase
+    .from('admin_magic_links' as never)
+    .select('*')
+    .eq('token_hash', tokenHash)
+    .gt('expires_at', new Date().toISOString())
+    .is('used_at', null)
+    .single() as DbResult<{
+      id: string;
+      user_id: string;
+      email: string;
+      expires_at: string;
+      used_at: string | null;
+    }>;
+
+  if (findError || !magicLink) {
+    return { success: false, error: 'Invalid or expired magic link' };
+  }
+
+  // Mark as used
+  await supabase
+    .from('admin_magic_links' as never)
+    .update({ used_at: new Date().toISOString() } as never)
+    .eq('id', magicLink.id);
+
+  // Get user
+  const user = await getAdminUserWithRoles(magicLink.user_id);
+
+  if (!user) {
+    return { success: false, error: 'User not found' };
+  }
+
+  if (!user.is_active) {
+    return { success: false, error: 'Account is disabled' };
+  }
+
+  // Create session
+  const { token: sessionToken, expiresAt } = await createAdminSession(
+    user.id,
+    ipAddress,
+    userAgent
+  );
+
+  // Log login via magic link
+  await logAdminAction({
+    userId: user.id,
+    action: 'magic_link_login',
+    resourceType: 'session',
+    ipAddress,
+    userAgent,
+  });
+
+  return {
+    success: true,
+    token: sessionToken,
+    expiresAt,
+    user,
+  };
+}

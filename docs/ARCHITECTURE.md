@@ -861,4 +861,109 @@ RBAC-specific tests (40 tests):
 
 ---
 
-*Last updated: January 12, 2026 (SmartOffice streaming sync added)*
+---
+
+## Agent Portal Features (Added: 2026-01-13)
+
+### Replicated Site Customization
+
+Agents can customize their replicated recruitment site appearance and social links.
+
+#### Database Columns (Migration: `20260113150000_replicated_site_customization.sql`)
+
+```sql
+-- Added to agents table
+site_headline TEXT,               -- Custom headline for replicated site
+site_cta_text TEXT DEFAULT 'Join My Team', -- Call-to-action button text
+site_primary_color TEXT,          -- Hex color for primary accent
+show_phone BOOLEAN DEFAULT true,  -- Show phone on replicated site
+show_email BOOLEAN DEFAULT true,  -- Show email on replicated site
+social_facebook TEXT,             -- Social media URLs
+social_instagram TEXT,
+social_linkedin TEXT,
+social_youtube TEXT,
+social_tiktok TEXT
+```
+
+#### API Route
+
+```
+GET/PUT /api/replicated-site/settings
+```
+
+- GET: Returns current settings for authenticated agent
+- PUT: Updates settings with Zod validation (color format, URL format)
+
+#### Dashboard Page
+
+```
+/dashboard/replicated-site → 3-tab customization UI
+  - Profile: Bio, headline, CTA text, contact visibility
+  - Appearance: Color picker with presets
+  - Social: Social media profile URLs
+```
+
+### Top Performers Leaderboard
+
+Agent-facing leaderboard showing top performers by various metrics.
+
+#### API Route
+
+```
+GET /api/leaderboard?metric=commissions&period=month&limit=25
+```
+
+Metrics: `commissions`, `premium`, `recruits`
+Periods: `week`, `month`, `quarter`, `year`
+
+Response includes:
+- Top N performers with agent info
+- Current user's rank position
+- Total participants count
+
+#### Dashboard Page
+
+```
+/dashboard/leaderboard → Leaderboard with podium display
+  - Top 3 podium with avatars and values
+  - Metrics tabs (Commissions, Premium, Recruits)
+  - Period selector
+  - Current user rank card
+```
+
+### Bulk Admin Operations
+
+Batch operations for managing multiple records at once.
+
+#### API Route
+
+```
+POST /api/admin/bulk
+{
+  "operation": "agents_status_change" | "agents_rank_change" | "agents_delete" |
+               "commissions_approve" | "commissions_reject" |
+               "payouts_process" | "payouts_complete",
+  "ids": ["uuid1", "uuid2", ...],  // Max 100 per request
+  "data": { ... }  // Operation-specific data
+}
+```
+
+All operations:
+- Validate input with Zod schema
+- Perform batch update using `.in('id', ids)`
+- Log to `audit_logs` table
+- Return success/failure counts
+
+#### Admin Page
+
+```
+/admin/bulk-operations → Batch management interface
+  - Checkbox selection for multiple records
+  - Filter by status/rank
+  - Confirmation dialogs with operation details
+  - Result feedback with success/failure counts
+```
+
+---
+
+*Last updated: January 13, 2026 (Agent Portal features added)*

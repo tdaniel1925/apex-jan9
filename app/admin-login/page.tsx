@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -9,10 +9,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, AlertCircle, Loader2, Eye, EyeOff, Building2, User } from 'lucide-react';
+import { Shield, AlertCircle, Loader2, Eye, EyeOff, Building2, User, Mail, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { createClient } from '@/lib/db/supabase-client';
 import { RANK_CONFIG, Rank } from '@/lib/config/ranks';
+
+type CorporateAuthMode = 'password' | 'magic-link' | 'magic-link-sent';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -21,13 +23,53 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loginType, setLoginType] = useState<'corporate' | 'agent'>('corporate');
+  const [corporateAuthMode, setCorporateAuthMode] = useState<CorporateAuthMode>('magic-link');
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { signIn, signOut, agent, agentLoading } = useAuth();
 
-  // Clear error when switching tabs
+  // Handle error from URL params (e.g., from magic link verification)
+  useEffect(() => {
+    const urlError = searchParams.get('error');
+    if (urlError) {
+      setError(decodeURIComponent(urlError));
+    }
+  }, [searchParams]);
+
+  // Clear error when switching tabs or auth mode
   useEffect(() => {
     setError(null);
-  }, [loginType]);
+  }, [loginType, corporateAuthMode]);
+
+  // Handle magic link request
+  const handleMagicLinkRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/admin/auth/magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to send magic link');
+        return;
+      }
+
+      // Switch to sent mode
+      setCorporateAuthMode('magic-link-sent');
+    } catch (err) {
+      console.error('Magic link error:', err);
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Handle corporate staff login (RBAC system)
   const handleCorporateLogin = async (e: React.FormEvent) => {
@@ -166,66 +208,179 @@ export default function AdminLoginPage() {
             </TabsList>
 
             <TabsContent value="corporate" className="mt-4">
-              <form onSubmit={handleCorporateLogin} className="space-y-4">
-                {error && (
-                  <div className="p-3 text-sm text-red-400 bg-red-950/50 border border-red-900 rounded-md flex items-start gap-2">
-                    <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-                    <span>{error}</span>
+              {/* Magic Link Sent Confirmation */}
+              {corporateAuthMode === 'magic-link-sent' ? (
+                <div className="space-y-6 text-center">
+                  <div className="flex justify-center">
+                    <div className="w-16 h-16 bg-green-900/30 rounded-full flex items-center justify-center">
+                      <CheckCircle2 className="h-8 w-8 text-green-500" />
+                    </div>
                   </div>
-                )}
-
-                <div className="space-y-2">
-                  <Label htmlFor="corporate-email" className="text-slate-300">Email</Label>
-                  <Input
-                    id="corporate-email"
-                    type="email"
-                    placeholder="staff@theapexway.net"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    disabled={loading}
-                    className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-500"
-                  />
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-2">Check Your Email</h3>
+                    <p className="text-slate-400 text-sm">
+                      We sent a sign-in link to<br />
+                      <span className="text-white font-medium">{email}</span>
+                    </p>
+                  </div>
+                  <div className="text-slate-500 text-xs space-y-1">
+                    <p>The link expires in 15 minutes.</p>
+                    <p>Check your spam folder if you don&apos;t see it.</p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    className="text-slate-400 hover:text-white"
+                    onClick={() => {
+                      setCorporateAuthMode('magic-link');
+                      setEmail('');
+                    }}
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Try a different email
+                  </Button>
                 </div>
+              ) : corporateAuthMode === 'magic-link' ? (
+                /* Magic Link Form */
+                <form onSubmit={handleMagicLinkRequest} className="space-y-4">
+                  {error && (
+                    <div className="p-3 text-sm text-red-400 bg-red-950/50 border border-red-900 rounded-md flex items-start gap-2">
+                      <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                      <span>{error}</span>
+                    </div>
+                  )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="corporate-password" className="text-slate-300">Password</Label>
-                  <div className="relative">
+                  <div className="text-center mb-4">
+                    <div className="w-12 h-12 bg-amber-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Mail className="h-6 w-6 text-amber-500" />
+                    </div>
+                    <p className="text-slate-400 text-sm">
+                      Enter your email to receive a secure sign-in link
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="magic-email" className="text-slate-300">Email</Label>
                     <Input
-                      id="corporate-password"
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      id="magic-email"
+                      type="email"
+                      placeholder="staff@theapexway.net"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
                       disabled={loading}
-                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-500 pr-10"
+                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-500"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
                   </div>
-                </div>
 
-                <Button
-                  type="submit"
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Signing in...
-                    </>
-                  ) : (
-                    'Sign In'
+                  <Button
+                    type="submit"
+                    className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending link...
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="mr-2 h-4 w-4" />
+                        Send Magic Link
+                      </>
+                    )}
+                  </Button>
+
+                  <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-slate-700" />
+                    </div>
+                    <div className="relative flex justify-center text-xs">
+                      <span className="bg-slate-800 px-2 text-slate-500">or</span>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full text-slate-400 hover:text-white"
+                    onClick={() => setCorporateAuthMode('password')}
+                  >
+                    Sign in with password instead
+                  </Button>
+                </form>
+              ) : (
+                /* Password Form (fallback) */
+                <form onSubmit={handleCorporateLogin} className="space-y-4">
+                  {error && (
+                    <div className="p-3 text-sm text-red-400 bg-red-950/50 border border-red-900 rounded-md flex items-start gap-2">
+                      <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                      <span>{error}</span>
+                    </div>
                   )}
-                </Button>
-              </form>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="corporate-email" className="text-slate-300">Email</Label>
+                    <Input
+                      id="corporate-email"
+                      type="email"
+                      placeholder="staff@theapexway.net"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      disabled={loading}
+                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-500"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="corporate-password" className="text-slate-300">Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="corporate-password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        disabled={loading}
+                        className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-500 pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Signing in...
+                      </>
+                    ) : (
+                      'Sign In'
+                    )}
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full text-slate-400 hover:text-white"
+                    onClick={() => setCorporateAuthMode('magic-link')}
+                  >
+                    <Mail className="mr-2 h-4 w-4" />
+                    Use magic link instead
+                  </Button>
+                </form>
+              )}
 
               <p className="text-center text-xs text-slate-500 mt-4">
                 For corporate employees (Finance, IT, Memberships, Training)

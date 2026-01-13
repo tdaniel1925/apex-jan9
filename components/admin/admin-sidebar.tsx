@@ -26,6 +26,9 @@ import {
   UserCog,
   ClipboardList,
   Mail,
+  Webhook,
+  MessageSquareWarning,
+  Layers,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 
@@ -52,11 +55,13 @@ interface AdminSidebarProps {
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard, permission: 'dashboard.view' },
   { name: 'Agents', href: '/admin/agents', icon: Users, permission: 'agents.view' },
+  { name: 'Bulk Operations', href: '/admin/bulk-operations', icon: Layers, permission: 'agents.manage' },
   { name: 'Products', href: '/admin/products', icon: ShoppingBag, permission: 'products.view' },
   { name: 'Import Commissions', href: '/admin/commissions', icon: FileSpreadsheet, permission: 'commissions.view' },
   { name: 'Pay Periods', href: '/admin/pay-periods', icon: Calendar, permission: 'payperiods.view' },
   { name: 'Clawbacks', href: '/admin/clawbacks', icon: RotateCcw, permission: 'clawbacks.view' },
   { name: 'Compliance', href: '/admin/compliance', icon: AlertTriangle, permission: 'compliance.view' },
+  { name: 'Disputes', href: '/admin/disputes', icon: MessageSquareWarning, permission: 'disputes.view' },
   { name: 'Bonuses', href: '/admin/bonuses', icon: Award, permission: 'bonuses.view' },
   { name: 'Payouts', href: '/admin/payouts', icon: Wallet, permission: 'payouts.view' },
   { name: 'Override Report', href: '/admin/overrides', icon: DollarSign, permission: 'overrides.view' },
@@ -65,6 +70,7 @@ const navigation = [
   { name: 'SmartOffice', href: '/admin/smartoffice', icon: Database, permission: 'smartoffice.view' },
   { name: 'AI Copilot', href: '/admin/copilot', icon: Bot, permission: 'copilot.view' },
   { name: 'Email Templates', href: '/admin/email-templates', icon: Mail, permission: 'settings.view' },
+  { name: 'Webhooks', href: '/admin/webhooks', icon: Webhook, permission: 'settings.view' },
   { name: 'System Settings', href: '/admin/settings', icon: Settings, permission: 'settings.view' },
   { name: 'User Management', href: '/admin/users', icon: UserCog, permission: 'users.view' },
   { name: 'Audit Log', href: '/admin/audit', icon: ClipboardList, permission: 'audit.view' },

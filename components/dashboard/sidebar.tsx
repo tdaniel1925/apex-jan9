@@ -19,6 +19,9 @@ import {
   ExternalLink,
   ShoppingBag,
   Package,
+  MessageSquareWarning,
+  Globe,
+  Trophy,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 
@@ -30,14 +33,17 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Team', href: '/dashboard/team', icon: Users },
   { name: 'Genealogy', href: '/dashboard/genealogy', icon: Network },
+  { name: 'Leaderboard', href: '/dashboard/leaderboard', icon: Trophy },
   { name: 'Commissions', href: '/dashboard/commissions', icon: DollarSign },
   { name: 'Bonuses', href: '/dashboard/bonuses', icon: Award },
   { name: 'Wallet', href: '/dashboard/wallet', icon: Wallet },
+  { name: 'Disputes', href: '/dashboard/disputes', icon: MessageSquareWarning },
   { name: 'Shop', href: '/dashboard/shop', icon: ShoppingBag },
   { name: 'Orders', href: '/dashboard/orders', icon: Package },
   { name: 'CRM', href: '/dashboard/crm', icon: Contact },
   { name: 'Training', href: '/dashboard/training', icon: BookOpen },
   { name: 'Reports', href: '/dashboard/reports', icon: BarChart3 },
+  { name: 'Replicated Site', href: '/dashboard/replicated-site', icon: Globe },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 

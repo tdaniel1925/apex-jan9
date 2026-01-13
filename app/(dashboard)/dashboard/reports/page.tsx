@@ -11,7 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { BarChart3, TrendingUp, Users, DollarSign, Download, Calendar } from 'lucide-react';
+import { BarChart3, TrendingUp, Users, DollarSign, Download, Calendar, FileText, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 import { useAuth } from '@/lib/auth/auth-context';
 import { createClient } from '@/lib/db/supabase-client';
 import { toast } from 'sonner';
@@ -228,6 +229,26 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Tax Documents Link */}
+      <Link href="/dashboard/reports/tax-documents">
+        <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
+          <CardContent className="flex items-center justify-between p-6">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center">
+                <FileText className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Tax Documents</h3>
+                <p className="text-sm text-muted-foreground">
+                  Download income statements and 1099 summaries for tax purposes
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </Link>
 
       {/* Earnings Breakdown */}
       <Card>
