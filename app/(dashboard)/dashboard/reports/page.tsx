@@ -14,6 +14,7 @@ import {
 import { BarChart3, TrendingUp, Users, DollarSign, Download, Calendar } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { createClient } from '@/lib/db/supabase-client';
+import { toast } from 'sonner';
 
 export default function ReportsPage() {
   const { user } = useAuth();
@@ -126,6 +127,36 @@ export default function ReportsPage() {
 
   const totalEarnings = stats.totalCommissions + stats.totalOverrides + stats.totalBonuses;
 
+  const handleExport = () => {
+    const periodLabel = {
+      week: 'Last 7 Days',
+      month: 'This Month',
+      quarter: 'This Quarter',
+      year: 'This Year',
+    }[period] || period;
+
+    const headers = ['Metric', 'Value'];
+    const rows = [
+      ['Period', periodLabel],
+      ['Total Premium', `$${stats.totalPremium.toFixed(2)}`],
+      ['Direct Commissions', `$${stats.totalCommissions.toFixed(2)}`],
+      ['Override Commissions', `$${stats.totalOverrides.toFixed(2)}`],
+      ['Bonuses', `$${stats.totalBonuses.toFixed(2)}`],
+      ['Total Earnings', `$${totalEarnings.toFixed(2)}`],
+      ['New Recruits', stats.newRecruits.toString()],
+    ];
+
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `report-${period}-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success('Report exported successfully');
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -148,7 +179,7 @@ export default function ReportsPage() {
               <SelectItem value="year">This Year</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExport}>
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>

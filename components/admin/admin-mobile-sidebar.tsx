@@ -41,7 +41,7 @@ export function AdminMobileSidebar({ agent }: AdminMobileSidebarProps) {
   return (
     <div className="flex h-full flex-col gap-y-5 overflow-y-auto bg-sidebar px-6 pb-4">
       {/* Logo with Admin Badge */}
-      <div className="flex h-16 shrink-0 items-center justify-between">
+      <div className="flex h-16 shrink-0 items-center justify-between pt-4">
         <Logo href="/admin" size="sm" variant="white" />
         <Shield className="h-5 w-5 text-sidebar-primary" />
       </div>

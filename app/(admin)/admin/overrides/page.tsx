@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DollarSign, Download, Filter, Search, TrendingUp, Users } from 'lucide-react';
 import { createClient, Tables } from '@/lib/db/supabase-client';
+import { toast } from 'sonner';
 
 type OverrideWithDetails = Tables<'overrides'> & {
   agents: { first_name: string; last_name: string; rank: string } | null;
@@ -143,6 +144,35 @@ export default function AdminOverridesPage() {
     fetchData();
   }, []);
 
+  const handleExportReport = () => {
+    const headers = ['Recipient', 'Rank', 'Gen 1', 'Gen 2', 'Gen 3', 'Gen 4', 'Gen 5', 'Gen 6', 'Total'];
+    const rows = summaries.map(s => [
+      s.agentName,
+      s.rank,
+      s.gen1.toFixed(2),
+      s.gen2.toFixed(2),
+      s.gen3.toFixed(2),
+      s.gen4.toFixed(2),
+      s.gen5.toFixed(2),
+      s.gen6.toFixed(2),
+      s.totalOverrides.toFixed(2),
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `override-report-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success('Override report exported successfully');
+  };
+
+  const handleFilterClick = () => {
+    toast.info('Advanced filtering coming soon. Use the search box to filter by agent or policy.');
+  };
+
   const filteredOverrides = overrides.filter(o => {
     if (!searchQuery) return true;
     const agentName = o.agents ? `${o.agents.first_name} ${o.agents.last_name}`.toLowerCase() : '';
@@ -167,7 +197,7 @@ export default function AdminOverridesPage() {
             6-generation override tracking and analysis.
           </p>
         </div>
-        <Button variant="outline">
+        <Button variant="outline" onClick={handleExportReport}>
           <Download className="mr-2 h-4 w-4" />
           Export Report
         </Button>
@@ -312,7 +342,7 @@ export default function AdminOverridesPage() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" onClick={handleFilterClick}>
                 <Filter className="h-4 w-4" />
               </Button>
             </div>

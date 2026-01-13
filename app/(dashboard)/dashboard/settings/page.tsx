@@ -1,20 +1,29 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { User, Sparkles, Shield, Bell, Key } from 'lucide-react';
+import { User, Sparkles, Shield, Bell, Key, Loader2, Copy, Check } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { createClient } from '@/lib/db/supabase-client';
 import { AvatarUpload } from '@/components/dashboard/avatar-upload';
+import { toast } from 'sonner';
 
 export default function SettingsPage() {
   const { user } = useAuth();
   const [agent, setAgent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
+    phone: '',
+  });
 
   useEffect(() => {
     if (!user) return;
@@ -28,12 +37,57 @@ export default function SettingsPage() {
         .eq('user_id', user.id)
         .single();
 
-      setAgent(agentData);
+      const agent = agentData as { first_name?: string; last_name?: string; phone?: string; [key: string]: unknown } | null;
+      setAgent(agent);
+      if (agent) {
+        setFormData({
+          first_name: agent.first_name || '',
+          last_name: agent.last_name || '',
+          phone: agent.phone || '',
+        });
+      }
       setLoading(false);
     };
 
     fetchData();
   }, [user]);
+
+  const handleSaveProfile = async () => {
+    if (!agent?.id) return;
+    setSaving(true);
+    try {
+      const supabase = createClient();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase.from('agents') as any)
+        .update({
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          phone: formData.phone,
+        })
+        .eq('id', agent.id);
+
+      if (error) throw error;
+      setAgent({ ...agent, ...formData });
+      toast.success('Profile updated successfully');
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast.error('Failed to save profile');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCopyReferralLink = async () => {
+    const link = `${window.location.origin}/join/${agent?.agent_code || ''}`;
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(true);
+      toast.success('Referral link copied to clipboard');
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error('Failed to copy link');
+    }
+  };
 
   if (loading) {
     return (
@@ -71,11 +125,19 @@ export default function SettingsPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name</Label>
-              <Input id="firstName" defaultValue={agent?.first_name || ''} />
+              <Input
+                id="firstName"
+                value={formData.first_name}
+                onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastName">Last Name</Label>
-              <Input id="lastName" defaultValue={agent?.last_name || ''} />
+              <Input
+                id="lastName"
+                value={formData.last_name}
+                onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -83,11 +145,19 @@ export default function SettingsPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="phone">Phone</Label>
-              <Input id="phone" type="tel" defaultValue={agent?.phone || ''} />
+              <Input
+                id="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              />
             </div>
           </div>
 
-          <Button>Save Changes</Button>
+          <Button onClick={handleSaveProfile} disabled={saving}>
+            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save Changes
+          </Button>
         </CardContent>
       </Card>
 
@@ -118,9 +188,11 @@ export default function SettingsPage() {
                   : 'Your AI assistant is active and ready to help'}
               </p>
             </div>
-            <Button variant={agent?.ai_copilot_tier === 'none' ? 'default' : 'outline'}>
-              {agent?.ai_copilot_tier === 'none' ? 'Subscribe' : 'Manage Plan'}
-            </Button>
+            <Link href="/copilot/subscribe">
+              <Button variant={agent?.ai_copilot_tier === 'none' ? 'default' : 'outline'}>
+                {agent?.ai_copilot_tier === 'none' ? 'Subscribe' : 'Manage Plan'}
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>
@@ -143,7 +215,12 @@ export default function SettingsPage() {
                 <p className="text-sm text-muted-foreground">Change your account password</p>
               </div>
             </div>
-            <Button variant="outline">Change</Button>
+            <Button
+              variant="outline"
+              onClick={() => toast.info('Password change will be sent to your email')}
+            >
+              Change
+            </Button>
           </div>
           <div className="flex items-center justify-between p-4 rounded-lg border">
             <div className="flex items-center gap-3">
@@ -153,7 +230,12 @@ export default function SettingsPage() {
                 <p className="text-sm text-muted-foreground">Add extra security to your account</p>
               </div>
             </div>
-            <Button variant="outline">Enable</Button>
+            <Button
+              variant="outline"
+              onClick={() => toast.info('Two-factor authentication setup coming soon')}
+            >
+              Enable
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -173,14 +255,26 @@ export default function SettingsPage() {
               <p className="font-medium">Email Notifications</p>
               <p className="text-sm text-muted-foreground">Receive updates via email</p>
             </div>
-            <Button variant="outline" size="sm">Configure</Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => toast.info('Email notification settings coming soon')}
+            >
+              Configure
+            </Button>
           </div>
           <div className="flex items-center justify-between p-4 rounded-lg border">
             <div>
               <p className="font-medium">Push Notifications</p>
               <p className="text-sm text-muted-foreground">Receive browser notifications</p>
             </div>
-            <Button variant="outline" size="sm">Configure</Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => toast.info('Push notification settings coming soon')}
+            >
+              Configure
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -195,10 +289,12 @@ export default function SettingsPage() {
           <div className="flex gap-2">
             <Input
               readOnly
-              value={`https://apex.com/join/${agent?.agent_code || ''}`}
+              value={`${typeof window !== 'undefined' ? window.location.origin : 'https://apex.com'}/join/${agent?.agent_code || ''}`}
               className="font-mono"
             />
-            <Button variant="outline">Copy</Button>
+            <Button variant="outline" onClick={handleCopyReferralLink}>
+              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            </Button>
           </div>
         </CardContent>
       </Card>

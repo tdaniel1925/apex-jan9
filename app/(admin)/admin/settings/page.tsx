@@ -26,6 +26,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { toast } from 'sonner';
+
+const DEFAULT_SETTINGS = {
+  companyName: 'Apex Affinity Group',
+  supportEmail: 'support@apexaffinity.com',
+  supportPhone: '(800) 555-0123',
+  commissionProcessingDay: '15',
+  autoApproveThreshold: '500',
+  currentPhase: '1',
+  autoApproveBonuses: true,
+  emailNotifications: true,
+  smsNotifications: false,
+  requireMfa: false,
+  sessionTimeout: '60',
+  aiCopilotEnabled: true,
+  defaultAiModel: 'claude-sonnet',
+};
 
 export default function AdminSettingsPage() {
   const [saving, setSaving] = useState(false);
@@ -58,9 +75,27 @@ export default function AdminSettingsPage() {
 
   const handleSave = async () => {
     setSaving(true);
-    // Simulate save
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setSaving(false);
+    try {
+      // Simulate save
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success('Settings saved successfully');
+    } catch {
+      toast.error('Failed to save settings');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleResetSettings = () => {
+    if (!confirm('Are you sure you want to reset all settings to their default values?')) return;
+    setSettings(DEFAULT_SETTINGS);
+    toast.success('Settings reset to defaults');
+  };
+
+  const handleClearData = () => {
+    if (!confirm('WARNING: This will permanently delete all system data. This action cannot be undone. Are you absolutely sure?')) return;
+    if (!confirm('This is your final warning. Type "DELETE" in the next prompt to confirm.')) return;
+    toast.error('Clear data functionality is disabled for safety');
   };
 
   return (
@@ -373,7 +408,7 @@ export default function AdminSettingsPage() {
                 Reset all settings to their default values
               </p>
             </div>
-            <Button variant="outline" className="text-destructive border-destructive hover:bg-destructive/10">
+            <Button variant="outline" className="text-destructive border-destructive hover:bg-destructive/10" onClick={handleResetSettings}>
               Reset Settings
             </Button>
           </div>
@@ -385,7 +420,7 @@ export default function AdminSettingsPage() {
                 Permanently delete all system data (irreversible)
               </p>
             </div>
-            <Button variant="destructive">
+            <Button variant="destructive" onClick={handleClearData}>
               Clear Data
             </Button>
           </div>
