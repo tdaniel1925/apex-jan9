@@ -405,7 +405,6 @@ export function buildSearchPoliciesRequest(options?: SearchOptions): string {
         <CarrierName/>
         <HoldingType/>
         <AnnualPremium/>
-        <ModalPremium/>
         <Status/>
         <ProductName/>
         <IssueDate/>

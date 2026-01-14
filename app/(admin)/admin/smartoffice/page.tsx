@@ -90,19 +90,21 @@ interface SmartOfficeAgent {
 interface SmartOfficePolicy {
   id: string;
   smartoffice_id: string;
+  smartoffice_agent_id: string | null;
+  primary_advisor_contact_id: string | null;
   policy_number: string | null;
   product_name: string | null;
-  carrier: string | null;
+  carrier_name: string | null;
+  holding_type: number | null;
+  holding_type_name: string | null;
+  annual_premium: number | null;
   status: string | null;
-  agent_id: string | null;
-  writing_agent_smartoffice_id: string | null;
-  premium: number | null;
   issue_date: string | null;
   effective_date: string | null;
+  writing_agent_id: string | null;
   raw_data: Record<string, unknown> | null;
   synced_at: string | null;
   created_at: string;
-  updated_at: string;
 }
 
 interface SyncLog {
@@ -1059,7 +1061,7 @@ export default function SmartOfficePage() {
                           <TableCell className="font-mono text-xs">{policy.smartoffice_id}</TableCell>
                           <TableCell className="font-medium">{policy.policy_number || '-'}</TableCell>
                           <TableCell>{policy.product_name || '-'}</TableCell>
-                          <TableCell>{policy.carrier || '-'}</TableCell>
+                          <TableCell>{policy.carrier_name || '-'}</TableCell>
                           <TableCell>
                             {policy.status && (
                               <Badge variant={policy.status === 'Active' || policy.status === 'In Force' ? 'default' : 'secondary'}>
@@ -1068,7 +1070,7 @@ export default function SmartOfficePage() {
                             )}
                           </TableCell>
                           <TableCell className="text-right font-mono">
-                            {policy.premium ? `$${policy.premium.toLocaleString()}` : '-'}
+                            {policy.annual_premium ? `$${policy.annual_premium.toLocaleString()}` : '-'}
                           </TableCell>
                           <TableCell className="whitespace-nowrap">
                             {policy.issue_date ? new Date(policy.issue_date).toLocaleDateString() : '-'}
@@ -1076,7 +1078,7 @@ export default function SmartOfficePage() {
                           <TableCell className="whitespace-nowrap">
                             {policy.effective_date ? new Date(policy.effective_date).toLocaleDateString() : '-'}
                           </TableCell>
-                          <TableCell className="font-mono text-xs">{policy.writing_agent_smartoffice_id || '-'}</TableCell>
+                          <TableCell className="font-mono text-xs">{policy.writing_agent_id || '-'}</TableCell>
                           <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
                             {policy.synced_at ? new Date(policy.synced_at).toLocaleString() : '-'}
                           </TableCell>
@@ -1539,7 +1541,7 @@ export default function SmartOfficePage() {
                 </div>
                 <div>
                   <Label className="text-xs text-muted-foreground">Carrier</Label>
-                  <div>{selectedPolicy.carrier || '-'}</div>
+                  <div>{selectedPolicy.carrier_name || '-'}</div>
                 </div>
                 <div>
                   <Label className="text-xs text-muted-foreground">Status</Label>
@@ -1552,8 +1554,8 @@ export default function SmartOfficePage() {
                   </div>
                 </div>
                 <div>
-                  <Label className="text-xs text-muted-foreground">Premium</Label>
-                  <div className="font-mono">{selectedPolicy.premium ? `$${selectedPolicy.premium.toLocaleString()}` : '-'}</div>
+                  <Label className="text-xs text-muted-foreground">Annual Premium</Label>
+                  <div className="font-mono">{selectedPolicy.annual_premium ? `$${selectedPolicy.annual_premium.toLocaleString()}` : '-'}</div>
                 </div>
                 <div>
                   <Label className="text-xs text-muted-foreground">Issue Date</Label>
@@ -1564,12 +1566,16 @@ export default function SmartOfficePage() {
                   <div className="text-sm">{selectedPolicy.effective_date ? new Date(selectedPolicy.effective_date).toLocaleDateString() : '-'}</div>
                 </div>
                 <div>
-                  <Label className="text-xs text-muted-foreground">Writing Agent (SmartOffice ID)</Label>
-                  <div className="font-mono text-sm">{selectedPolicy.writing_agent_smartoffice_id || '-'}</div>
+                  <Label className="text-xs text-muted-foreground">Writing Agent ID</Label>
+                  <div className="font-mono text-sm">{selectedPolicy.writing_agent_id || '-'}</div>
                 </div>
                 <div>
-                  <Label className="text-xs text-muted-foreground">Linked Agent ID</Label>
-                  <div className="font-mono text-sm">{selectedPolicy.agent_id || '-'}</div>
+                  <Label className="text-xs text-muted-foreground">Primary Advisor Contact ID</Label>
+                  <div className="font-mono text-sm">{selectedPolicy.primary_advisor_contact_id || '-'}</div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Holding Type</Label>
+                  <div className="text-sm">{selectedPolicy.holding_type_name || selectedPolicy.holding_type || '-'}</div>
                 </div>
                 <div>
                   <Label className="text-xs text-muted-foreground">Synced At</Label>

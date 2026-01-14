@@ -41,11 +41,29 @@ export async function GET(request: NextRequest) {
     if (type === 'policies') {
       const policyResult = parsePolicySearchResult(result.parsed);
       parsedItems = policyResult.items;
+
+      const firstPolicy = policyResult.items[0];
       parserDebug = {
         total: policyResult.total,
         more: policyResult.more,
         itemCount: policyResult.items.length,
-        firstItemRaw: policyResult.items[0]?.rawData || null,
+        firstPolicy: firstPolicy ? {
+          id: firstPolicy.id,
+          policyNumber: firstPolicy.policyNumber,
+          carrierName: firstPolicy.carrierName,
+          productName: firstPolicy.productName,
+          holdingType: firstPolicy.holdingType,
+          annualPremium: firstPolicy.annualPremium,
+          status: firstPolicy.status,
+          issueDate: firstPolicy.issueDate,
+          effectiveDate: firstPolicy.effectiveDate,
+          primaryAdvisorContactId: firstPolicy.primaryAdvisorContactId,
+          writingAgentId: firstPolicy.writingAgentId,
+        } : null,
+        firstPolicyRaw: firstPolicy?.rawData || null,
+        // Show the raw search data structure for debugging
+        searchDataKeys: result.parsed?.data ? Object.keys(result.parsed.data as object) : [],
+        searchDataSample: result.parsed?.data || null,
       };
     } else {
       const agentResult = parseAgentSearchResult(result.parsed);
@@ -53,10 +71,16 @@ export async function GET(request: NextRequest) {
 
       // Debug info to understand the parsing
       const firstAgent = agentResult.items[0];
+
+      // Deep dive into raw data structure
+      const rawAgent = firstAgent?.rawData;
+      const rawContact = rawAgent?.Contact;
+
       parserDebug = {
         total: agentResult.total,
         more: agentResult.more,
         itemCount: agentResult.items.length,
+        // Parsed/normalized agent
         firstAgent: firstAgent ? {
           id: firstAgent.id,
           contactId: firstAgent.contactId,
@@ -68,7 +92,28 @@ export async function GET(request: NextRequest) {
           clientType: firstAgent.clientType,
           status: firstAgent.status,
         } : null,
-        firstAgentRaw: firstAgent?.rawData || null,
+        // Raw agent from API (after XML parse)
+        firstAgentRaw: rawAgent || null,
+        // Contact structure analysis
+        contactAnalysis: rawContact ? {
+          hasContact: true,
+          contactKeys: Object.keys(rawContact),
+          firstName: rawContact.FirstName,
+          firstNameType: typeof rawContact.FirstName,
+          lastName: rawContact.LastName,
+          lastNameType: typeof rawContact.LastName,
+          taxId: rawContact.TaxID,
+          clientType: rawContact.ClientType,
+          hasWebAddresses: !!rawContact.WebAddresses,
+          webAddressesKeys: rawContact.WebAddresses ? Object.keys(rawContact.WebAddresses) : [],
+          hasPhones: !!rawContact.Phones,
+          phonesKeys: rawContact.Phones ? Object.keys(rawContact.Phones) : [],
+        } : {
+          hasContact: false,
+          reason: 'Contact property is missing or undefined in raw agent',
+        },
+        // Show the raw search data structure for debugging
+        searchDataKeys: result.parsed?.data ? Object.keys(result.parsed.data as object) : [],
       };
     }
 
