@@ -185,6 +185,22 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      // Build agent contact ID map for fast lookup during policy sync
+      // This avoids N queries for N policies
+      const { data: agentMappings } = await supabase
+        .from('smartoffice_agents')
+        .select('id, contact_id')
+        .not('contact_id', 'is', null);
+
+      const agentContactIdMap = new Map<string, string>();
+      if (agentMappings) {
+        for (const mapping of agentMappings) {
+          if (mapping.contact_id) {
+            agentContactIdMap.set(mapping.contact_id, mapping.id);
+          }
+        }
+      }
+
       // Stage 3: Fetch policies from SmartOffice (with progress for each page)
       await sendProgress({
         stage: 'fetching_policies',
@@ -248,7 +264,7 @@ export async function POST(request: NextRequest) {
       let policiesSynced = 0;
       for (const policy of policies) {
         try {
-          const created = await upsertPolicy(supabase, policy);
+          const created = await upsertPolicy(supabase, policy, agentContactIdMap);
           result.policies.synced++;
           if (created) result.policies.created++;
         } catch (error) {
@@ -380,6 +396,7 @@ async function upsertAgent(
   supabase: ReturnType<typeof createUntypedAdminClient>,
   agent: SmartOfficeAgent
 ): Promise<{ created: boolean; updated: boolean }> {
+  const now = new Date().toISOString();
   const row = {
     smartoffice_id: agent.id,
     contact_id: agent.contactId,
@@ -392,40 +409,35 @@ async function upsertAgent(
     status: agent.status,
     hierarchy_id: agent.hierarchyId,
     raw_data: agent.rawData,
+    synced_at: now,
+    updated_at: now,
   };
 
-  const { data: existing } = await supabase
+  // Use upsert - single query instead of check + insert/update
+  const { data, error } = await supabase
     .from('smartoffice_agents')
-    .select('id')
-    .eq('smartoffice_id', agent.id)
+    .upsert(row, { onConflict: 'smartoffice_id', ignoreDuplicates: false })
+    .select('created_at, updated_at')
     .single();
 
-  if (existing) {
-    await supabase
-      .from('smartoffice_agents')
-      .update({ ...row, synced_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-      .eq('smartoffice_id', agent.id);
-    return { created: false, updated: true };
-  } else {
-    await supabase.from('smartoffice_agents').insert(row);
-    return { created: true, updated: false };
-  }
+  if (error) throw error;
+
+  // If created_at equals updated_at (within a second), it's a new record
+  const isNew = data && Math.abs(new Date(data.created_at).getTime() - new Date(data.updated_at).getTime()) < 1000;
+  return { created: isNew || false, updated: !isNew };
 }
 
 async function upsertPolicy(
   supabase: ReturnType<typeof createUntypedAdminClient>,
-  policy: SmartOfficePolicy
+  policy: SmartOfficePolicy,
+  agentContactIdMap: Map<string, string> // Map of contact_id -> smartoffice_agent internal id
 ): Promise<boolean> {
-  let smartofficeAgentId: string | null = null;
-  if (policy.primaryAdvisorContactId) {
-    const { data: agent } = await supabase
-      .from('smartoffice_agents')
-      .select('id')
-      .eq('contact_id', policy.primaryAdvisorContactId)
-      .single();
-    smartofficeAgentId = agent?.id || null;
-  }
+  // Look up agent ID from pre-fetched map instead of querying DB each time
+  const smartofficeAgentId = policy.primaryAdvisorContactId
+    ? agentContactIdMap.get(policy.primaryAdvisorContactId) || null
+    : null;
 
+  const now = new Date().toISOString();
   const row = {
     smartoffice_id: policy.id,
     smartoffice_agent_id: smartofficeAgentId,
@@ -436,22 +448,19 @@ async function upsertPolicy(
     holding_type_name: policy.holdingTypeName,
     annual_premium: policy.annualPremium,
     raw_data: policy.rawData,
+    synced_at: now,
   };
 
-  const { data: existing } = await supabase
+  // Use upsert - single query instead of check + insert/update
+  const { data, error } = await supabase
     .from('smartoffice_policies')
-    .select('id')
-    .eq('smartoffice_id', policy.id)
+    .upsert(row, { onConflict: 'smartoffice_id', ignoreDuplicates: false })
+    .select('created_at')
     .single();
 
-  if (existing) {
-    await supabase
-      .from('smartoffice_policies')
-      .update({ ...row, synced_at: new Date().toISOString() })
-      .eq('smartoffice_id', policy.id);
-    return false;
-  } else {
-    await supabase.from('smartoffice_policies').insert(row);
-    return true;
-  }
+  if (error) throw error;
+
+  // Check if it was newly created (created_at within last few seconds)
+  const isNew = data && (Date.now() - new Date(data.created_at).getTime()) < 5000;
+  return isNew || false;
 }
