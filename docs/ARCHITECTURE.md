@@ -344,7 +344,7 @@ export const metadata: Metadata = {
 
 | Aspect | Marketing Site | Replicated Sites |
 |--------|---------------|------------------|
-| URL | apexaffinity.com/* | /join/[agentCode]/* |
+| URL | theapexway.net/* | /join/[agentCode]/* |
 | Purpose | Corporate, SEO, general public | Agent-specific lead capture |
 | Layout | Shared marketing layout | Agent-branded layout |
 | Legal pages | Corporate versions | Agent-attributed versions |

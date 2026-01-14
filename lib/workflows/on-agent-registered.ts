@@ -35,12 +35,27 @@ export async function onAgentRegistered(
   const supabase = createAdminClient();
   const errors: string[] = [];
   let matrixPath: string | null = null;
+  let effectiveSponsorId = sponsorId;
 
   try {
     // ================================================
     // 1. PLACE IN MATRIX
     // ================================================
-    if (sponsorId) {
+
+    // If no sponsor provided, use FC Inc. (root) as the default sponsor
+    if (!effectiveSponsorId) {
+      const { data: fcAgent } = await supabase
+        .from('agents')
+        .select('id')
+        .eq('agent_code', 'FC-INC-001')
+        .single();
+
+      if (fcAgent) {
+        effectiveSponsorId = (fcAgent as { id: string }).id;
+      }
+    }
+
+    if (effectiveSponsorId) {
       // Get all existing matrix positions
       const { data: existingPositions, error: positionsError } = await supabase
         .from('matrix_positions')
@@ -52,7 +67,7 @@ export async function onAgentRegistered(
         // Find next available position under sponsor
         const placement = findNextAvailablePosition(
           existingPositions,
-          sponsorId
+          effectiveSponsorId
         );
 
         if (placement) {
@@ -73,16 +88,16 @@ export async function onAgentRegistered(
         }
       }
     } else {
-      // No sponsor - this is a root agent
-      // Check if there's already a root
-      const { data: rootPosition, error: rootError } = await supabase
+      // No sponsor AND no FC Inc. found - create legacy root position
+      // This should only happen if FC Inc. hasn't been seeded yet
+      const { data: rootPosition } = await supabase
         .from('matrix_positions')
         .select('*')
         .eq('level', 0)
         .single();
 
       if (!rootPosition) {
-        // Create root position
+        // Create root position (legacy mode)
         const { error: insertError } = await supabase
           .from('matrix_positions')
           .insert({
@@ -99,7 +114,7 @@ export async function onAgentRegistered(
           matrixPath = '1';
         }
       } else {
-        errors.push('Root position already exists');
+        errors.push('Root position already exists and no sponsor provided');
       }
     }
 

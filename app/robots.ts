@@ -5,7 +5,7 @@
 
 import { MetadataRoute } from 'next';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://apexaffinity.com';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://theapexway.net';
 
 export default function robots(): MetadataRoute.Robots {
   return {

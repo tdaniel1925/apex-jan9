@@ -1,6 +1,11 @@
 /**
  * Matrix Engine
  * Single source of truth for 5x7 forced matrix operations
+ *
+ * Matrix Structure with Founders Club:
+ * - Level 0: FC Inc. (root) at position 0, path '0'
+ * - Level 1: Positions 1-5 directly under FC Inc., paths '0.1' through '0.5'
+ * - Level 2+: Regular agents with spillover placement
  */
 
 import { MatrixPosition, Agent } from '../types/database';
@@ -9,6 +14,10 @@ import { MatrixPosition, Agent } from '../types/database';
 export const MATRIX_WIDTH = 5;
 export const MATRIX_DEPTH = 7;
 export const MAX_POSITIONS = Math.pow(MATRIX_WIDTH, MATRIX_DEPTH + 1) - 1; // 97,656 positions
+
+// Root configuration
+export const ROOT_PATH = '0';
+export const FC_INC_AGENT_CODE = 'FC-INC-001';
 
 export interface MatrixNode {
   position: MatrixPosition;

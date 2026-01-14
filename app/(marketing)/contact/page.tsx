@@ -94,13 +94,13 @@ export default function ContactPage() {
                     <div>
                       <h3 className="font-semibold mb-1">Email</h3>
                       <p className="text-sm text-muted-foreground">
-                        <a href="mailto:info@apexaffinity.com" className="hover:text-foreground">
-                          info@apexaffinity.com
+                        <a href="mailto:info@theapexway.net" className="hover:text-foreground">
+                          info@theapexway.net
                         </a>
                       </p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        <a href="mailto:support@apexaffinity.com" className="hover:text-foreground">
-                          support@apexaffinity.com
+                        <a href="mailto:support@theapexway.net" className="hover:text-foreground">
+                          support@theapexway.net
                         </a>
                       </p>
                     </div>

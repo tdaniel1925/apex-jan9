@@ -15,6 +15,37 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  const { pathname } = request.nextUrl;
+
+  // Handle /join/[agentCode] to /team/[username] redirects
+  // This preserves SEO by redirecting old URLs to new canonical URLs
+  const joinMatch = pathname.match(/^\/join\/([A-Za-z0-9]+)(\/.*)?$/);
+  if (joinMatch) {
+    const agentCode = joinMatch[1];
+    const subPath = joinMatch[2] || '';
+
+    // Quick lookup to check if agent has username
+    try {
+      const apiResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/agents?agent_code=eq.${agentCode}&select=username`,
+        {
+          headers: {
+            'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
+          },
+        }
+      );
+      const agents = await apiResponse.json();
+      if (agents && agents.length > 0 && agents[0].username) {
+        // Redirect to /team/[username] with same sub-path
+        const newUrl = new URL(`/team/${agents[0].username}${subPath}`, request.url);
+        return NextResponse.redirect(newUrl, 301); // 301 = permanent redirect for SEO
+      }
+    } catch {
+      // If lookup fails, continue to /join/ route (fallback)
+    }
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -47,10 +78,8 @@ export async function middleware(request: NextRequest) {
   // Fast session check without refreshing - NO DATABASE QUERIES
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
-
   // Public routes (no auth required)
-  const publicRoutes = ['/login', '/signup', '/admin-login', '/join'];
+  const publicRoutes = ['/login', '/signup', '/admin-login', '/join', '/team'];
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route)) || pathname === '/';
 
   // Admin routes

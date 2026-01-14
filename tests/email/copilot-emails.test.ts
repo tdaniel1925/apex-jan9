@@ -11,7 +11,7 @@ describe('Copilot Email Templates', () => {
         agentName: 'John Doe',
         daysRemaining: 3,
         trialEndDate: 'January 15, 2026',
-        upgradeUrl: 'https://apexaffinity.com/copilot/subscribe',
+        upgradeUrl: 'https://theapexway.net/copilot/subscribe',
       };
 
       expect(props.agentName).toBeDefined();
@@ -27,7 +27,7 @@ describe('Copilot Email Templates', () => {
     });
 
     it('should include upgrade CTA', () => {
-      const upgradeUrl = 'https://apexaffinity.com/copilot/subscribe';
+      const upgradeUrl = 'https://theapexway.net/copilot/subscribe';
       expect(upgradeUrl).toBeDefined();
       expect(upgradeUrl.length).toBeGreaterThan(0);
     });
@@ -41,7 +41,7 @@ describe('Copilot Email Templates', () => {
         limitMessages: 50,
         percentUsed: 90,
         currentTier: 'Basic',
-        upgradeUrl: 'https://apexaffinity.com/copilot/subscribe',
+        upgradeUrl: 'https://theapexway.net/copilot/subscribe',
       };
 
       expect(props.usedMessages).toBeLessThanOrEqual(props.limitMessages);
@@ -78,8 +78,8 @@ describe('Copilot Email Templates', () => {
         isTrialing: true,
         trialDays: 7,
         dailyLimit: 20,
-        dashboardUrl: 'https://apexaffinity.com/copilot',
-        widgetUrl: 'https://apexaffinity.com/copilot/widget',
+        dashboardUrl: 'https://theapexway.net/copilot',
+        widgetUrl: 'https://theapexway.net/copilot/widget',
       };
 
       expect(props.isTrialing).toBe(true);
@@ -93,8 +93,8 @@ describe('Copilot Email Templates', () => {
         isTrialing: false,
         trialDays: undefined,
         dailyLimit: 200,
-        dashboardUrl: 'https://apexaffinity.com/copilot',
-        widgetUrl: 'https://apexaffinity.com/copilot/widget',
+        dashboardUrl: 'https://theapexway.net/copilot',
+        widgetUrl: 'https://theapexway.net/copilot/widget',
       };
 
       expect(props.isTrialing).toBe(false);
@@ -158,8 +158,8 @@ describe('Copilot Email Templates', () => {
     });
 
     it('should include support contact', () => {
-      const supportEmail = 'support@apexaffinity.com';
-      expect(supportEmail).toContain('@apexaffinity.com');
+      const supportEmail = 'support@theapexway.net';
+      expect(supportEmail).toContain('@theapexway.net');
     });
 
     it('should have call-to-action buttons', () => {
@@ -171,18 +171,18 @@ describe('Copilot Email Templates', () => {
 
   describe('URL Validation', () => {
     it('should have valid dashboard URL', () => {
-      const dashboardUrl = 'https://apexaffinity.com/copilot';
+      const dashboardUrl = 'https://theapexway.net/copilot';
       expect(dashboardUrl).toMatch(/^https?:\/\//);
     });
 
     it('should have valid widget URL', () => {
-      const widgetUrl = 'https://apexaffinity.com/copilot/widget';
+      const widgetUrl = 'https://theapexway.net/copilot/widget';
       expect(widgetUrl).toMatch(/^https?:\/\//);
       expect(widgetUrl).toContain('/widget');
     });
 
     it('should have valid upgrade URL', () => {
-      const upgradeUrl = 'https://apexaffinity.com/copilot/subscribe';
+      const upgradeUrl = 'https://theapexway.net/copilot/subscribe';
       expect(upgradeUrl).toMatch(/^https?:\/\//);
       expect(upgradeUrl).toContain('/subscribe');
     });

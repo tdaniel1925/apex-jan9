@@ -13,6 +13,7 @@ import { Logo } from '@/components/ui/logo';
 interface ReplicatedSiteHeaderProps {
   agent: Agent;
   agentCode: string;
+  basePath?: 'join' | 'team'; // 'join' for legacy agent_code, 'team' for username
 }
 
 // Navigation - internal links stay within replicated site, external go to main site
@@ -26,9 +27,9 @@ const navigation = [
   { name: 'Contact', href: '/contact', internal: true },
 ];
 
-export function ReplicatedSiteHeader({ agent, agentCode }: ReplicatedSiteHeaderProps) {
+export function ReplicatedSiteHeader({ agent, agentCode, basePath: basePathProp = 'join' }: ReplicatedSiteHeaderProps) {
   const pathname = usePathname();
-  const basePath = `/join/${agentCode}`;
+  const basePath = `/${basePathProp}/${agentCode}`;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

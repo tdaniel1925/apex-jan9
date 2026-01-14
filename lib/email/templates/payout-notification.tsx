@@ -32,7 +32,7 @@ export function PayoutNotificationEmail({
   status = 'processing',
   paymentMethod = 'Bank Transfer',
   expectedDate,
-  viewUrl = 'https://apexaffinity.com/agent/wallet',
+  viewUrl = 'https://theapexway.net/agent/wallet',
 }: PayoutNotificationEmailProps) {
   const isCompleted = status === 'completed';
 
@@ -79,7 +79,7 @@ export function PayoutNotificationEmail({
           <Text style={footer}>
             Apex Affinity Group
             <br />
-            Questions? Reply to this email or contact support@apexaffinity.com
+            Questions? Reply to this email or contact support@theapexway.net
           </Text>
         </Container>
       </Body>

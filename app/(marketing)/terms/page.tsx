@@ -266,7 +266,7 @@ export default function TermsOfServicePage() {
               Questions about these Terms? Contact us:
             </p>
             <div className="text-muted-foreground">
-              <p><strong>Email:</strong> legal@apexaffinity.com</p>
+              <p><strong>Email:</strong> legal@theapexway.net</p>
               <p><strong>Mail:</strong> Apex Affinity Group, Attn: Legal Department, Dallas, TX</p>
             </div>
           </CardContent>

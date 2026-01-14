@@ -13,7 +13,7 @@ interface LayoutProps {
 export async function generateMetadata({ params }: { params: Promise<{ agentCode: string }> }): Promise<Metadata> {
   const { agentCode } = await params;
   const supabase = await createServerSupabaseClient();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://apexaffinity.com';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theapexway.net';
 
   const { data: agentData } = await supabase
     .from('agents')
@@ -69,7 +69,7 @@ export async function generateMetadata({ params }: { params: Promise<{ agentCode
       title,
       description,
       images: ogImage ? [ogImage] : undefined,
-      creator: '@ApexAffinity',
+      creator: '@TheApexWay',
     },
     alternates: {
       canonical: pageUrl,
@@ -104,6 +104,9 @@ export default async function ReplicatedSiteLayout({ children, params }: LayoutP
   }
 
   const agent = agentData as Agent;
+
+  // Note: Redirect from /join/[agentCode] to /team/[username] is handled in middleware
+  // This layout only runs if agent doesn't have a username (legacy support)
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

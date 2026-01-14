@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
         try {
           await resend.emails.send({
-            from: process.env.EMAIL_FROM || 'Apex Affinity Group <noreply@apexaffinity.com>',
+            from: process.env.EMAIL_FROM || 'Apex Affinity Group <noreply@theapexway.net>',
             to: email,
             subject: 'Sign in to Apex Admin Portal',
             html: `

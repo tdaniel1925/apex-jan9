@@ -231,7 +231,7 @@ export default function PrivacyPolicyPage() {
               </div>
             </div>
             <p className="text-muted-foreground mt-4">
-              To exercise any of these rights, contact us at privacy@apexaffinity.com.
+              To exercise any of these rights, contact us at privacy@theapexway.net.
             </p>
           </CardContent>
         </Card>
@@ -299,7 +299,7 @@ export default function PrivacyPolicyPage() {
               If you have questions about this Privacy Policy or our data practices:
             </p>
             <div className="text-muted-foreground">
-              <p><strong>Email:</strong> privacy@apexaffinity.com</p>
+              <p><strong>Email:</strong> privacy@theapexway.net</p>
               <p><strong>Mail:</strong> Apex Affinity Group, Attn: Privacy Officer, Dallas, TX</p>
             </div>
           </CardContent>

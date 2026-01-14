@@ -30,7 +30,7 @@ import { toast } from 'sonner';
 
 const DEFAULT_SETTINGS = {
   companyName: 'Apex Affinity Group',
-  supportEmail: 'support@apexaffinity.com',
+  supportEmail: 'support@theapexway.net',
   supportPhone: '(800) 555-0123',
   commissionProcessingDay: '15',
   autoApproveThreshold: '500',
@@ -49,7 +49,7 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState({
     // Company Settings
     companyName: 'Apex Affinity Group',
-    supportEmail: 'support@apexaffinity.com',
+    supportEmail: 'support@theapexway.net',
     supportPhone: '(800) 555-0123',
 
     // Commission Settings

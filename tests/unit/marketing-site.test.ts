@@ -166,12 +166,12 @@ describe('Marketing Site Pages', () => {
     test('has correct contact info', () => {
       const contactInfo = {
         phone: '(888) 555-0123',
-        email: 'info@apexaffinity.com',
-        supportEmail: 'support@apexaffinity.com',
+        email: 'info@theapexway.net',
+        supportEmail: 'support@theapexway.net',
         location: 'Dallas, Texas',
       };
 
-      expect(contactInfo.email).toBe('info@apexaffinity.com');
+      expect(contactInfo.email).toBe('info@theapexway.net');
       expect(contactInfo.location).toContain('Dallas');
     });
 
@@ -213,7 +213,7 @@ describe('SEO Configuration', () => {
   test('Twitter card is configured', () => {
     const twitterConfig = {
       card: 'summary_large_image',
-      creator: '@ApexAffinity',
+      creator: '@TheApexWay',
     };
 
     expect(twitterConfig.card).toBe('summary_large_image');

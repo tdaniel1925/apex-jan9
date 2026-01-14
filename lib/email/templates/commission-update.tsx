@@ -28,7 +28,7 @@ export function CommissionUpdateEmail({
   agentName = 'Agent',
   amount = 0,
   period = 'Current Period',
-  viewUrl = 'https://apexaffinity.com/agent/wallet',
+  viewUrl = 'https://theapexway.net/agent/wallet',
 }: CommissionUpdateEmailProps) {
   return (
     <Html>
@@ -55,7 +55,7 @@ export function CommissionUpdateEmail({
           <Text style={footer}>
             Apex Affinity Group
             <br />
-            Questions? Reply to this email or contact support@apexaffinity.com
+            Questions? Reply to this email or contact support@theapexway.net
           </Text>
         </Container>
       </Body>

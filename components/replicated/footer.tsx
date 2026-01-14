@@ -6,13 +6,14 @@ import { Logo } from '@/components/ui/logo';
 interface ReplicatedSiteFooterProps {
   agent: Agent;
   agentCode?: string;
+  basePath?: 'join' | 'team'; // 'join' for legacy agent_code, 'team' for username
 }
 
-export function ReplicatedSiteFooter({ agent, agentCode }: ReplicatedSiteFooterProps) {
+export function ReplicatedSiteFooter({ agent, agentCode, basePath: basePathProp = 'join' }: ReplicatedSiteFooterProps) {
   const currentYear = new Date().getFullYear();
   // Use agent code from props or fall back to agent's code
   const code = agentCode || agent.agent_code;
-  const basePath = `/join/${code}`;
+  const basePath = `/${basePathProp}/${code}`;
 
   return (
     <footer className="bg-muted/50 border-t">
@@ -25,19 +26,19 @@ export function ReplicatedSiteFooter({ agent, agentCode }: ReplicatedSiteFooterP
               Building financial futures through trusted insurance solutions and entrepreneurial opportunities since 2018.
             </p>
             <div className="flex gap-4">
-              <a href="https://facebook.com/apexaffinity" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <a href="https://facebook.com/theapexway" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Facebook className="h-5 w-5" />
                 <span className="sr-only">Facebook</span>
               </a>
-              <a href="https://linkedin.com/company/apexaffinity" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <a href="https://linkedin.com/company/theapexway" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Linkedin className="h-5 w-5" />
                 <span className="sr-only">LinkedIn</span>
               </a>
-              <a href="https://twitter.com/apexaffinity" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <a href="https://twitter.com/theapexway" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Twitter className="h-5 w-5" />
                 <span className="sr-only">Twitter</span>
               </a>
-              <a href="https://instagram.com/apexaffinity" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <a href="https://instagram.com/theapexway" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Instagram className="h-5 w-5" />
                 <span className="sr-only">Instagram</span>
               </a>

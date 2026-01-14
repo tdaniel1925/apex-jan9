@@ -10,6 +10,7 @@ import { BonusApprovalEmail } from './templates/bonus-approval';
 import { PayoutNotificationEmail } from './templates/payout-notification';
 import { WelcomeAgentEmail } from './templates/welcome-agent';
 import { NewLeadNotificationEmail } from './templates/new-lead-notification';
+import { FoundersWelcomeEmail } from './templates/founders-welcome';
 
 export interface EmailResult {
   success: boolean;
@@ -171,7 +172,7 @@ export async function sendWelcomeEmail(params: {
 }): Promise<EmailResult> {
   try {
     const { to, agentName, agentCode, sponsorName } = params;
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://apexaffinity.com';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theapexway.net';
 
     const html = await render(
       WelcomeAgentEmail({
@@ -221,7 +222,7 @@ export async function sendNewLeadNotification(params: {
 }): Promise<EmailResult> {
   try {
     const { to, agentName, leadName, leadEmail, leadPhone, leadMessage, source } = params;
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://apexaffinity.com';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theapexway.net';
 
     const html = await render(
       NewLeadNotificationEmail({
@@ -251,6 +252,52 @@ export async function sendNewLeadNotification(params: {
     return { success: true, messageId: data?.id };
   } catch (error) {
     console.error('Error sending new lead notification:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Send Founders Club welcome email
+ * Sent when someone is added as a Founder Partner
+ */
+export async function sendFoundersWelcomeEmail(params: {
+  to: string;
+  founderName: string;
+  slotNumber: number;
+  sharePercentage?: number;
+}): Promise<EmailResult> {
+  try {
+    const { to, founderName, slotNumber, sharePercentage = 25 } = params;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theapexway.net';
+
+    const html = await render(
+      FoundersWelcomeEmail({
+        founderName,
+        slotNumber,
+        sharePercentage,
+        dashboardUrl: `${appUrl}/dashboard`,
+      })
+    );
+
+    const { data, error } = await resend.emails.send({
+      from: EMAIL_CONFIG.from,
+      to,
+      subject: `Welcome to the Founders Club – You're Part of History`,
+      html,
+    });
+
+    if (error) {
+      console.error('Failed to send founders welcome email:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('Founders welcome email sent:', { to, slotNumber, messageId: data?.id });
+    return { success: true, messageId: data?.id };
+  } catch (error) {
+    console.error('Error sending founders welcome email:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

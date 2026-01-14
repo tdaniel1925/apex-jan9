@@ -8,6 +8,7 @@ import { Rank } from '../config/ranks';
 
 // Commission rates for retail products by rank
 const RETAIL_COMMISSION_RATES: Record<Rank, number> = {
+  founder: 0, // Founders only earn overrides, not direct commissions
   pre_associate: 0.10, // 10%
   associate: 0.12, // 12%
   sr_associate: 0.13, // 13%

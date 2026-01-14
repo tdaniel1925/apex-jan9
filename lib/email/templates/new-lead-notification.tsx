@@ -35,7 +35,7 @@ export function NewLeadNotificationEmail({
   leadPhone,
   leadMessage,
   source = 'Your replicated site',
-  viewUrl = 'https://apexaffinity.com/dashboard/contacts',
+  viewUrl = 'https://theapexway.net/dashboard/contacts',
 }: NewLeadNotificationEmailProps) {
   return (
     <Html>

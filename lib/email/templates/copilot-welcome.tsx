@@ -33,8 +33,8 @@ export function CopilotWelcomeEmail({
   isTrialing = true,
   trialDays = 7,
   dailyLimit = 50,
-  dashboardUrl = 'https://apexaffinity.com/copilot',
-  widgetUrl = 'https://apexaffinity.com/copilot/widget',
+  dashboardUrl = 'https://theapexway.net/copilot',
+  widgetUrl = 'https://theapexway.net/copilot/widget',
 }: CopilotWelcomeEmailProps) {
   return (
     <Html>
@@ -112,7 +112,7 @@ export function CopilotWelcomeEmail({
           <Text style={footer}>
             Apex Affinity Group
             <br />
-            Need help? Reply to this email or contact support@apexaffinity.com
+            Need help? Reply to this email or contact support@theapexway.net
           </Text>
         </Container>
       </Body>

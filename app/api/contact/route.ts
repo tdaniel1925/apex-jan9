@@ -44,8 +44,8 @@ export async function POST(request: Request) {
 
     // Send notification email to Apex team
     const { error: sendError } = await resend.emails.send({
-      from: 'Apex Contact Form <noreply@apexaffinity.com>',
-      to: process.env.CONTACT_EMAIL || 'info@apexaffinity.com',
+      from: 'Apex Contact Form <noreply@theapexway.net>',
+      to: process.env.CONTACT_EMAIL || 'info@theapexway.net',
       replyTo: email,
       subject: `[Contact Form] ${subjectLine} - ${name}`,
       html: `
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
 
     // Send auto-reply to the sender
     await resend.emails.send({
-      from: 'Apex Affinity Group <noreply@apexaffinity.com>',
+      from: 'Apex Affinity Group <noreply@theapexway.net>',
       to: email,
       subject: 'Thank you for contacting Apex Affinity Group',
       html: `
@@ -87,15 +87,15 @@ export async function POST(request: Request) {
         </blockquote>
         <p>In the meantime, feel free to explore:</p>
         <ul>
-          <li><a href="https://apexaffinity.com/opportunity">Our Career Opportunity</a></li>
-          <li><a href="https://apexaffinity.com/carriers">Our Carrier Partners</a></li>
-          <li><a href="https://apexaffinity.com/faq">Frequently Asked Questions</a></li>
+          <li><a href="https://theapexway.net/opportunity">Our Career Opportunity</a></li>
+          <li><a href="https://theapexway.net/carriers">Our Carrier Partners</a></li>
+          <li><a href="https://theapexway.net/faq">Frequently Asked Questions</a></li>
         </ul>
         <p>Best regards,<br />The Apex Affinity Group Team</p>
         <hr />
         <p style="color: #666; font-size: 12px;">
           Apex Affinity Group | Dallas, Texas<br />
-          <a href="https://apexaffinity.com">apexaffinity.com</a>
+          <a href="https://theapexway.net">theapexway.net</a>
         </p>
       `,
     });

@@ -32,9 +32,9 @@ export function WelcomeAgentEmail({
   agentName = 'New Agent',
   agentCode = 'APX000000',
   sponsorName = 'Your Sponsor',
-  replicatedSiteUrl = 'https://apexaffinity.com/join/APX000000',
-  dashboardUrl = 'https://apexaffinity.com/dashboard',
-  trainingUrl = 'https://apexaffinity.com/dashboard/training',
+  replicatedSiteUrl = 'https://theapexway.net/join/APX000000',
+  dashboardUrl = 'https://theapexway.net/dashboard',
+  trainingUrl = 'https://theapexway.net/dashboard/training',
 }: WelcomeAgentEmailProps) {
   return (
     <Html>
@@ -167,12 +167,12 @@ export function WelcomeAgentEmail({
             <br />
             Building Financial Freedom, One Family at a Time
             <br /><br />
-            <Link href="https://apexaffinity.com" style={footerLink}>
-              apexaffinity.com
+            <Link href="https://theapexway.net" style={footerLink}>
+              theapexway.net
             </Link>
             {' | '}
-            <Link href="mailto:support@apexaffinity.com" style={footerLink}>
-              support@apexaffinity.com
+            <Link href="mailto:support@theapexway.net" style={footerLink}>
+              support@theapexway.net
             </Link>
           </Text>
         </Container>

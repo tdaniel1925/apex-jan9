@@ -70,6 +70,14 @@ export const DEFAULT_QUALIFICATION_CONFIG: QualificationConfig = {
 };
 
 /**
+ * Check if a rank is exempt from qualification requirements
+ * Founders are always qualified - they only earn overrides
+ */
+export function isRankExemptFromQualification(rank: Rank): boolean {
+  return rank === 'founder';
+}
+
+/**
  * Check if an agent meets requirements for a specific rank
  */
 export function checkRankRequirements(
@@ -80,6 +88,15 @@ export function checkRankRequirements(
   requirements: Record<string, { required: number; actual: number; met: boolean }>;
   percentageMet: number;
 } {
+  // Founders are always qualified - exempt from all requirements
+  if (isRankExemptFromQualification(rank)) {
+    return {
+      met: true,
+      requirements: {},
+      percentageMet: 1,
+    };
+  }
+
   const config = RANK_CONFIG[rank];
   const req = config.requirements;
 
@@ -148,6 +165,17 @@ export function determinePaidAsRank(
   message: string;
 } {
   const titleRank = agent.rank;
+
+  // Founders are always qualified - exempt from all requirements
+  if (isRankExemptFromQualification(titleRank)) {
+    return {
+      paidAsRank: titleRank,
+      status: 'qualified',
+      usedGracePeriod: false,
+      message: `Founder rank - exempt from qualification requirements`,
+    };
+  }
+
   const requirements = checkRankRequirements(agent, titleRank);
 
   // Fully qualified for current rank

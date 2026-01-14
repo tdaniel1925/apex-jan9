@@ -13,6 +13,19 @@ import {
 } from '../config/ranks';
 import { Agent } from '../types/database';
 
+/**
+ * Ranks that are manually assigned only (not calculated through normal progression)
+ * Founder rank is special - only assigned to FC Inc. partners, never through normal promotion
+ */
+const MANUALLY_ASSIGNED_RANKS: Rank[] = ['founder'];
+
+/**
+ * Check if a rank is manually assigned (not calculated through normal progression)
+ */
+export function isManuallyAssignedRank(rank: Rank): boolean {
+  return MANUALLY_ASSIGNED_RANKS.includes(rank);
+}
+
 export interface RankEligibility {
   rank: Rank;
   eligible: boolean;
@@ -35,12 +48,23 @@ export interface RankProgress {
 
 /**
  * Calculate the highest rank an agent qualifies for
+ * Note: Manually assigned ranks (like founder) are never returned by this function
  */
 export function calculateRank(agent: Agent): Rank {
+  // If agent is already a manually assigned rank, keep it (don't calculate)
+  if (isManuallyAssignedRank(agent.rank)) {
+    return agent.rank;
+  }
+
   let qualifiedRank: Rank = 'pre_associate';
 
-  // Check each rank from lowest to highest
+  // Check each rank from lowest to highest, skipping manually assigned ranks
   for (const rank of RANKS) {
+    // Skip manually assigned ranks - they can only be set by admin
+    if (isManuallyAssignedRank(rank)) {
+      continue;
+    }
+
     const eligibility = checkRankEligibility(agent, rank);
     if (eligibility.eligible) {
       qualifiedRank = rank;
@@ -199,8 +223,14 @@ function calculateProgressPercentage(eligibility: RankEligibility): number {
 
 /**
  * Check if agent should be promoted
+ * Note: Manually assigned ranks (founder) cannot be promoted through normal progression
  */
 export function shouldPromote(agent: Agent): { shouldPromote: boolean; newRank: Rank | null } {
+  // Manually assigned ranks are not subject to normal promotion
+  if (isManuallyAssignedRank(agent.rank)) {
+    return { shouldPromote: false, newRank: null };
+  }
+
   const calculatedRank = calculateRank(agent);
   const currentOrder = RANK_CONFIG[agent.rank].order;
   const calculatedOrder = RANK_CONFIG[calculatedRank].order;
@@ -215,8 +245,14 @@ export function shouldPromote(agent: Agent): { shouldPromote: boolean; newRank: 
 /**
  * Check if agent should be demoted
  * Note: Typically MLMs don't demote, but this is here if needed
+ * Note: Manually assigned ranks (founder) cannot be demoted through normal progression
  */
 export function shouldDemote(agent: Agent): { shouldDemote: boolean; newRank: Rank | null } {
+  // Manually assigned ranks are not subject to normal demotion
+  if (isManuallyAssignedRank(agent.rank)) {
+    return { shouldDemote: false, newRank: null };
+  }
+
   const calculatedRank = calculateRank(agent);
   const currentOrder = RANK_CONFIG[agent.rank].order;
   const calculatedOrder = RANK_CONFIG[calculatedRank].order;

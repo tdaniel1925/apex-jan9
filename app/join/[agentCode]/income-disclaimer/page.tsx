@@ -268,7 +268,7 @@ export default async function IncomeDisclaimerPage({ params }: PageProps) {
             Questions about this income disclosure?
           </p>
           <p>
-            Contact: compliance@apexaffinity.com
+            Contact: compliance@theapexway.net
           </p>
         </div>
       </div>

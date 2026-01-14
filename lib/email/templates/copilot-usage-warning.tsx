@@ -32,7 +32,7 @@ export function CopilotUsageWarningEmail({
   limitMessages = 50,
   percentUsed = 90,
   currentTier = 'Basic',
-  upgradeUrl = 'https://apexaffinity.com/copilot/subscribe',
+  upgradeUrl = 'https://theapexway.net/copilot/subscribe',
 }: CopilotUsageWarningEmailProps) {
   return (
     <Html>
@@ -82,7 +82,7 @@ export function CopilotUsageWarningEmail({
             <br />
             Your usage resets at midnight UTC each day.
             <br />
-            Questions? Reply to this email or contact support@apexaffinity.com
+            Questions? Reply to this email or contact support@theapexway.net
           </Text>
         </Container>
       </Body>

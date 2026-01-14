@@ -42,7 +42,7 @@ describe('Copilot Widget API', () => {
   describe('Embed Code Generation', () => {
     it('should generate valid embed code', () => {
       const agentId = 'agent-123';
-      const baseUrl = 'https://app.apexaffinity.com';
+      const baseUrl = 'https://app.theapexway.net';
 
       const embedCode = `<!-- Apex Copilot Widget -->
 <script>

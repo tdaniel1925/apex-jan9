@@ -30,7 +30,7 @@ export function BonusApprovalEmail({
   bonusType = 'Performance Bonus',
   amount = 0,
   reason = '',
-  viewUrl = 'https://apexaffinity.com/agent/wallet',
+  viewUrl = 'https://theapexway.net/agent/wallet',
 }: BonusApprovalEmailProps) {
   return (
     <Html>
@@ -58,7 +58,7 @@ export function BonusApprovalEmail({
           <Text style={footer}>
             Apex Affinity Group
             <br />
-            Questions? Reply to this email or contact support@apexaffinity.com
+            Questions? Reply to this email or contact support@theapexway.net
           </Text>
         </Container>
       </Body>

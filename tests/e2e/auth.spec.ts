@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test';
 
 // Test user credentials (these should be created in your test database)
 const TEST_USER = {
-  email: 'test@apexaffinity.com',
+  email: 'test@theapexway.net',
   password: 'TestPassword123!',
 };
 
@@ -147,7 +147,7 @@ test.describe('Authentication System', () => {
 
   test('should allow admin users to access admin routes', async ({ page }) => {
     const ADMIN_USER = {
-      email: 'admin@apexaffinity.com',
+      email: 'admin@theapexway.net',
       password: 'AdminPassword123!',
     };
 

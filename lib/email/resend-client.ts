@@ -15,6 +15,6 @@ export const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Email configuration
 export const EMAIL_CONFIG = {
-  from: process.env.EMAIL_FROM || 'Apex Affinity Group <noreply@apexaffinity.com>',
-  replyTo: process.env.EMAIL_REPLY_TO || 'support@apexaffinity.com',
+  from: process.env.EMAIL_FROM || 'Apex Affinity Group <noreply@theapexway.net>',
+  replyTo: process.env.EMAIL_REPLY_TO || 'support@theapexway.net',
 } as const;

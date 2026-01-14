@@ -21,19 +21,19 @@ export function MarketingFooter() {
               Building financial futures through trusted insurance solutions and entrepreneurial opportunities since 2018.
             </p>
             <div className="flex gap-4">
-              <a href="https://facebook.com/apexaffinity" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <a href="https://facebook.com/theapexway" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Facebook className="h-5 w-5" />
                 <span className="sr-only">Facebook</span>
               </a>
-              <a href="https://linkedin.com/company/apexaffinity" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <a href="https://linkedin.com/company/theapexway" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Linkedin className="h-5 w-5" />
                 <span className="sr-only">LinkedIn</span>
               </a>
-              <a href="https://twitter.com/apexaffinity" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <a href="https://twitter.com/theapexway" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Twitter className="h-5 w-5" />
                 <span className="sr-only">Twitter</span>
               </a>
-              <a href="https://instagram.com/apexaffinity" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <a href="https://instagram.com/theapexway" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Instagram className="h-5 w-5" />
                 <span className="sr-only">Instagram</span>
               </a>
@@ -89,7 +89,7 @@ export function MarketingFooter() {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 shrink-0" />
-                <a href="mailto:info@apexaffinity.com" className="hover:text-foreground">info@apexaffinity.com</a>
+                <a href="mailto:info@theapexway.net" className="hover:text-foreground">info@theapexway.net</a>
               </li>
             </ul>
           </div>

@@ -137,7 +137,7 @@ describe('Open Graph Meta Tags', () => {
   test('includes Twitter card configuration', () => {
     const twitterConfig = {
       card: 'summary_large_image',
-      creator: '@ApexAffinity',
+      creator: '@TheApexWay',
     };
 
     expect(twitterConfig.card).toBe('summary_large_image');
@@ -147,7 +147,7 @@ describe('Open Graph Meta Tags', () => {
 
 describe('Social Share Component', () => {
   test('generates correct share URLs', () => {
-    const url = 'https://apexaffinity.com/join/APX123456';
+    const url = 'https://theapexway.net/join/APX123456';
     const title = "Join John Doe's Team";
     const encodedUrl = encodeURIComponent(url);
     const encodedTitle = encodeURIComponent(title);
@@ -193,7 +193,7 @@ describe('Agent Lead Notification', () => {
   });
 
   test('notification includes CTA to view in CRM', () => {
-    const appUrl = 'https://apexaffinity.com';
+    const appUrl = 'https://theapexway.net';
     const viewUrl = `${appUrl}/dashboard/contacts`;
 
     expect(viewUrl).toContain('/dashboard/contacts');

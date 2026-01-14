@@ -65,8 +65,11 @@ export default function SignupSuccessPage() {
   }, [agentCode]);
 
   const copyReplicatedSiteUrl = () => {
-    if (currentUser?.agent_code) {
-      const url = `${window.location.origin}/join/${currentUser.agent_code}`;
+    // Use username if available, fall back to agent_code for backward compatibility
+    const siteId = currentUser?.username || currentUser?.agent_code;
+    const pathPrefix = currentUser?.username ? 'team' : 'join';
+    if (siteId) {
+      const url = `${window.location.origin}/${pathPrefix}/${siteId}`;
       navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -82,6 +85,9 @@ export default function SignupSuccessPage() {
   }
 
   const sponsorRankConfig = sponsor ? RANK_CONFIG[sponsor.rank] : null;
+  // Use username if available, fall back to agent_code for backward compatibility
+  const userSiteId = currentUser?.username || currentUser?.agent_code;
+  const userPathPrefix = currentUser?.username ? 'team' : 'join';
 
   return (
     <div className="py-12">
@@ -129,7 +135,7 @@ export default function SignupSuccessPage() {
         )}
 
         {/* Your Replicated Site */}
-        {currentUser?.agent_code && (
+        {userSiteId && (
           <Card className="mb-8 border-green-200 bg-green-50">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-green-800">
@@ -144,8 +150,8 @@ export default function SignupSuccessPage() {
               <div className="flex items-center gap-2 p-3 bg-white rounded-lg border">
                 <code className="flex-1 text-sm text-green-800 truncate">
                   {typeof window !== 'undefined'
-                    ? `${window.location.origin}/join/${currentUser.agent_code}`
-                    : `/join/${currentUser.agent_code}`
+                    ? `${window.location.origin}/${userPathPrefix}/${userSiteId}`
+                    : `/${userPathPrefix}/${userSiteId}`
                   }
                 </code>
                 <Button
@@ -169,7 +175,7 @@ export default function SignupSuccessPage() {
               </div>
               <div className="mt-4 flex gap-2">
                 <Button asChild variant="outline" size="sm">
-                  <Link href={`/join/${currentUser.agent_code}`} target="_blank">
+                  <Link href={`/${userPathPrefix}/${userSiteId}`} target="_blank">
                     <ExternalLink className="h-4 w-4 mr-2" />
                     Preview Your Site
                   </Link>

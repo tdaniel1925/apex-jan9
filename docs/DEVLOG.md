@@ -164,8 +164,8 @@ Payout Completed → Status Updated → Email Sent
 **Environment Variables**:
 ```
 RESEND_API_KEY=your_resend_api_key
-EMAIL_FROM=Apex Affinity Group <noreply@apexaffinity.com>
-EMAIL_REPLY_TO=support@apexaffinity.com
+EMAIL_FROM=Apex Affinity Group <noreply@theapexway.net>
+EMAIL_REPLY_TO=support@theapexway.net
 NEXT_PUBLIC_APP_URL=https://yourdomain.com
 ```
 

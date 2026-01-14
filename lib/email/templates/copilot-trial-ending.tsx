@@ -28,7 +28,7 @@ export function CopilotTrialEndingEmail({
   agentName = 'Agent',
   daysRemaining = 3,
   trialEndDate = 'January 15, 2026',
-  upgradeUrl = 'https://apexaffinity.com/copilot/subscribe',
+  upgradeUrl = 'https://theapexway.net/copilot/subscribe',
 }: CopilotTrialEndingEmailProps) {
   return (
     <Html>
@@ -73,7 +73,7 @@ export function CopilotTrialEndingEmail({
           <Text style={footer}>
             Apex Affinity Group
             <br />
-            Questions? Reply to this email or contact support@apexaffinity.com
+            Questions? Reply to this email or contact support@theapexway.net
           </Text>
         </Container>
       </Body>

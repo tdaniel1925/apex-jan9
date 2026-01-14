@@ -273,7 +273,7 @@ export default async function PrivacyPolicyPage({ params }: PageProps) {
             </div>
 
             <p className="text-muted-foreground mt-4">
-              To exercise any of these rights, contact us at privacy@apexaffinity.com.
+              To exercise any of these rights, contact us at privacy@theapexway.net.
             </p>
           </CardContent>
         </Card>
@@ -341,7 +341,7 @@ export default async function PrivacyPolicyPage({ params }: PageProps) {
               If you have questions about this Privacy Policy or our data practices:
             </p>
             <div className="text-muted-foreground">
-              <p><strong>Email:</strong> privacy@apexaffinity.com</p>
+              <p><strong>Email:</strong> privacy@theapexway.net</p>
               <p><strong>Mail:</strong> Apex Affinity Group, Attn: Privacy Officer</p>
             </div>
           </CardContent>

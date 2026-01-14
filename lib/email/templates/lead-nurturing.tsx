@@ -46,7 +46,7 @@ export function LeadNurturingEmail({
   leadFirstName = 'Friend',
   agentFirstName = 'Your Agent',
   agentLastName = '',
-  agentEmail = 'agent@apexaffinity.com',
+  agentEmail = 'agent@theapexway.net',
   agentPhone,
   agentCalendarLink,
   previewText = 'A message from Apex Affinity Group',

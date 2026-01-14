@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/db/supabase-client';
@@ -12,7 +12,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Agent } from '@/lib/types/database';
 import { RANK_CONFIG } from '@/lib/config/ranks';
-import { CheckCircle, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { CheckCircle, ArrowRight, Loader2, AlertCircle, AtSign, Check, X } from 'lucide-react';
+import { validateUsername } from '@/lib/utils/username';
 
 export default function ReplicatedSignupPage() {
   const router = useRouter();
@@ -24,6 +25,11 @@ export default function ReplicatedSignupPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
+
+  // Username state
+  const [usernameInput, setUsernameInput] = useState('');
+  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'invalid'>('idle');
+  const [usernameError, setUsernameError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -52,6 +58,56 @@ export default function ReplicatedSignupPage() {
     fetchAgent();
   }, [agentCode]);
 
+  // Check username availability with debounce
+  const checkUsername = useCallback(async (value: string) => {
+    if (!value) {
+      setUsernameStatus('idle');
+      setUsernameError(null);
+      return;
+    }
+
+    // Client-side validation first
+    const validation = validateUsername(value);
+    if (!validation.valid) {
+      setUsernameStatus('invalid');
+      setUsernameError(validation.error || 'Invalid username');
+      return;
+    }
+
+    setUsernameStatus('checking');
+    setUsernameError(null);
+
+    try {
+      const response = await fetch(`/api/username/check?username=${encodeURIComponent(value)}`);
+      const data = await response.json();
+
+      if (data.available) {
+        setUsernameStatus('available');
+        setUsernameError(null);
+      } else {
+        setUsernameStatus('taken');
+        setUsernameError(data.reason || 'Username is not available');
+      }
+    } catch {
+      setUsernameStatus('idle');
+      setUsernameError('Failed to check username availability');
+    }
+  }, []);
+
+  // Debounced username check
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      checkUsername(usernameInput);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [usernameInput, checkUsername]);
+
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    setUsernameInput(value);
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
@@ -66,6 +122,13 @@ export default function ReplicatedSignupPage() {
 
     if (!agreed) {
       setError('You must agree to the terms to continue.');
+      setSubmitting(false);
+      return;
+    }
+
+    // Validate username
+    if (!usernameInput || usernameStatus !== 'available') {
+      setError('Please choose an available username for your team page.');
       setSubmitting(false);
       return;
     }
@@ -137,6 +200,7 @@ export default function ReplicatedSignupPage() {
       last_name: formData.lastName,
       email: formData.email.toLowerCase(),
       phone: formData.phone || null,
+      username: usernameInput.toLowerCase(),
       status: 'pending',
       rank: 'pre_associate',
     } as never);
@@ -266,6 +330,52 @@ export default function ReplicatedSignupPage() {
                         required
                       />
                     </div>
+                  </div>
+
+                  {/* Username Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="username">Choose Your Team URL</Label>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground whitespace-nowrap">
+                        <AtSign className="h-4 w-4" />
+                        theapexway.net/team/
+                      </div>
+                      <div className="relative flex-1">
+                        <Input
+                          id="username"
+                          name="username"
+                          placeholder="jsmith"
+                          value={usernameInput}
+                          onChange={handleUsernameChange}
+                          className={
+                            usernameStatus === 'available' ? 'border-green-500 pr-10' :
+                            usernameStatus === 'taken' || usernameStatus === 'invalid' ? 'border-red-500 pr-10' :
+                            'pr-10'
+                          }
+                          required
+                        />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          {usernameStatus === 'checking' && (
+                            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                          )}
+                          {usernameStatus === 'available' && (
+                            <Check className="h-4 w-4 text-green-500" />
+                          )}
+                          {(usernameStatus === 'taken' || usernameStatus === 'invalid') && (
+                            <X className="h-4 w-4 text-red-500" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    {usernameError && (
+                      <p className="text-sm text-red-600">{usernameError}</p>
+                    )}
+                    {usernameStatus === 'available' && (
+                      <p className="text-sm text-green-600">Username is available!</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      This will be your personal recruiting site URL. 3-20 characters, letters, numbers, and underscores only.
+                    </p>
                   </div>
 
                   <div className="space-y-2">

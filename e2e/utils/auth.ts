@@ -9,7 +9,7 @@ export async function loginAsAdmin(page: Page) {
   await page.goto('/login');
 
   // Fill in admin credentials
-  await page.fill('input[name="email"]', 'admin@apexaffinity.com');
+  await page.fill('input[name="email"]', 'admin@theapexway.net');
   await page.fill('input[name="password"]', 'admin123');
 
   // Submit login form

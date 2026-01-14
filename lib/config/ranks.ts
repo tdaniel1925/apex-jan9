@@ -4,6 +4,7 @@
  */
 
 export const RANKS = [
+  'founder',
   'pre_associate',
   'associate',
   'sr_associate',
@@ -36,6 +37,19 @@ export interface RankConfig {
 }
 
 export const RANK_CONFIG: Record<Rank, RankConfig> = {
+  founder: {
+    id: 'founder',
+    name: "Founder's Rank",
+    shortName: 'Founder',
+    order: 0,
+    requirements: {
+      premium90Days: 0,
+      activeAgents: 0,
+      personalRecruits: 0,
+    },
+    persistencyRequired: 0,
+    placementRequired: 0,
+  },
   pre_associate: {
     id: 'pre_associate',
     name: 'Pre-Associate',

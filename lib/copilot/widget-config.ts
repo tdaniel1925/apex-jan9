@@ -62,7 +62,7 @@ export interface WidgetSession {
  * Generate embed code for an agent's widget
  */
 export function generateEmbedCode(agentId: string, config?: Partial<WidgetConfig>): string {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.apexaffinity.com';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theapexway.net';
   const configStr = config ? encodeURIComponent(JSON.stringify(config)) : '';
 
   return `<!-- Apex Copilot Widget -->

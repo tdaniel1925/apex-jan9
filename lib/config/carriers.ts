@@ -31,6 +31,7 @@ export const CARRIER_CONFIG: Record<Carrier, CarrierConfig> = {
     name: 'Columbus Life',
     shortName: 'Columbus',
     commissionRates: {
+      founder: 0, // Founders only earn overrides, not direct commissions
       pre_associate: 0.50,
       associate: 0.55,
       sr_associate: 0.60,
@@ -50,6 +51,7 @@ export const CARRIER_CONFIG: Record<Carrier, CarrierConfig> = {
     name: 'AIG',
     shortName: 'AIG',
     commissionRates: {
+      founder: 0, // Founders only earn overrides, not direct commissions
       pre_associate: 0.40,
       associate: 0.45,
       sr_associate: 0.50,
@@ -69,6 +71,7 @@ export const CARRIER_CONFIG: Record<Carrier, CarrierConfig> = {
     name: 'F+G',
     shortName: 'F+G',
     commissionRates: {
+      founder: 0, // Founders only earn overrides, not direct commissions
       pre_associate: 0.50,
       associate: 0.55,
       sr_associate: 0.60,
@@ -88,6 +91,7 @@ export const CARRIER_CONFIG: Record<Carrier, CarrierConfig> = {
     name: 'MOO',
     shortName: 'MOO',
     commissionRates: {
+      founder: 0, // Founders only earn overrides, not direct commissions
       pre_associate: 0.60,
       associate: 0.65,
       sr_associate: 0.70,
@@ -107,6 +111,7 @@ export const CARRIER_CONFIG: Record<Carrier, CarrierConfig> = {
     name: 'NLG',
     shortName: 'NLG',
     commissionRates: {
+      founder: 0, // Founders only earn overrides, not direct commissions
       pre_associate: 0.40,
       associate: 0.45,
       sr_associate: 0.50,
@@ -126,6 +131,7 @@ export const CARRIER_CONFIG: Record<Carrier, CarrierConfig> = {
     name: 'Symetra',
     shortName: 'Symetra',
     commissionRates: {
+      founder: 0, // Founders only earn overrides, not direct commissions
       pre_associate: 0.40,
       associate: 0.45,
       sr_associate: 0.50,
@@ -145,6 +151,7 @@ export const CARRIER_CONFIG: Record<Carrier, CarrierConfig> = {
     name: 'North American',
     shortName: 'NA',
     commissionRates: {
+      founder: 0, // Founders only earn overrides, not direct commissions
       pre_associate: 0.45,
       associate: 0.50,
       sr_associate: 0.55,
@@ -165,6 +172,7 @@ export const CARRIER_CONFIG: Record<Carrier, CarrierConfig> = {
     shortName: 'Retail',
     // Note: Retail commissions use retail-commission-engine rates, not these
     commissionRates: {
+      founder: 0, // Founders only earn overrides, not direct commissions
       pre_associate: 0.10,
       associate: 0.12,
       sr_associate: 0.13,

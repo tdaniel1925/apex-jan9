@@ -367,7 +367,7 @@ export default async function TermsOfServicePage({ params }: PageProps) {
               Questions about these Terms? Contact us:
             </p>
             <div className="text-muted-foreground">
-              <p><strong>Email:</strong> legal@apexaffinity.com</p>
+              <p><strong>Email:</strong> legal@theapexway.net</p>
               <p><strong>Mail:</strong> Apex Affinity Group, Attn: Legal Department</p>
             </div>
           </CardContent>

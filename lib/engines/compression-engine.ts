@@ -14,6 +14,7 @@
 
 import { Agent, MatrixPosition } from '../types/database';
 import { MAX_GENERATIONS, getOverridePercentage } from '../config/overrides';
+import { isRankExemptFromQualification } from './qualification-engine';
 
 export type CompressionReason =
   | 'inactive'
@@ -61,6 +62,14 @@ export function isAgentQualifiedForOverrides(
   agent: Agent,
   config: CompressionConfig = DEFAULT_COMPRESSION_CONFIG
 ): AgentQualificationStatus {
+  // Founders are always qualified for overrides - exempt from all requirements
+  if (isRankExemptFromQualification(agent.rank)) {
+    return {
+      agentId: agent.id,
+      isQualified: true,
+    };
+  }
+
   // Terminated agents are never qualified
   if (agent.status === 'terminated') {
     return {

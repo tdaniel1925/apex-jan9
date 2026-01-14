@@ -516,8 +516,8 @@ export default function JoinPage() {
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground mb-4">
             Questions? Contact us at{' '}
-            <a href="mailto:join@apexaffinity.com" className="text-primary hover:underline">
-              join@apexaffinity.com
+            <a href="mailto:join@theapexway.net" className="text-primary hover:underline">
+              join@theapexway.net
             </a>
           </p>
           <p className="text-sm text-muted-foreground">

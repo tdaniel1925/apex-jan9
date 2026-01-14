@@ -4,7 +4,7 @@ import { ErrorHandler } from "@/components/error-handler";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://apexaffinity.com';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://theapexway.net';
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     title: 'Apex Affinity Group | Build Your Insurance Career',
     description: 'Join Apex Affinity Group and build your insurance career with top carriers and AI-powered tools.',
     images: [`${APP_URL}/og-image.png`],
-    creator: '@ApexAffinity',
+    creator: '@TheApexWay',
   },
   robots: {
     index: true,
