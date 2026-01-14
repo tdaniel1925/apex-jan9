@@ -390,6 +390,9 @@ export function buildSearchPoliciesRequest(options?: SearchOptions): string {
   const searchAttrStr = searchAttrs.length > 0 ? ' ' + searchAttrs.join(' ') : '';
 
   // Build properly nested XML structure for policies
+  // Note: SmartOffice Policy only supports these properties based on API docs:
+  // PolicyNumber, CarrierName, HoldingType, AnnualPremium
+  // Status, ProductName, IssueDate, EffectiveDate etc. are NOT valid Policy properties
   return `<?xml version="1.0" encoding="UTF-8"?>
 <request version="1.0">
   <header>
@@ -405,18 +408,6 @@ export function buildSearchPoliciesRequest(options?: SearchOptions): string {
         <CarrierName/>
         <HoldingType/>
         <AnnualPremium/>
-        <Status/>
-        <ProductName/>
-        <IssueDate/>
-        <EffectiveDate/>
-        <PrimaryAdvisor/>
-        <WritingAgent/>
-        <Carrier>
-          <Name/>
-        </Carrier>
-        <Product>
-          <Name/>
-        </Product>
       </Policy>
     </object>
   </search>

@@ -145,6 +145,20 @@ export async function POST(request: NextRequest) {
       let agentsSynced = 0;
       for (const agent of agents) {
         try {
+          // Debug: Log first agent's data to verify parsing
+          if (agentsSynced === 0) {
+            console.log('[SmartOffice Sync] First agent data:', JSON.stringify({
+              id: agent.id,
+              contactId: agent.contactId,
+              firstName: agent.firstName,
+              lastName: agent.lastName,
+              email: agent.email,
+              phone: agent.phone,
+              taxId: agent.taxId,
+              clientType: agent.clientType,
+              status: agent.status,
+            }, null, 2));
+          }
           const upsertResult = await upsertAgent(supabase, agent);
           result.agents.synced++;
           if (upsertResult.created) result.agents.created++;
@@ -413,6 +427,16 @@ async function upsertAgent(
     updated_at: now,
   };
 
+  // Debug: Log the row being upserted
+  console.log('[SmartOffice Sync] Upserting agent row:', JSON.stringify({
+    smartoffice_id: row.smartoffice_id,
+    first_name: row.first_name,
+    last_name: row.last_name,
+    email: row.email,
+    phone: row.phone,
+    tax_id: row.tax_id,
+  }, null, 2));
+
   // Use upsert - single query instead of check + insert/update
   const { data, error } = await supabase
     .from('smartoffice_agents')
@@ -420,7 +444,10 @@ async function upsertAgent(
     .select('created_at, updated_at')
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error('[SmartOffice Sync] Upsert error:', error);
+    throw error;
+  }
 
   // If created_at equals updated_at (within a second), it's a new record
   const isNew = data && Math.abs(new Date(data.created_at).getTime() - new Date(data.updated_at).getTime()) < 1000;
