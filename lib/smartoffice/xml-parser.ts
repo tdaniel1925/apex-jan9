@@ -257,38 +257,85 @@ function getId(obj: Record<string, unknown> | undefined): string {
  * Normalize agent response to standard format
  */
 function normalizeAgent(agent: SmartOfficeAgentResponse): SmartOfficeAgent {
-  const contact = agent.Contact || ({} as SmartOfficeContactResponse);
+  // Contact may be an array due to isArray config - get first item
+  const contactRaw = agent.Contact;
+  const contact: SmartOfficeContactResponse = Array.isArray(contactRaw)
+    ? contactRaw[0] || ({} as SmartOfficeContactResponse)
+    : contactRaw || ({} as SmartOfficeContactResponse);
+
   const agentObj = agent as unknown as Record<string, unknown>;
   const contactObj = contact as unknown as Record<string, unknown>;
 
-  // Extract email from WebAddresses (WebAddressType = 1)
-  const webAddresses = normalizeArray(contact.WebAddresses?.WebAddress);
+  // Extract email from WebAddresses (WebAddressType = 1 is email)
+  // WebAddresses may contain WebAddress array
+  const webAddressesContainer = contact.WebAddresses;
+  const webAddresses = webAddressesContainer
+    ? normalizeArray(webAddressesContainer.WebAddress)
+    : [];
+
   const emailAddress = webAddresses.find((wa: SmartOfficeWebAddressResponse) => {
     const waObj = wa as unknown as Record<string, unknown>;
-    // Check both WebAddressType and _WebAddressType
-    const waType = waObj.WebAddressType || waObj._WebAddressType;
-    return waType === '1';
+    // Check various possible attribute names
+    const waType = waObj.WebAddressType || waObj._WebAddressType || waObj['@_WebAddressType'];
+    return waType === '1' || waType === 1;
   });
-  const email = emailAddress?.Address || null;
+
+  // Also check if Address is nested or direct
+  let email: string | null = null;
+  if (emailAddress) {
+    const addrObj = emailAddress as unknown as Record<string, unknown>;
+    email = (addrObj.Address as string) || (addrObj._text as string) || null;
+  }
 
   // Extract phone from Phones
-  const phones = normalizeArray(contact.Phones?.Phone);
+  const phonesContainer = contact.Phones;
+  const phones = phonesContainer ? normalizeArray(phonesContainer.Phone) : [];
   const primaryPhone = phones[0] as SmartOfficePhoneResponse | undefined;
-  const phone = primaryPhone ? `${primaryPhone.AreaCode || ''}${primaryPhone.Number || ''}` : null;
+
+  let phone: string | null = null;
+  if (primaryPhone) {
+    const areaCode = primaryPhone.AreaCode || '';
+    const number = primaryPhone.Number || '';
+    phone = `${areaCode}${number}`;
+  }
+
+  // Get direct properties or check for nested text
+  const firstName = getTextValue(contact.FirstName) || '';
+  const lastName = getTextValue(contact.LastName) || '';
+  const taxId = getTextValue(contact.TaxID) || null;
+  const clientType = getTextValue(contact.ClientType) || '0';
+  const status = getTextValue(agent.Status) || '0';
 
   return {
     id: getId(agentObj),
     contactId: getId(contactObj),
-    firstName: contact.FirstName || '',
-    lastName: contact.LastName || '',
+    firstName,
+    lastName,
     email,
     phone: phone && phone.length > 3 ? phone : null,
-    taxId: contact.TaxID || null,
-    clientType: parseInt(contact.ClientType || '0', 10),
-    status: parseInt(agent.Status || '0', 10),
+    taxId,
+    clientType: parseInt(clientType, 10),
+    status: parseInt(status, 10),
     hierarchyId: null, // TBD - needs to be discovered from API Dictionary
     rawData: agent,
   };
+}
+
+/**
+ * Get text value from XML element (handles both direct string and {_text: string})
+ */
+function getTextValue(value: unknown): string | null {
+  if (!value) return null;
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  if (typeof value === 'object' && value !== null) {
+    const obj = value as Record<string, unknown>;
+    // Check for _text (fast-xml-parser text node)
+    if (obj._text !== undefined) return String(obj._text);
+    // Check for #text
+    if (obj['#text'] !== undefined) return String(obj['#text']);
+  }
+  return null;
 }
 
 /**
