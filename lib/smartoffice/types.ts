@@ -63,9 +63,32 @@ export interface SmartOfficePolicyResponse {
   CarrierName?: string;
   HoldingType?: string; // "1" = Life, "3" = other
   AnnualPremium?: string;
+  ModalPremium?: string;
+  Status?: string;
+  ProductName?: string;
+  IssueDate?: string;
+  EffectiveDate?: string;
+  WritingAgent?: {
+    _type?: 'obj';
+    _id?: string;
+    id?: string;
+  };
   PrimaryAdvisor?: {
-    _type: 'obj';
-    id: string; // Contact ID reference
+    _type?: 'obj';
+    _id?: string;
+    id?: string; // Contact ID reference
+  };
+  Carrier?: {
+    _type?: 'obj';
+    _id?: string;
+    id?: string;
+    Name?: string;
+  };
+  Product?: {
+    _type?: 'obj';
+    _id?: string;
+    id?: string;
+    Name?: string;
   };
 }
 
@@ -116,10 +139,15 @@ export interface SmartOfficePolicy {
   id: string; // SmartOffice Policy ID
   policyNumber: string;
   carrierName: string;
+  productName: string;
   holdingType: number;
   holdingTypeName: string;
   annualPremium: number;
+  status: string;
+  issueDate: string | null;
+  effectiveDate: string | null;
   primaryAdvisorContactId: string | null;
+  writingAgentId: string | null;
   rawData: SmartOfficePolicyResponse;
 }
 

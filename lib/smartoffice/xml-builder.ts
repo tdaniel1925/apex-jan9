@@ -373,14 +373,55 @@ export function buildGetAgentRequest(agentId: string): string {
 
 /**
  * Build search request for policies
+ * Uses custom XML building for proper nested structure with all needed fields
  */
 export function buildSearchPoliciesRequest(options?: SearchOptions): string {
-  return buildSearchRequest({
-    object: 'Policy',
-    properties: ['PolicyNumber', 'CarrierName', 'HoldingType', 'AnnualPremium', 'PrimaryAdvisor'],
-    condition: { property: 'PolicyNumber', operator: 'ne', value: '' },
-    options,
-  });
+  // Build search attributes
+  const searchAttrs: string[] = [];
+  if (options?.pageSize) {
+    searchAttrs.push(`pagesize="${options.pageSize}"`);
+  }
+  if (options?.searchId) {
+    searchAttrs.push(`searchid="${options.searchId}"`);
+  }
+  if (options?.page !== undefined) {
+    searchAttrs.push(`page="${options.page}"`);
+  }
+  const searchAttrStr = searchAttrs.length > 0 ? ' ' + searchAttrs.join(' ') : '';
+
+  // Build properly nested XML structure for policies
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<request version="1.0">
+  <header>
+    <office/>
+    <user/>
+    <password/>
+    ${options?.keepSession ? '<keepsession>true</keepsession>' : ''}
+  </header>
+  <search${searchAttrStr}>
+    <object>
+      <Policy>
+        <PolicyNumber/>
+        <CarrierName/>
+        <HoldingType/>
+        <AnnualPremium/>
+        <ModalPremium/>
+        <Status/>
+        <ProductName/>
+        <IssueDate/>
+        <EffectiveDate/>
+        <PrimaryAdvisor/>
+        <WritingAgent/>
+        <Carrier>
+          <Name/>
+        </Carrier>
+        <Product>
+          <Name/>
+        </Product>
+      </Policy>
+    </object>
+  </search>
+</request>`;
 }
 
 /**

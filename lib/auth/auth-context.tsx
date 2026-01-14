@@ -60,11 +60,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Initialize auth - simple and direct
   useEffect(() => {
     const supabase = createClient();
+    let currentUserId: string | null = null;
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      currentUserId = session?.user?.id ?? null;
       setLoading(false);
 
       if (session?.user) {
@@ -74,17 +76,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    // Listen for auth changes - only react to actual user changes, not token refreshes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      const newUserId = session?.user?.id ?? null;
 
-      if (session?.user) {
-        setAgentLoading(true);
-        fetchAgent(session.user.id);
+      // Skip if user hasn't changed - this prevents refetch on TOKEN_REFRESHED events
+      // which happen when tab regains focus
+      if (event === 'TOKEN_REFRESHED' && newUserId === currentUserId) {
+        // Just update session without refetching agent
+        setSession(session);
+        return;
+      }
+
+      // Only update and refetch if user actually changed
+      if (newUserId !== currentUserId) {
+        currentUserId = newUserId;
+        setSession(session);
+        setUser(session?.user ?? null);
+
+        if (session?.user) {
+          setAgentLoading(true);
+          fetchAgent(session.user.id);
+        } else {
+          setAgent(null);
+          setAgentLoading(false);
+        }
       } else {
-        setAgent(null);
-        setAgentLoading(false);
+        // User is the same, just update session (e.g., for token refresh)
+        setSession(session);
       }
     });
 

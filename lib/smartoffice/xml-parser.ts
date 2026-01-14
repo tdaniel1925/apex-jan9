@@ -26,8 +26,10 @@ const parser = new XMLParser({
   attributeNamePrefix: '_',
   textNodeName: '_text',
   isArray: (name) => {
-    // These elements should always be arrays
-    return ['Agent', 'Contact', 'Policy', 'CommPayable', 'WebAddress', 'Phone'].includes(name);
+    // These elements should always be arrays when they appear at the search result level
+    // Note: Contact is NOT an array - it's a nested single object within Agent
+    // Policy and Agent can have multiple results, so they need to be arrays
+    return ['Agent', 'Policy', 'CommPayable', 'WebAddress', 'Phone'].includes(name);
   },
 });
 
@@ -257,11 +259,8 @@ function getId(obj: Record<string, unknown> | undefined): string {
  * Normalize agent response to standard format
  */
 function normalizeAgent(agent: SmartOfficeAgentResponse): SmartOfficeAgent {
-  // Contact may be an array due to isArray config - get first item
-  const contactRaw = agent.Contact;
-  const contact: SmartOfficeContactResponse = Array.isArray(contactRaw)
-    ? contactRaw[0] || ({} as SmartOfficeContactResponse)
-    : contactRaw || ({} as SmartOfficeContactResponse);
+  // Contact is a single nested object within Agent
+  const contact: SmartOfficeContactResponse = agent.Contact || ({} as SmartOfficeContactResponse);
 
   const agentObj = agent as unknown as Record<string, unknown>;
   const contactObj = contact as unknown as Record<string, unknown>;
@@ -345,15 +344,35 @@ function normalizePolicy(policy: SmartOfficePolicyResponse): SmartOfficePolicy {
   const holdingType = parseInt(policy.HoldingType || '0', 10);
   const policyObj = policy as unknown as Record<string, unknown>;
   const primaryAdvisorObj = policy.PrimaryAdvisor as unknown as Record<string, unknown> | undefined;
+  const writingAgentObj = policy.WritingAgent as unknown as Record<string, unknown> | undefined;
+  const carrierObj = policy.Carrier as unknown as Record<string, unknown> | undefined;
+  const productObj = policy.Product as unknown as Record<string, unknown> | undefined;
+
+  // Get carrier name - from nested Carrier.Name or direct CarrierName
+  let carrierName = policy.CarrierName || '';
+  if (!carrierName && carrierObj) {
+    carrierName = getTextValue(carrierObj.Name) || '';
+  }
+
+  // Get product name - from nested Product.Name or direct ProductName
+  let productName = policy.ProductName || '';
+  if (!productName && productObj) {
+    productName = getTextValue(productObj.Name) || '';
+  }
 
   return {
     id: getId(policyObj),
-    policyNumber: policy.PolicyNumber || '',
-    carrierName: policy.CarrierName || '',
+    policyNumber: getTextValue(policy.PolicyNumber) || '',
+    carrierName,
+    productName,
     holdingType,
     holdingTypeName: getHoldingTypeName(holdingType),
-    annualPremium: parseFloat(policy.AnnualPremium || '0'),
+    annualPremium: parseFloat(getTextValue(policy.AnnualPremium) || '0'),
+    status: getTextValue(policy.Status) || '',
+    issueDate: getTextValue(policy.IssueDate) || null,
+    effectiveDate: getTextValue(policy.EffectiveDate) || null,
     primaryAdvisorContactId: getId(primaryAdvisorObj) || null,
+    writingAgentId: getId(writingAgentObj) || null,
     rawData: policy,
   };
 }

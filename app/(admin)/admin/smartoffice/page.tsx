@@ -181,6 +181,8 @@ export default function SmartOfficePage() {
   const [selectedPolicy, setSelectedPolicy] = useState<SmartOfficePolicy | null>(null);
   const [syncProgress, setSyncProgress] = useState<SyncProgress | null>(null);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   // Pagination state
   const [agentsPagination, setAgentsPagination] = useState<PaginationState>({
@@ -479,6 +481,39 @@ export default function SmartOfficePage() {
       });
     } finally {
       setSyncing(false);
+    }
+  };
+
+  // Clear all SmartOffice data
+  const handleClearData = async () => {
+    setClearing(true);
+    try {
+      const response = await fetch('/api/admin/smartoffice/clear', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirm: 'DELETE_ALL_SMARTOFFICE_DATA' }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setShowClearConfirm(false);
+        setStatusMessage({
+          type: 'success',
+          message: `Data cleared successfully! Deleted: ${result.deleted.agents} agents, ${result.deleted.policies} policies, ${result.deleted.syncLogs} sync logs`,
+        });
+        // Refresh all data
+        await fetchData();
+        await fetchAgents(1);
+        await fetchPolicies(1);
+        await fetchLogs(1);
+      } else {
+        const error = await response.json();
+        setStatusMessage({ type: 'error', message: error.error || 'Failed to clear data' });
+      }
+    } catch (error) {
+      setStatusMessage({ type: 'error', message: 'Failed to clear data' });
+    } finally {
+      setClearing(false);
     }
   };
 
@@ -1295,21 +1330,28 @@ export default function SmartOfficePage() {
           </Card>
 
           {isConfigured && (
-            <Card>
+            <Card className="border-destructive/50">
               <CardHeader>
-                <CardTitle>Danger Zone</CardTitle>
-                <CardDescription>Actions that affect synced data</CardDescription>
+                <CardTitle className="text-destructive">Danger Zone</CardTitle>
+                <CardDescription>Actions that affect synced data - use with caution</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center justify-between p-4 border border-destructive/30 rounded-lg bg-destructive/5">
                   <div>
                     <h4 className="font-medium">Clear All Synced Data</h4>
                     <p className="text-sm text-muted-foreground">
-                      Remove all imported SmartOffice data. Agent mappings will be preserved.
+                      Remove all imported SmartOffice agents, policies, and sync logs. Configuration will be preserved.
                     </p>
                   </div>
-                  <Button variant="destructive" disabled>
-                    Clear Data
+                  <Button variant="destructive" onClick={() => setShowClearConfirm(true)} disabled={clearing}>
+                    {clearing ? (
+                      <>
+                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                        Clearing...
+                      </>
+                    ) : (
+                      'Clear All Data'
+                    )}
                   </Button>
                 </div>
               </CardContent>
@@ -1551,6 +1593,43 @@ export default function SmartOfficePage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setSelectedPolicy(null)}>
               Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Clear Data Confirmation Dialog */}
+      <Dialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-destructive">⚠️ Clear All SmartOffice Data?</DialogTitle>
+            <DialogDescription className="pt-2">
+              This will permanently delete:
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+              <li><strong>{stats?.totalAgents || 0}</strong> synced agents</li>
+              <li><strong>{stats?.totalPolicies || 0}</strong> synced policies</li>
+              <li>All sync history logs</li>
+            </ul>
+            <p className="mt-4 text-sm font-medium text-destructive">
+              This action cannot be undone. You will need to run a new sync to restore the data.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowClearConfirm(false)} disabled={clearing}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleClearData} disabled={clearing}>
+              {clearing ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  Clearing...
+                </>
+              ) : (
+                'Yes, Clear All Data'
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
