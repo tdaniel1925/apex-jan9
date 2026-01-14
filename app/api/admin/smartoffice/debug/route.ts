@@ -76,10 +76,28 @@ export async function GET(request: NextRequest) {
       const rawAgent = firstAgent?.rawData;
       const rawContact = rawAgent?.Contact;
 
+      // Analyze ALL agents to see if Contact is present
+      const agentContactAnalysis = agentResult.items.slice(0, 5).map((agent, idx) => {
+        const raw = agent.rawData as Record<string, unknown> | undefined;
+        const contact = raw?.Contact as Record<string, unknown> | undefined;
+        return {
+          index: idx,
+          id: agent.id,
+          hasContact: !!contact,
+          contactKeys: contact ? Object.keys(contact) : [],
+          firstName: agent.firstName || null,
+          lastName: agent.lastName || null,
+          clientType: agent.clientType,
+          status: agent.status,
+        };
+      });
+
       parserDebug = {
         total: agentResult.total,
         more: agentResult.more,
         itemCount: agentResult.items.length,
+        // Show analysis of first 5 agents to spot pattern
+        agentContactAnalysis,
         // Parsed/normalized agent
         firstAgent: firstAgent ? {
           id: firstAgent.id,

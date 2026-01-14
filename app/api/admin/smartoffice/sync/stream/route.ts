@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
         try {
           // Debug: Log first agent's data to verify parsing
           if (agentsSynced === 0) {
-            console.log('[SmartOffice Sync] First agent data:', JSON.stringify({
+            console.log('[SmartOffice Sync] First agent PARSED data:', JSON.stringify({
               id: agent.id,
               contactId: agent.contactId,
               firstName: agent.firstName,
@@ -158,6 +158,8 @@ export async function POST(request: NextRequest) {
               clientType: agent.clientType,
               status: agent.status,
             }, null, 2));
+            // Also log raw data to see actual API response
+            console.log('[SmartOffice Sync] First agent RAW data:', JSON.stringify(agent.rawData, null, 2));
           }
           const upsertResult = await upsertAgent(supabase, agent);
           result.agents.synced++;
