@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
 
       const client = await getSmartOfficeClient();
 
-      // Stage 1: Fetch agents from SmartOffice
+      // Stage 1: Fetch agents from SmartOffice (with progress for each page)
       await sendProgress({
         stage: 'fetching_agents',
         message: 'Fetching agents from SmartOffice...',
@@ -102,7 +102,43 @@ export async function POST(request: NextRequest) {
         eta_ms: null,
       });
 
-      const agents = await client.getAllAgents();
+      // Fetch agents with progress updates (inline pagination)
+      const agents: SmartOfficeAgent[] = [];
+      let searchId: string | undefined;
+      let more = true;
+      let agentPage = 0;
+      const pageSize = 100;
+
+      while (more) {
+        const pageResult = await client.searchAgents({
+          pageSize,
+          keepSession: true,
+          searchId,
+          page: agentPage > 0 ? agentPage : undefined,
+        });
+
+        agents.push(...pageResult.items);
+        more = pageResult.more;
+        searchId = pageResult.searchId;
+        agentPage++;
+
+        // Send progress update during fetch
+        await sendProgress({
+          stage: 'fetching_agents',
+          message: `Fetching agents from SmartOffice... (${agents.length} found, page ${agentPage})`,
+          current: agents.length,
+          total: pageResult.total || agents.length,
+          percentage: Math.min(5 + (agentPage * 2), 20), // 5-20% for fetching
+          elapsed_ms: Date.now() - startTime,
+          eta_ms: null,
+        });
+
+        // Safety limit
+        if (agentPage > 100) {
+          console.warn('SmartOffice: Hit 100 page limit for agent search');
+          break;
+        }
+      }
       const totalAgents = agents.length;
 
       // Stage 2: Sync agents to database
@@ -149,13 +185,13 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Stage 3: Fetch policies from SmartOffice
+      // Stage 3: Fetch policies from SmartOffice (with progress for each page)
       await sendProgress({
         stage: 'fetching_policies',
         message: 'Fetching policies from SmartOffice...',
         current: 0,
         total: 100,
-        percentage: 50,
+        percentage: 45,
         elapsed_ms: Date.now() - startTime,
         eta_ms: null,
         details: {
@@ -165,7 +201,47 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      const policies = await client.getAllPolicies();
+      // Fetch policies with progress updates (inline pagination)
+      const policies: SmartOfficePolicy[] = [];
+      let policySearchId: string | undefined;
+      let policyMore = true;
+      let policyPage = 0;
+
+      while (policyMore) {
+        const policyPageResult = await client.searchPolicies({
+          pageSize: 100,
+          keepSession: true,
+          searchId: policySearchId,
+          page: policyPage > 0 ? policyPage : undefined,
+        });
+
+        policies.push(...policyPageResult.items);
+        policyMore = policyPageResult.more;
+        policySearchId = policyPageResult.searchId;
+        policyPage++;
+
+        // Send progress update during fetch
+        await sendProgress({
+          stage: 'fetching_policies',
+          message: `Fetching policies from SmartOffice... (${policies.length} found, page ${policyPage})`,
+          current: policies.length,
+          total: policyPageResult.total || policies.length,
+          percentage: Math.min(45 + (policyPage * 1), 55), // 45-55% for fetching policies
+          elapsed_ms: Date.now() - startTime,
+          eta_ms: null,
+          details: {
+            agents_synced: result.agents.synced,
+            agents_created: result.agents.created,
+            agents_updated: result.agents.updated,
+          },
+        });
+
+        // Safety limit
+        if (policyPage > 100) {
+          console.warn('SmartOffice: Hit 100 page limit for policy search');
+          break;
+        }
+      }
       const totalPolicies = policies.length;
 
       // Stage 4: Sync policies to database
