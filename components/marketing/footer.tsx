@@ -13,7 +13,7 @@ export function MarketingFooter() {
   return (
     <footer className="bg-muted/50 border-t">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand */}
           <div className="space-y-4">
             <Logo size="sm" />
@@ -46,9 +46,19 @@ export function MarketingFooter() {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link href="/about" className="hover:text-foreground">About Us</Link></li>
               <li><Link href="/carriers" className="hover:text-foreground">Our Carriers</Link></li>
-              <li><Link href="/opportunity" className="hover:text-foreground">Career Opportunity</Link></li>
               <li><Link href="/faq" className="hover:text-foreground">FAQ</Link></li>
               <li><Link href="/contact" className="hover:text-foreground">Contact Us</Link></li>
+            </ul>
+          </div>
+
+          {/* Get Started */}
+          <div>
+            <h4 className="font-semibold mb-4">Get Started</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link href="/professionals" className="hover:text-foreground">Licensed Agents</Link></li>
+              <li><Link href="/new-to-insurance" className="hover:text-foreground">New to Insurance</Link></li>
+              <li><Link href="/opportunity" className="hover:text-foreground">Career Opportunity</Link></li>
+              <li><Link href="/join" className="hover:text-foreground">Join Apex</Link></li>
             </ul>
           </div>
 

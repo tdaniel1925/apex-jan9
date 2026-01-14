@@ -28,8 +28,11 @@ export default function MarketingLayout({
             <Link href="/carriers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Carriers
             </Link>
-            <Link href="/opportunity" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Opportunity
+            <Link href="/professionals" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              For Agents
+            </Link>
+            <Link href="/new-to-insurance" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              New to Insurance
             </Link>
             <Link href="/faq" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               FAQ
