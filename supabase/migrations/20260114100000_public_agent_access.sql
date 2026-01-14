@@ -12,7 +12,7 @@ CREATE POLICY "Public can view agents for replicated sites"
   TO anon, authenticated
   USING (
     -- Only show agents with active-ish status that can have replicated sites
-    status IN ('active', 'pending', 'pending_verification')
+    status IN ('active', 'pending')
   );
 
 -- Note: The application should only SELECT necessary public fields:
