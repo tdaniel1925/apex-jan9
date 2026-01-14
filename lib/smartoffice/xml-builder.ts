@@ -274,49 +274,101 @@ export function buildInsertRequest(params: {
  * Build search request for agents
  * SmartOffice Agent search works best WITHOUT a condition - returns all agents.
  * Adding conditions (like Status >= 0) can actually filter out valid agents.
+ *
+ * NOTE: This uses custom XML building because nested properties like
+ * Contact/WebAddresses/WebAddress need proper XML nesting, not path-style tags.
+ *
  * @param options - Search options (pagination, searchId, etc.)
  */
 export function buildSearchAgentsRequest(options?: SearchOptions): string {
-  // NOTE: Per SmartOffice support, Agent search should NOT include a condition
-  // The sandbox returns 0 results when using Status >= 0 or ClientType = 7 conditions
-  // An unconditional search returns all agents correctly
-  return buildSearchRequest({
-    object: 'Agent',
-    properties: ['Status'],
-    nestedProperties: {
-      Contact: [
-        'LastName',
-        'FirstName',
-        'ClientType',
-        'TaxID',
-      ],
-      'Contact/WebAddresses/WebAddress': ['Address', 'WebAddressType'],
-      'Contact/Phones/Phone': ['AreaCode', 'Number', 'PhoneType'],
-    },
-    // No condition - SmartOffice Agent search works better without one
-    options,
-  });
+  // Build search attributes
+  const searchAttrs: string[] = [];
+  if (options?.pageSize) {
+    searchAttrs.push(`pagesize="${options.pageSize}"`);
+  }
+  if (options?.searchId) {
+    searchAttrs.push(`searchid="${options.searchId}"`);
+  }
+  if (options?.page !== undefined) {
+    searchAttrs.push(`page="${options.page}"`);
+  }
+  const searchAttrStr = searchAttrs.length > 0 ? ' ' + searchAttrs.join(' ') : '';
+
+  // Build properly nested XML structure matching SmartOffice Postman collection
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<request version="1.0">
+  <header>
+    <office/>
+    <user/>
+    <password/>
+    ${options?.keepSession ? '<keepsession>true</keepsession>' : ''}
+  </header>
+  <search${searchAttrStr}>
+    <object>
+      <Agent>
+        <Status/>
+        <Contact>
+          <LastName/>
+          <FirstName/>
+          <ClientType/>
+          <TaxID/>
+          <WebAddresses>
+            <WebAddress>
+              <Address/>
+              <WebAddressType/>
+            </WebAddress>
+          </WebAddresses>
+          <Phones>
+            <Phone>
+              <AreaCode/>
+              <Number/>
+              <PhoneType/>
+            </Phone>
+          </Phones>
+        </Contact>
+      </Agent>
+    </object>
+  </search>
+</request>`;
 }
 
 /**
  * Build get request for a single agent
+ * Uses custom XML building for proper nested structure
  */
 export function buildGetAgentRequest(agentId: string): string {
-  return buildGetRequest({
-    object: 'Agent',
-    id: agentId,
-    properties: ['Status'],
-    nestedProperties: {
-      Contact: [
-        'LastName',
-        'FirstName',
-        'ClientType',
-        'TaxID',
-      ],
-      'Contact/WebAddresses/WebAddress': ['Address', 'WebAddressType'],
-      'Contact/Phones/Phone': ['AreaCode', 'Number', 'PhoneType'],
-    },
-  });
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<request version="1.0">
+  <header>
+    <office/>
+    <user/>
+    <password/>
+  </header>
+  <get>
+    <Agent id="${agentId}">
+      <Status/>
+      <Contact>
+        <LastName/>
+        <FirstName/>
+        <ClientType/>
+        <TaxID/>
+        <WebAddresses>
+          <WebAddress>
+            <Address/>
+            <WebAddressType/>
+          </WebAddress>
+        </WebAddresses>
+        <Phones>
+          <Phone>
+            <AreaCode/>
+            <Number/>
+            <PhoneType/>
+          </Phone>
+        </Phones>
+      </Contact>
+    </Agent>
+  </get>
+</request>`;
 }
 
 /**
