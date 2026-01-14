@@ -15,13 +15,15 @@ interface ReplicatedSiteHeaderProps {
   agentCode: string;
 }
 
+// Navigation - internal links stay within replicated site, external go to main site
 const navigation = [
-  { name: 'Home', href: '' },
-  { name: 'About', href: '/about' },
-  { name: 'Products', href: '/products' },
-  { name: 'Opportunity', href: '/opportunity' },
-  { name: 'Testimonials', href: '/testimonials' },
-  { name: 'Contact', href: '/contact' },
+  { name: 'Home', href: '', internal: true },
+  { name: 'About Me', href: '/about-me', internal: true },
+  { name: 'Carriers', href: '/carriers', internal: false },
+  { name: 'Compare', href: '/compare', internal: false },
+  { name: 'Opportunity', href: '/opportunity', internal: true },
+  { name: 'FAQ', href: '/faq', internal: false },
+  { name: 'Contact', href: '/contact', internal: true },
 ];
 
 export function ReplicatedSiteHeader({ agent, agentCode }: ReplicatedSiteHeaderProps) {
@@ -74,8 +76,8 @@ export function ReplicatedSiteHeader({ agent, agentCode }: ReplicatedSiteHeaderP
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1">
             {navigation.map((item) => {
-              const href = `${basePath}${item.href}`;
-              const isActive = pathname === href || (item.href === '' && pathname === basePath);
+              const href = item.internal ? `${basePath}${item.href}` : item.href;
+              const isActive = item.internal && (pathname === href || (item.href === '' && pathname === basePath));
               return (
                 <Link
                   key={item.name}
@@ -111,8 +113,8 @@ export function ReplicatedSiteHeader({ agent, agentCode }: ReplicatedSiteHeaderP
             <SheetContent side="right" className="w-[300px]">
               <div className="flex flex-col gap-4 mt-8">
                 {navigation.map((item) => {
-                  const href = `${basePath}${item.href}`;
-                  const isActive = pathname === href || (item.href === '' && pathname === basePath);
+                  const href = item.internal ? `${basePath}${item.href}` : item.href;
+                  const isActive = item.internal && (pathname === href || (item.href === '' && pathname === basePath));
                   return (
                     <Link
                       key={item.name}

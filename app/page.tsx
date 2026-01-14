@@ -95,11 +95,20 @@ export default function Home() {
             <Link href="/carriers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Carriers
             </Link>
-            <Link href="/opportunity" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Opportunity
+            <Link href="/compare" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Compare
+            </Link>
+            <Link href="/professionals" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              For Agents
+            </Link>
+            <Link href="/new-to-insurance" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              New to Insurance
             </Link>
             <Link href="/faq" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               FAQ
+            </Link>
+            <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Contact
             </Link>
           </nav>
           <div className="flex items-center gap-4">
@@ -378,13 +387,13 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-muted/50 border-t py-12">
         <div className="container mx-auto px-4">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
             {/* Brand */}
             <div className="space-y-4">
               <Logo size="sm" />
               <p className="text-sm text-muted-foreground">
                 Building financial futures through trusted insurance solutions and
-                entrepreneurial opportunities.
+                entrepreneurial opportunities since 2018.
               </p>
             </div>
 
@@ -394,9 +403,20 @@ export default function Home() {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link href="/about" className="hover:text-foreground">About Us</Link></li>
                 <li><Link href="/carriers" className="hover:text-foreground">Our Carriers</Link></li>
-                <li><Link href="/opportunity" className="hover:text-foreground">Career Opportunity</Link></li>
+                <li><Link href="/compare" className="hover:text-foreground">Compare</Link></li>
                 <li><Link href="/faq" className="hover:text-foreground">FAQ</Link></li>
                 <li><Link href="/contact" className="hover:text-foreground">Contact Us</Link></li>
+              </ul>
+            </div>
+
+            {/* Get Started */}
+            <div>
+              <h4 className="font-semibold mb-4">Get Started</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/professionals" className="hover:text-foreground">Licensed Agents</Link></li>
+                <li><Link href="/new-to-insurance" className="hover:text-foreground">New to Insurance</Link></li>
+                <li><Link href="/opportunity" className="hover:text-foreground">Career Opportunity</Link></li>
+                <li><Link href="/join" className="hover:text-foreground">Join Apex</Link></li>
               </ul>
             </div>
 
@@ -408,6 +428,7 @@ export default function Home() {
                 <li><Link href="/carriers#annuities" className="hover:text-foreground">Annuities</Link></li>
                 <li><Link href="/carriers#iul" className="hover:text-foreground">IUL Policies</Link></li>
                 <li><Link href="/carriers#term-life" className="hover:text-foreground">Term Life</Link></li>
+                <li><Link href="/carriers#final-expense" className="hover:text-foreground">Final Expense</Link></li>
               </ul>
             </div>
 

@@ -46,6 +46,7 @@ export function MarketingFooter() {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link href="/about" className="hover:text-foreground">About Us</Link></li>
               <li><Link href="/carriers" className="hover:text-foreground">Our Carriers</Link></li>
+              <li><Link href="/compare" className="hover:text-foreground">Compare</Link></li>
               <li><Link href="/faq" className="hover:text-foreground">FAQ</Link></li>
               <li><Link href="/contact" className="hover:text-foreground">Contact Us</Link></li>
             </ul>
