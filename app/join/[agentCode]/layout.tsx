@@ -1,9 +1,12 @@
 import { Metadata } from 'next';
-import { createServerSupabaseClient } from '@/lib/db/supabase-server';
+import { createAdminClient } from '@/lib/db/supabase-server';
 import { notFound } from 'next/navigation';
 import { ReplicatedSiteHeader } from '@/components/replicated/header';
 import { ReplicatedSiteFooter } from '@/components/replicated/footer';
 import type { Agent } from '@/lib/types/database';
+
+// Public fields safe to expose on replicated sites
+const PUBLIC_AGENT_FIELDS = 'id, first_name, last_name, username, agent_code, avatar_url, bio, rank, status' as const;
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -12,13 +15,14 @@ interface LayoutProps {
 
 export async function generateMetadata({ params }: { params: Promise<{ agentCode: string }> }): Promise<Metadata> {
   const { agentCode } = await params;
-  const supabase = await createServerSupabaseClient();
+  const supabase = createAdminClient(); // Use admin client to bypass RLS for public pages
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theapexway.net';
 
   const { data: agentData } = await supabase
     .from('agents')
     .select('first_name, last_name, avatar_url, bio')
     .eq('agent_code', agentCode)
+    .in('status', ['active', 'pending']) // Only show active/pending agents
     .single();
 
   if (!agentData) {
@@ -90,13 +94,14 @@ export async function generateMetadata({ params }: { params: Promise<{ agentCode
 
 export default async function ReplicatedSiteLayout({ children, params }: LayoutProps) {
   const { agentCode } = await params;
-  const supabase = await createServerSupabaseClient();
+  const supabase = createAdminClient(); // Use admin client to bypass RLS for public pages
 
-  // Fetch agent by agent_code
+  // Fetch agent by agent_code - only select public fields
   const { data: agentData, error } = await supabase
     .from('agents')
-    .select('*')
+    .select(PUBLIC_AGENT_FIELDS)
     .eq('agent_code', agentCode)
+    .in('status', ['active', 'pending']) // Only show active/pending agents
     .single();
 
   if (error || !agentData) {
