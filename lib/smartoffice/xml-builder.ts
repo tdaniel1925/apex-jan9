@@ -272,16 +272,14 @@ export function buildInsertRequest(params: {
 
 /**
  * Build search request for agents
+ * SmartOffice Agent search works best WITHOUT a condition - returns all agents.
+ * Adding conditions (like Status >= 0) can actually filter out valid agents.
  * @param options - Search options (pagination, searchId, etc.)
- * @param filterByAdvisor - If true, only return ClientType = 7 (advisors). Default: false for sandbox compatibility.
  */
-export function buildSearchAgentsRequest(options?: SearchOptions, filterByAdvisor = false): string {
-  // SmartOffice API may require a condition to return results
-  // Use broad condition: Status >= 0 (all agents) or ClientType = 7 (advisors only)
-  const condition = filterByAdvisor
-    ? { property: 'Contact.ClientType', operator: 'eq' as const, value: '7' }
-    : { property: 'Status', operator: 'gte' as const, value: '0' };
-
+export function buildSearchAgentsRequest(options?: SearchOptions): string {
+  // NOTE: Per SmartOffice support, Agent search should NOT include a condition
+  // The sandbox returns 0 results when using Status >= 0 or ClientType = 7 conditions
+  // An unconditional search returns all agents correctly
   return buildSearchRequest({
     object: 'Agent',
     properties: ['Status'],
@@ -295,7 +293,7 @@ export function buildSearchAgentsRequest(options?: SearchOptions, filterByAdviso
       'Contact/WebAddresses/WebAddress': ['Address', 'WebAddressType'],
       'Contact/Phones/Phone': ['AreaCode', 'Number', 'PhoneType'],
     },
-    condition,
+    // No condition - SmartOffice Agent search works better without one
     options,
   });
 }
