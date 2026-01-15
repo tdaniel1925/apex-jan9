@@ -28,6 +28,7 @@ export interface Agent {
   rank: Rank;
   status: 'pending' | 'active' | 'inactive' | 'terminated';
   licensed_date: string | null;
+  is_licensed_agent: boolean; // Whether they're a licensed insurance professional
 
   // Metrics (computed/cached)
   premium_90_days: number;
@@ -73,6 +74,7 @@ export interface AgentInsert {
   rank?: Rank;
   status?: 'pending' | 'active' | 'inactive' | 'terminated';
   licensed_date?: string | null;
+  is_licensed_agent?: boolean;
   premium_90_days?: number;
   persistency_rate?: number;
   placement_rate?: number;
@@ -1209,4 +1211,115 @@ export interface Database {
       [_ in never]: never;
     };
   };
+}
+
+// ============================================
+// DRIP CAMPAIGNS
+// ============================================
+
+export type DripCampaignType =
+  | 'new_agent_licensed'
+  | 'new_agent_unlicensed'
+  | 'reactivation'
+  | 'promotion'
+  | 'custom';
+
+export type DripCampaignStatus = 'draft' | 'active' | 'paused' | 'completed' | 'archived';
+
+export interface DripCampaign {
+  id: string;
+  name: string;
+  description: string | null;
+  campaign_type: DripCampaignType;
+  status: DripCampaignStatus;
+  target_criteria: Record<string, unknown>;
+  total_enrolled: number;
+  total_completed: number;
+  total_unsubscribed: number;
+  created_at: string;
+  updated_at: string;
+  activated_at: string | null;
+  created_by: string | null;
+}
+
+export interface DripCampaignInsert {
+  name: string;
+  description?: string | null;
+  campaign_type: DripCampaignType;
+  status?: DripCampaignStatus;
+  target_criteria?: Record<string, unknown>;
+  created_by?: string | null;
+}
+
+export type DripCampaignUpdate = Partial<DripCampaignInsert>;
+
+export interface DripCampaignEmail {
+  id: string;
+  campaign_id: string;
+  subject: string;
+  preview_text: string | null;
+  html_content: string;
+  plain_text: string | null;
+  sequence_order: number;
+  delay_days: number;
+  delay_hours: number;
+  preferred_send_hour: number | null;
+  total_sent: number;
+  total_opened: number;
+  total_clicked: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DripCampaignEmailInsert {
+  campaign_id: string;
+  subject: string;
+  preview_text?: string | null;
+  html_content: string;
+  plain_text?: string | null;
+  sequence_order: number;
+  delay_days?: number;
+  delay_hours?: number;
+  preferred_send_hour?: number | null;
+}
+
+export type DripCampaignEmailUpdate = Partial<Omit<DripCampaignEmailInsert, 'campaign_id'>>;
+
+export type DripEnrollmentStatus = 'active' | 'completed' | 'unsubscribed' | 'paused';
+
+export interface DripCampaignEnrollment {
+  id: string;
+  campaign_id: string;
+  agent_id: string;
+  current_email_index: number;
+  status: DripEnrollmentStatus;
+  enrolled_at: string;
+  next_send_at: string | null;
+  completed_at: string | null;
+  unsubscribed_at: string | null;
+  emails_sent: number;
+  emails_opened: number;
+  emails_clicked: number;
+}
+
+export interface DripCampaignEnrollmentInsert {
+  campaign_id: string;
+  agent_id: string;
+  current_email_index?: number;
+  status?: DripEnrollmentStatus;
+  next_send_at?: string | null;
+}
+
+export type DripCampaignEnrollmentUpdate = Partial<Omit<DripCampaignEnrollmentInsert, 'campaign_id' | 'agent_id'>>;
+
+export interface DripCampaignSend {
+  id: string;
+  enrollment_id: string;
+  email_id: string;
+  agent_id: string;
+  sent_at: string;
+  opened_at: string | null;
+  clicked_at: string | null;
+  message_id: string | null;
+  unsubscribe_token: string;
 }

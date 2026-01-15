@@ -10,7 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Logo } from '@/components/ui/logo';
 import { useTranslations } from 'next-intl';
-import { CheckCircle, Mail } from 'lucide-react';
+import { CheckCircle, Mail, Shield, Briefcase } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 function SignupForm() {
   const t = useTranslations('auth');
@@ -29,6 +30,7 @@ function SignupForm() {
     password: '',
     confirmPassword: '',
     sponsorUsername: sponsorCode || '',
+    isLicensedAgent: false, // Track if they're a licensed insurance professional
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -101,6 +103,7 @@ function SignupForm() {
           lastName: formData.lastName,
           phone: formData.phone || undefined,
           sponsorUsername: formData.sponsorUsername || undefined,
+          isLicensedAgent: formData.isLicensedAgent,
         }),
       });
 
@@ -242,6 +245,49 @@ function SignupForm() {
                 onChange={handleChange}
                 disabled={loading}
               />
+            </div>
+
+            {/* Licensed Insurance Professional Question */}
+            <div className="space-y-3 p-4 bg-muted/50 rounded-lg border">
+              <Label className="text-sm font-medium">
+                Are you a licensed insurance professional?
+              </Label>
+              <RadioGroup
+                value={formData.isLicensedAgent ? 'yes' : 'no'}
+                onValueChange={(value) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    isLicensedAgent: value === 'yes',
+                  }));
+                }}
+                disabled={loading}
+                className="flex flex-col gap-3"
+              >
+                <div className="flex items-start space-x-3 p-3 rounded-md border bg-background hover:bg-accent/50 transition-colors cursor-pointer">
+                  <RadioGroupItem value="yes" id="licensed-yes" className="mt-0.5" />
+                  <div className="flex-1">
+                    <Label htmlFor="licensed-yes" className="cursor-pointer flex items-center gap-2 font-medium">
+                      <Shield className="w-4 h-4 text-green-600" />
+                      Yes, I&apos;m licensed
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      I hold an active insurance license and want to maximize my opportunities with Apex
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3 p-3 rounded-md border bg-background hover:bg-accent/50 transition-colors cursor-pointer">
+                  <RadioGroupItem value="no" id="licensed-no" className="mt-0.5" />
+                  <div className="flex-1">
+                    <Label htmlFor="licensed-no" className="cursor-pointer flex items-center gap-2 font-medium">
+                      <Briefcase className="w-4 h-4 text-blue-600" />
+                      No, I&apos;m new to insurance
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      I&apos;ll receive step-by-step guidance to grow my Apex business
+                    </p>
+                  </div>
+                </div>
+              </RadioGroup>
             </div>
 
             <div className="space-y-2">

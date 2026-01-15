@@ -251,7 +251,25 @@ export async function onAgentRegistered(
     }
 
     // ================================================
-    // 6. NOTIFY SPONSOR
+    // 6. ENROLL IN DRIP CAMPAIGN
+    // ================================================
+    try {
+      const { enrollAgentInDripCampaign } = await import('../services/drip-campaign-service');
+
+      // Get the agent's license status (defaults to false if not set)
+      const isLicensedAgent = agent.is_licensed_agent ?? false;
+
+      const dripResult = await enrollAgentInDripCampaign(agent.id, isLicensedAgent);
+
+      if (!dripResult.success && dripResult.error) {
+        errors.push(`Drip campaign enrollment: ${dripResult.error}`);
+      }
+    } catch (dripError) {
+      errors.push(`Drip campaign error: ${dripError instanceof Error ? dripError.message : 'Unknown error'}`);
+    }
+
+    // ================================================
+    // 7. NOTIFY SPONSOR
     // ================================================
     // TODO: Implement notification service for sponsor alerts
     // if (sponsorId) {

@@ -25,6 +25,7 @@ const signupSchema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
   phone: z.string().optional(),
   sponsorUsername: z.string().optional(),
+  isLicensedAgent: z.boolean().default(false), // Track if they're a licensed insurance pro
 });
 
 export async function POST(request: NextRequest) {
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { email, password, firstName, lastName, phone, sponsorUsername } = parseResult.data;
+    const { email, password, firstName, lastName, phone, sponsorUsername, isLicensedAgent } = parseResult.data;
 
     // Check if email already exists
     const { data: existingAgent } = await supabase
@@ -112,6 +113,7 @@ export async function POST(request: NextRequest) {
       sponsor_id: sponsorId,
       rank: 'pre_associate' as Rank,
       status: 'pending',
+      is_licensed_agent: isLicensedAgent,
     };
 
     const { data: agent, error: createError } = await supabase
