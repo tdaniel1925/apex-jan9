@@ -22,29 +22,41 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Marketing/public pages that don't have i18n yet
+  // Extract locale from pathname first
+  const localeMatch = pathname.match(/^\/(en|es|zh)(\/.*)?$/);
+  const pathWithoutLocale = localeMatch ? (localeMatch[2] || '/') : pathname;
+  const detectedLocale = localeMatch ? localeMatch[1] : 'en';
+
+  // Marketing/public pages (base paths without locale)
   const marketingPages = ['/', '/about', '/carriers', '/compare', '/professionals',
                           '/new-to-insurance', '/faq', '/contact', '/opportunity',
                           '/privacy', '/terms', '/income-disclaimer', '/login',
                           '/signup', '/admin-login'];
 
-  // Check if this is a marketing page (without locale prefix)
-  const isMarketingPage = marketingPages.includes(pathname) ||
-                          pathname.startsWith('/join') ||
-                          pathname.startsWith('/team');
+  // Check if this is a marketing page (checking path without locale)
+  const isMarketingPage = marketingPages.includes(pathWithoutLocale) ||
+                          pathWithoutLocale.startsWith('/join') ||
+                          pathWithoutLocale.startsWith('/team');
 
-  // Skip i18n for API routes, static files, images folder, and marketing pages
+  // For locale-prefixed marketing pages (e.g., /es/about), rewrite to base path
+  // but set a cookie to remember the locale preference
+  if (localeMatch && isMarketingPage) {
+    const response = NextResponse.rewrite(new URL(pathWithoutLocale, request.url));
+    // Set locale cookie so the page knows which language to display
+    response.cookies.set('NEXT_LOCALE', detectedLocale, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+    });
+    return response;
+  }
+
+  // Skip i18n middleware for API routes, static files, images, and non-prefixed marketing pages
   const shouldSkipI18n = pathname.startsWith('/api') ||
                          pathname.startsWith('/_next') ||
                          pathname.startsWith('/images') ||
                          pathname.includes('/favicon.ico') ||
                          /\.(svg|png|jpg|jpeg|gif|webp|ico)$/.test(pathname) ||
                          isMarketingPage;
-
-  // Handle /join/[agentCode] to /team/[username] redirects
-  // Extract locale-free path for checking
-  const localeMatch = pathname.match(/^\/(en|es|zh)(\/.*)?$/);
-  const pathWithoutLocale = localeMatch ? (localeMatch[2] || '/') : pathname;
 
   const joinMatch = pathWithoutLocale.match(/^\/join\/([A-Za-z0-9]+)(\/.*)?$/);
   if (joinMatch) {

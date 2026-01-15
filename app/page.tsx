@@ -19,6 +19,7 @@ import {
   Award,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
+import { MarketingLanguageSwitcher } from '@/components/marketing-language-switcher';
 
 const testimonials = [
   {
@@ -111,7 +112,8 @@ export default function Home() {
               Contact
             </Link>
           </nav>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <MarketingLanguageSwitcher />
             <Link href="/login">
               <Button variant="ghost">Sign In</Button>
             </Link>
