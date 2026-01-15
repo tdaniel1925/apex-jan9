@@ -42,13 +42,32 @@ export default function WalletPage() {
 
       const agent = agentData as { id: string } | null;
       if (agent) {
-        // Get wallet
+        // Get wallet (use maybeSingle to handle missing wallet gracefully)
         const { data: walletData } = await supabase
           .from('wallets')
           .select('*')
           .eq('agent_id', agent.id)
-          .single();
-        setWallet(walletData);
+          .maybeSingle();
+
+        // If wallet doesn't exist, create one via the API
+        if (!walletData) {
+          try {
+            const walletCreateResponse = await fetch('/api/wallet/ensure', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+            });
+            if (walletCreateResponse.ok) {
+              const newWallet = await walletCreateResponse.json();
+              setWallet(newWallet.wallet || { balance: 0, pending_balance: 0, lifetime_earnings: 0 });
+            } else {
+              setWallet({ balance: 0, pending_balance: 0, lifetime_earnings: 0 });
+            }
+          } catch {
+            setWallet({ balance: 0, pending_balance: 0, lifetime_earnings: 0 });
+          }
+        } else {
+          setWallet(walletData);
+        }
 
         // Get recent transactions
         const { data: txData } = await supabase

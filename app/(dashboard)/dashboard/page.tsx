@@ -87,13 +87,34 @@ export default function DashboardPage() {
       if (typedAgent) {
         setAgent(typedAgent);
 
-        // Get wallet
+        // Get wallet (use maybeSingle to handle missing wallet gracefully)
         const { data: walletData } = await supabase
           .from('wallets')
           .select('*')
           .eq('agent_id', typedAgent.id)
-          .single();
-        setWallet(walletData);
+          .maybeSingle();
+
+        // If wallet doesn't exist, create one via the API (handles RLS properly)
+        if (!walletData) {
+          console.log('No wallet found for agent, attempting to create one');
+          try {
+            const walletCreateResponse = await fetch('/api/wallet/ensure', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+            });
+            if (walletCreateResponse.ok) {
+              const newWallet = await walletCreateResponse.json();
+              setWallet(newWallet.wallet || { balance: 0, pending_balance: 0, lifetime_earnings: 0 });
+            } else {
+              // Set default wallet values for display
+              setWallet({ balance: 0, pending_balance: 0, lifetime_earnings: 0 });
+            }
+          } catch {
+            setWallet({ balance: 0, pending_balance: 0, lifetime_earnings: 0 });
+          }
+        } else {
+          setWallet(walletData);
+        }
 
         // Get team count
         const { count } = await supabase

@@ -34,14 +34,21 @@ export default function GenealogyPage() {
 
       const agent = agentData as { id: string } | null;
       if (agent) {
-        // Get agent's matrix position
+        // Get agent's matrix position (use maybeSingle to handle missing position)
         const { data: positionData } = await supabase
           .from('matrix_positions')
           .select('*')
           .eq('agent_id', agent.id)
-          .single();
+          .maybeSingle();
 
         const myPosition = positionData as { path: string } | null;
+
+        // Count direct recruits regardless of matrix position
+        const { count: directRecruits } = await supabase
+          .from('agents')
+          .select('*', { count: 'exact', head: true })
+          .eq('sponsor_id', agent.id);
+
         if (myPosition) {
           // Count total downline
           const { count: totalDownline } = await supabase
@@ -49,17 +56,19 @@ export default function GenealogyPage() {
             .select('*', { count: 'exact', head: true })
             .like('path', `${myPosition.path}.%`);
 
-          // Count direct recruits
-          const { count: directRecruits } = await supabase
-            .from('agents')
-            .select('*', { count: 'exact', head: true })
-            .eq('sponsor_id', agent.id);
-
           setDownlineStats({
             total: totalDownline || 0,
             active: 0, // Simplified for now
             directRecruits: directRecruits || 0,
             generations: 0, // Simplified for now
+          });
+        } else {
+          // No matrix position yet - show just direct recruits
+          setDownlineStats({
+            total: 0,
+            active: 0,
+            directRecruits: directRecruits || 0,
+            generations: 0,
           });
         }
       }
