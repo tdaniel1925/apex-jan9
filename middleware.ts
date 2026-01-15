@@ -50,12 +50,15 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // Skip i18n middleware for API routes, static files, images, and non-prefixed marketing pages
+  // Skip i18n middleware for API routes, static files, images, dashboard, admin, and non-prefixed marketing pages
+  // Dashboard and admin use cookie-based locale detection, not URL prefixes
   const shouldSkipI18n = pathname.startsWith('/api') ||
                          pathname.startsWith('/_next') ||
                          pathname.startsWith('/images') ||
                          pathname.includes('/favicon.ico') ||
                          /\.(svg|png|jpg|jpeg|gif|webp|ico)$/.test(pathname) ||
+                         pathWithoutLocale.startsWith('/dashboard') ||
+                         pathWithoutLocale.startsWith('/admin') ||
                          isMarketingPage;
 
   const joinMatch = pathWithoutLocale.match(/^\/join\/([A-Za-z0-9]+)(\/.*)?$/);

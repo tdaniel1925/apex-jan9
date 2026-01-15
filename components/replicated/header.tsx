@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, Phone, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/ui/logo';
+import { MarketingLanguageSwitcher } from '@/components/marketing-language-switcher';
 
 interface ReplicatedSiteHeaderProps {
   agent: Agent;
@@ -96,21 +97,24 @@ export function ReplicatedSiteHeader({ agent, agentCode, basePath: basePathProp 
             })}
           </nav>
 
-          {/* CTA Button */}
-          <div className="hidden lg:block">
+          {/* CTA Button & Language Switcher */}
+          <div className="hidden lg:flex items-center gap-3">
+            <MarketingLanguageSwitcher />
             <Button asChild>
               <Link href={`${basePath}/signup`}>Join Our Team</Link>
             </Button>
           </div>
 
           {/* Mobile menu */}
-          <Sheet>
-            <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </SheetTrigger>
+          <div className="flex items-center gap-2 lg:hidden">
+            <MarketingLanguageSwitcher />
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </SheetTrigger>
             <SheetContent side="right" className="w-[300px]">
               <div className="flex flex-col gap-4 mt-8">
                 {navigation.map((item) => {
@@ -150,7 +154,8 @@ export function ReplicatedSiteHeader({ agent, agentCode, basePath: basePathProp 
                 </div>
               </div>
             </SheetContent>
-          </Sheet>
+            </Sheet>
+          </div>
         </div>
       </div>
     </header>
