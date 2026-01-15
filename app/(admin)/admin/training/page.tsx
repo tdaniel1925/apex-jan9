@@ -19,13 +19,16 @@ import {
 } from 'lucide-react';
 
 interface TrainingStats {
-  totalCourses: number;
-  publishedCourses: number;
-  totalQuizzes: number;
-  totalResources: number;
-  totalEnrollments: number;
-  completionRate: number;
-  avgQuizScore: number;
+  overall: {
+    total_courses: number;
+    total_lessons: number;
+    total_enrollments: number;
+    completed_enrollments: number;
+    completion_rate: number;
+    total_certificates: number;
+    total_quiz_attempts: number;
+    quiz_pass_rate: number;
+  };
 }
 
 export default function AdminTrainingPage() {
@@ -38,7 +41,7 @@ export default function AdminTrainingPage() {
         const res = await fetch('/api/admin/training/analytics');
         if (res.ok) {
           const data = await res.json();
-          setStats(data.stats || null);
+          setStats(data);
         }
       } catch (error) {
         console.error('Error fetching stats:', error);
@@ -55,7 +58,7 @@ export default function AdminTrainingPage() {
       description: 'Manage training courses, lessons, and content',
       icon: BookOpen,
       href: '/admin/training/courses',
-      stats: stats ? `${stats.publishedCourses} published, ${stats.totalCourses} total` : null,
+      stats: stats ? `${stats.overall.total_courses} courses, ${stats.overall.total_lessons} lessons` : null,
       color: 'text-blue-600 bg-blue-100',
     },
     {
@@ -63,7 +66,7 @@ export default function AdminTrainingPage() {
       description: 'Create and manage quizzes and certification exams',
       icon: HelpCircle,
       href: '/admin/training/quizzes',
-      stats: stats ? `${stats.totalQuizzes} quizzes` : null,
+      stats: stats ? `${stats.overall.total_quiz_attempts} attempts, ${stats.overall.quiz_pass_rate}% pass rate` : null,
       color: 'text-purple-600 bg-purple-100',
     },
     {
@@ -71,7 +74,7 @@ export default function AdminTrainingPage() {
       description: 'Upload and organize training resources',
       icon: FolderOpen,
       href: '/admin/training/resources',
-      stats: stats ? `${stats.totalResources} resources` : null,
+      stats: null,
       color: 'text-green-600 bg-green-100',
     },
     {
@@ -79,7 +82,7 @@ export default function AdminTrainingPage() {
       description: 'View and manage issued certificates',
       icon: Award,
       href: '/admin/training/certificates',
-      stats: null,
+      stats: stats ? `${stats.overall.total_certificates} issued` : null,
       color: 'text-yellow-600 bg-yellow-100',
     },
   ];
@@ -132,7 +135,7 @@ export default function AdminTrainingPage() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-muted-foreground" />
-                <span className="text-2xl font-bold">{stats.totalEnrollments}</span>
+                <span className="text-2xl font-bold">{stats.overall.total_enrollments}</span>
               </div>
               <p className="text-sm text-muted-foreground">Total Enrollments</p>
             </CardContent>
@@ -141,7 +144,7 @@ export default function AdminTrainingPage() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-muted-foreground" />
-                <span className="text-2xl font-bold">{stats.completionRate}%</span>
+                <span className="text-2xl font-bold">{stats.overall.completion_rate}%</span>
               </div>
               <p className="text-sm text-muted-foreground">Completion Rate</p>
             </CardContent>
@@ -150,16 +153,16 @@ export default function AdminTrainingPage() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-muted-foreground" />
-                <span className="text-2xl font-bold">{stats.avgQuizScore}%</span>
+                <span className="text-2xl font-bold">{stats.overall.quiz_pass_rate}%</span>
               </div>
-              <p className="text-sm text-muted-foreground">Avg. Quiz Score</p>
+              <p className="text-sm text-muted-foreground">Quiz Pass Rate</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-muted-foreground" />
-                <span className="text-2xl font-bold">{stats.totalCourses}</span>
+                <span className="text-2xl font-bold">{stats.overall.total_courses}</span>
               </div>
               <p className="text-sm text-muted-foreground">Total Courses</p>
             </CardContent>

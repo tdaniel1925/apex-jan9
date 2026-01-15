@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Bell, Menu, LogOut, User, Settings } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { MobileSidebar } from './mobile-sidebar';
+import { LanguageSwitcher } from '@/components/language-switcher';
 
 interface HeaderProps {
   agent: Agent;
@@ -56,6 +57,9 @@ export function Header({ agent }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-x-4 lg:gap-x-6">
+          {/* Language Switcher */}
+          <LanguageSwitcher variant="ghost" showLabel={false} />
+
           {/* Notifications */}
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />

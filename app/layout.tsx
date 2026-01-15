@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { AuthProvider } from "@/lib/auth/auth-context";
 import { ErrorHandler } from "@/components/error-handler";
 import { Toaster } from "sonner";
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 import "./globals.css";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://theapexway.net';
@@ -74,17 +76,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body className="font-sans antialiased bg-background text-foreground" suppressHydrationWarning>
-        <ErrorHandler />
-        <AuthProvider>{children}</AuthProvider>
-        <Toaster position="top-right" richColors closeButton />
+        <NextIntlClientProvider messages={messages}>
+          <ErrorHandler />
+          <AuthProvider>{children}</AuthProvider>
+          <Toaster position="top-right" richColors closeButton />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

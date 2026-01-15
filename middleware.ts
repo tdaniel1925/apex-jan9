@@ -1,12 +1,19 @@
 /**
  * Next.js Middleware
- * Server-side auth protection - runs before page renders
+ * Server-side auth protection + i18n locale routing
  */
 
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import createIntlMiddleware from 'next-intl/middleware';
+import { routing } from './i18n/routing';
+
+// Create the i18n middleware
+const intlMiddleware = createIntlMiddleware(routing);
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
   // Skip middleware for Next.js internal requests
   const isNextInternalRequest = request.headers.get('x-nextjs-data') ||
                                 request.headers.get('purpose') === 'prefetch';
@@ -15,14 +22,22 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const { pathname } = request.nextUrl;
+  // Skip i18n for API routes and static files
+  const shouldSkipI18n = pathname.startsWith('/api') ||
+                         pathname.startsWith('/_next') ||
+                         pathname.includes('/favicon.ico') ||
+                         /\.(svg|png|jpg|jpeg|gif|webp|ico)$/.test(pathname);
 
   // Handle /join/[agentCode] to /team/[username] redirects
-  // This preserves SEO by redirecting old URLs to new canonical URLs
-  const joinMatch = pathname.match(/^\/join\/([A-Za-z0-9]+)(\/.*)?$/);
+  // Extract locale-free path for checking
+  const localeMatch = pathname.match(/^\/(en|es|zh)(\/.*)?$/);
+  const pathWithoutLocale = localeMatch ? (localeMatch[2] || '/') : pathname;
+
+  const joinMatch = pathWithoutLocale.match(/^\/join\/([A-Za-z0-9]+)(\/.*)?$/);
   if (joinMatch) {
     const agentCode = joinMatch[1];
     const subPath = joinMatch[2] || '';
+    const localePrefix = localeMatch ? `/${localeMatch[1]}` : '';
 
     // Quick lookup to check if agent has username
     try {
@@ -37,8 +52,8 @@ export async function middleware(request: NextRequest) {
       );
       const agents = await apiResponse.json();
       if (agents && agents.length > 0 && agents[0].username) {
-        // Redirect to /team/[username] with same sub-path
-        const newUrl = new URL(`/team/${agents[0].username}${subPath}`, request.url);
+        // Redirect to /team/[username] with same sub-path, preserving locale
+        const newUrl = new URL(`${localePrefix}/team/${agents[0].username}${subPath}`, request.url);
         return NextResponse.redirect(newUrl, 301); // 301 = permanent redirect for SEO
       }
     } catch {
@@ -46,12 +61,19 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
+  // Apply i18n middleware first (unless skipped)
+  let response: NextResponse;
+  if (!shouldSkipI18n) {
+    response = intlMiddleware(request);
+  } else {
+    response = NextResponse.next({
+      request: {
+        headers: request.headers,
+      },
+    });
+  }
 
+  // Now handle Supabase auth
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -61,12 +83,10 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
-          response = NextResponse.next({
-            request,
-          });
+          // Update response with cookies
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           );
@@ -78,33 +98,30 @@ export async function middleware(request: NextRequest) {
   // Fast session check without refreshing - NO DATABASE QUERIES
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Public routes (no auth required)
-  const publicRoutes = ['/login', '/signup', '/admin-login', '/join', '/team'];
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route)) || pathname === '/';
+  // Public routes (no auth required) - check against path without locale
+  const publicRoutes = ['/login', '/signup', '/admin-login', '/join', '/team', '/'];
+  const isPublicRoute = publicRoutes.some(route =>
+    pathWithoutLocale === route || pathWithoutLocale.startsWith(route + '/')
+  ) || pathWithoutLocale === '/';
 
-  // Admin routes
-  const isAdminRoute = pathname.startsWith('/admin');
-
-  // Dashboard routes (agent-only)
-  const isDashboardRoute = pathname.startsWith('/dashboard');
+  // Check route types using path without locale
+  const isAdminRoute = pathWithoutLocale.startsWith('/admin');
+  const isDashboardRoute = pathWithoutLocale.startsWith('/dashboard');
 
   // If no user and trying to access protected route, redirect to login
   if (!user && (isDashboardRoute || isAdminRoute)) {
     const redirectUrl = isAdminRoute ? '/admin-login' : '/login';
-    return NextResponse.redirect(new URL(redirectUrl, request.url));
+    // Preserve locale in redirect
+    const localePrefix = localeMatch ? `/${localeMatch[1]}` : '';
+    return NextResponse.redirect(new URL(`${localePrefix}${redirectUrl}`, request.url));
   }
-
-  // Admin route protection - check happens in admin layout, not here
-  // Middleware only checks if user is authenticated, not their role
-  // This prevents database queries that cause AbortError
 
   // If user is logged in and trying to access login/signup pages
-  if (user && (pathname === '/login' || pathname === '/signup')) {
-    // Redirect to dashboard - role-based routing happens in dashboard/admin layouts
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  if (user && (pathWithoutLocale === '/login' || pathWithoutLocale === '/signup')) {
+    // Redirect to dashboard - preserve locale
+    const localePrefix = localeMatch ? `/${localeMatch[1]}` : '';
+    return NextResponse.redirect(new URL(`${localePrefix}/dashboard`, request.url));
   }
-
-  // For /admin-login, let logged-in users access it - the page will check admin role and redirect appropriately
 
   return response;
 }
