@@ -943,8 +943,10 @@
       },
       "cta": {
         "title": "迈出第一步",
+        "subtitle": "准备帮助您开始与Apex Affinity Group的旅程。让我们一起建设您的未来。",
         "description": "加入数千名已通过Apex Affinity Group改变生活的成功代理人。您的旅程从这里开始。",
         "joinNow": "立即加入",
+        "button": "加入我的团队",
         "askQuestions": "先提问"
       }
     },

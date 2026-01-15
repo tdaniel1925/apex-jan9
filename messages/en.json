@@ -880,10 +880,17 @@
     },
     "home": {
       "badge": "Join Apex Affinity Group",
+      "heroTitle": "Join Apex Affinity Group",
       "headline": "Build Your Financial Future in Insurance",
+      "heroSubtitle": "Build Your Financial Future in Insurance",
       "description": "Partner with {agentName} and join a proven system that helps you build a successful career in the insurance industry with unlimited earning potential.",
       "getStarted": "Get Started Today",
+      "getQuote": "Get Started Today",
       "learnAbout": "Learn About the Opportunity",
+      "scheduleCall": "Schedule a Call",
+      "services": {
+        "title": "Why Join Apex?"
+      },
       "activeAgents": "Active Agents",
       "commissionsPaid": "Commissions Paid",
       "topCarriers": "Top Carriers",
@@ -895,6 +902,9 @@
       "whyJoin": {
         "title": "Why Join Apex?",
         "subtitle": "We provide everything you need to succeed in the insurance industry.",
+        "personalService": {
+          "description": "We provide everything you need to succeed in the insurance industry."
+        },
         "highCommissions": "High Commissions",
         "highCommissionsDesc": "Earn up to 90% commission rates with our top-tier carrier contracts.",
         "overrideIncome": "Override Income",
@@ -938,8 +948,10 @@
       },
       "cta": {
         "title": "Take the First Step",
+        "subtitle": "Ready to help you start your journey with Apex Affinity Group. Let's build your future together.",
         "description": "Join thousands of successful agents who have transformed their lives with Apex Affinity Group. Your journey starts here.",
         "joinNow": "Join Now",
+        "button": "Join My Team",
         "askQuestions": "Ask Questions First"
       }
     },

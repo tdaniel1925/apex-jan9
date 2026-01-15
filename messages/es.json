@@ -879,10 +879,17 @@
     },
     "home": {
       "badge": "Únete a Apex Affinity Group",
+      "heroTitle": "Únete a Apex Affinity Group",
       "headline": "Construye Tu Futuro Financiero en Seguros",
+      "heroSubtitle": "Construye Tu Futuro Financiero en Seguros",
       "description": "Asóciate con {agentName} y únete a un sistema probado que te ayuda a construir una carrera exitosa en la industria de seguros con potencial de ingresos ilimitado.",
       "getStarted": "Comienza Hoy",
+      "getQuote": "Comienza Hoy",
       "learnAbout": "Conoce la Oportunidad",
+      "scheduleCall": "Agenda una Llamada",
+      "services": {
+        "title": "¿Por Qué Unirte a Apex?"
+      },
       "activeAgents": "Agentes Activos",
       "commissionsPaid": "Comisiones Pagadas",
       "topCarriers": "Mejores Aseguradoras",
@@ -894,6 +901,9 @@
       "whyJoin": {
         "title": "¿Por Qué Unirte a Apex?",
         "subtitle": "Te proporcionamos todo lo que necesitas para tener éxito en la industria de seguros.",
+        "personalService": {
+          "description": "Te proporcionamos todo lo que necesitas para tener éxito en la industria de seguros."
+        },
         "highCommissions": "Altas Comisiones",
         "highCommissionsDesc": "Gana hasta el 90% en comisiones con nuestros contratos de primer nivel.",
         "overrideIncome": "Ingresos por Sobrescritura",
@@ -937,8 +947,10 @@
       },
       "cta": {
         "title": "Da el Primer Paso",
+        "subtitle": "Listo para ayudarte a comenzar tu viaje con Apex Affinity Group. Construyamos tu futuro juntos.",
         "description": "Únete a miles de agentes exitosos que han transformado sus vidas con Apex Affinity Group. Tu viaje comienza aquí.",
         "joinNow": "Únete Ahora",
+        "button": "Únete a Mi Equipo",
         "askQuestions": "Haz Preguntas Primero"
       }
     },
