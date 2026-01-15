@@ -341,3 +341,72 @@ export async function sendBulkEmails(
 
   return results;
 }
+
+/**
+ * Send email verification link to new agents
+ */
+export async function sendVerificationEmail(params: {
+  to: string;
+  agentName: string;
+  verificationLink: string;
+}): Promise<EmailResult> {
+  const { to, agentName, verificationLink } = params;
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: EMAIL_CONFIG.from,
+      to,
+      subject: 'Verify Your Apex Affinity Group Account',
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <img src="${process.env.NEXT_PUBLIC_APP_URL || 'https://theapexway.net'}/images/apex-logo.png" alt="Apex Affinity Group" style="height: 60px;" />
+            </div>
+
+            <h1 style="color: #1a1a1a; font-size: 24px; margin-bottom: 20px;">Verify Your Email Address</h1>
+
+            <p>Hi ${agentName},</p>
+
+            <p>Thank you for creating your Apex Affinity Group account! Please click the button below to verify your email address and activate your account.</p>
+
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${verificationLink}" style="display: inline-block; background-color: #0ea5e9; color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                Verify Email Address
+              </a>
+            </div>
+
+            <p style="color: #666; font-size: 14px;">If the button doesn't work, copy and paste this link into your browser:</p>
+            <p style="color: #0ea5e9; word-break: break-all; font-size: 14px;">${verificationLink}</p>
+
+            <p style="color: #666; font-size: 14px; margin-top: 30px;">This verification link will expire in 24 hours. If you didn't create an account with Apex Affinity Group, you can safely ignore this email.</p>
+
+            <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 30px 0;" />
+
+            <p style="color: #999; font-size: 12px; text-align: center;">
+              © ${new Date().getFullYear()} Apex Affinity Group. All rights reserved.<br />
+              <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://theapexway.net'}/privacy" style="color: #999;">Privacy Policy</a> |
+              <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://theapexway.net'}/terms" style="color: #999;">Terms of Service</a>
+            </p>
+          </body>
+        </html>
+      `,
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, messageId: data?.id };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send verification email',
+    };
+  }
+}

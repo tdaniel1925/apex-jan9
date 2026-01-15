@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Logo } from '@/components/ui/logo';
 import { useTranslations } from 'next-intl';
+import { CheckCircle, Mail } from 'lucide-react';
 
 function SignupForm() {
   const t = useTranslations('auth');
@@ -32,6 +33,8 @@ function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sponsorName, setSponsorName] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [createdEmail, setCreatedEmail] = useState('');
 
   // Look up sponsor when username changes
   useEffect(() => {
@@ -65,6 +68,7 @@ function SignupForm() {
       ...prev,
       [e.target.name]: e.target.value,
     }));
+    setError(null);
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -72,7 +76,7 @@ function SignupForm() {
     setLoading(true);
     setError(null);
 
-    // Validate passwords match
+    // Client-side validation
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setLoading(false);
@@ -85,71 +89,88 @@ function SignupForm() {
       return;
     }
 
-    const supabase = createClient();
+    try {
+      // Call signup API
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone || undefined,
+          sponsorUsername: formData.sponsorUsername || undefined,
+        }),
+      });
 
-    // Look up sponsor ID if username provided
-    let sponsorId: string | null = null;
-    if (formData.sponsorUsername) {
-      const { data: sponsor, error: sponsorError } = await supabase
-        .from('agents')
-        .select('id')
-        .eq('username', formData.sponsorUsername)
-        .single();
+      const data = await response.json();
 
-      if (sponsorError || !sponsor) {
-        setError('Invalid sponsor code. Please check and try again.');
+      if (!response.ok) {
+        setError(data.error || 'Failed to create account');
         setLoading(false);
         return;
       }
-      sponsorId = (sponsor as { id: string }).id;
-    }
 
-    // Create auth user
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: formData.email,
-      password: formData.password,
-      options: {
-        data: {
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-        },
-      },
-    });
+      // Success - show verification message
+      setCreatedEmail(formData.email);
+      setSuccess(true);
 
-    if (authError) {
-      setError(authError.message);
+    } catch (err) {
+      console.error('Signup error:', err);
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
       setLoading(false);
-      return;
     }
-
-    if (!authData.user) {
-      setError('Failed to create account');
-      setLoading(false);
-      return;
-    }
-
-    // Create agent record
-    const { error: agentError } = await supabase.from('agents').insert({
-      user_id: authData.user.id,
-      sponsor_id: sponsorId,
-      first_name: formData.firstName,
-      last_name: formData.lastName,
-      email: formData.email,
-      phone: formData.phone || null,
-      status: 'pending',
-      rank: 'pre_associate',
-    } as never);
-
-    if (agentError) {
-      setError('Failed to create agent profile. Please contact support.');
-      setLoading(false);
-      return;
-    }
-
-    // Redirect to confirmation page or dashboard
-    router.push('/dashboard');
-    router.refresh();
   };
+
+  // Success state - show verification message
+  if (success) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4 py-8">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+            <CardTitle className="text-green-600">Account Created!</CardTitle>
+            <CardDescription>
+              Welcome to Apex Affinity Group
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <Mail className="w-5 h-5 text-blue-600 mt-0.5" />
+                <div>
+                  <p className="font-medium text-blue-900">Check your email</p>
+                  <p className="text-sm text-blue-700 mt-1">
+                    We sent a verification link to <strong>{createdEmail}</strong>.
+                    Click the link to activate your account.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center text-sm text-muted-foreground space-y-2">
+              <p>Didn&apos;t receive the email?</p>
+              <p>Check your spam folder or contact support.</p>
+            </div>
+
+            <div className="pt-4 border-t">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => router.push('/login')}
+              >
+                Go to Login
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4 py-8">
@@ -179,6 +200,7 @@ function SignupForm() {
                   value={formData.firstName}
                   onChange={handleChange}
                   required
+                  disabled={loading}
                 />
               </div>
               <div className="space-y-2">
@@ -190,6 +212,7 @@ function SignupForm() {
                   value={formData.lastName}
                   onChange={handleChange}
                   required
+                  disabled={loading}
                 />
               </div>
             </div>
@@ -204,6 +227,7 @@ function SignupForm() {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                disabled={loading}
               />
             </div>
 
@@ -216,6 +240,7 @@ function SignupForm() {
                 placeholder="(555) 123-4567"
                 value={formData.phone}
                 onChange={handleChange}
+                disabled={loading}
               />
             </div>
 
@@ -229,6 +254,7 @@ function SignupForm() {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                disabled={loading}
               />
             </div>
 
@@ -242,6 +268,7 @@ function SignupForm() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
+                disabled={loading}
               />
             </div>
 
@@ -253,16 +280,22 @@ function SignupForm() {
                 placeholder="Your sponsor's username"
                 value={formData.sponsorUsername}
                 onChange={handleChange}
+                disabled={loading}
               />
               {sponsorName && (
                 <p className="text-sm text-green-600">
                   Sponsor: {sponsorName}
                 </p>
               )}
+              {formData.sponsorUsername && !sponsorName && (
+                <p className="text-sm text-amber-600">
+                  Checking sponsor...
+                </p>
+              )}
             </div>
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? `${t('createAccount')}...` : t('createAccount')}
+              {loading ? 'Creating Account...' : t('createAccount')}
             </Button>
           </form>
 

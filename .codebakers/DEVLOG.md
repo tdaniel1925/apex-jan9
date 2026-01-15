@@ -1,5 +1,47 @@
 # Development Log
 
+## 2026-01-15 - Fix Agent Self-Signup Flow
+**Session:** 2026-01-15T09:00:00Z
+**Task Size:** MEDIUM
+**Status:** Completed
+**CodeBakers Compliance:** ✅ FOLLOWED - discover_patterns → code → tests → validate
+
+### What was done:
+- Created new `/api/auth/signup` server-side API route with full workflow integration
+- Fixed critical bug: self-signup now properly calls `onAgentRegistered` workflow
+- Added agent_code generation (APX prefix + 6 digits)
+- Added unique username generation from email/name
+- Added email verification with custom verification email template
+- Updated signup page to use new API and show verification success state
+- Added `sendVerificationEmail` function to email service
+
+### Files created/modified:
+- `app/api/auth/signup/route.ts` - NEW: Complete signup API with workflow
+- `app/(auth)/signup/page.tsx` - MODIFIED: Uses new API, verification UI
+- `lib/email/email-service.ts` - MODIFIED: Added sendVerificationEmail function
+- `tests/api/auth/signup.test.ts` - NEW: 8 tests for signup API
+
+### Critical Bug Fixed:
+Previously, agent self-signup:
+- ❌ Did NOT generate agent_code (left null)
+- ❌ Did NOT generate username (left null)
+- ❌ Did NOT call onAgentRegistered workflow
+- ❌ No wallet created, no matrix position, no welcome email
+
+Now, agent self-signup:
+- ✅ Generates unique APX###### agent code
+- ✅ Generates unique username from email
+- ✅ Calls onAgentRegistered workflow (wallet, matrix, welcome email)
+- ✅ Sends verification email via Resend
+- ✅ Shows verification success UI
+
+### Test Results:
+- 8 new tests added for signup API
+- All 8 tests pass
+- Total: 690/708 tests passing (97.5%)
+
+---
+
 ## 2026-01-15 - Complete System Audit & Project State Update
 **Session:** 2026-01-15T08:20:00Z
 **Task Size:** MEDIUM
