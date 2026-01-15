@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
 
       // Analyze ALL agents to see if Contact is present
       const agentContactAnalysis = agentResult.items.slice(0, 5).map((agent, idx) => {
-        const raw = agent.rawData as Record<string, unknown> | undefined;
+        const raw = agent.rawData as unknown as Record<string, unknown> | undefined;
         const contact = raw?.Contact as Record<string, unknown> | undefined;
         return {
           index: idx,
