@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { User, Sparkles, Shield, Bell, Key, Loader2, Copy, Check } from 'lucide-react';
+import { User, Sparkles, Shield, Bell, Key, Loader2, Copy, Check, Building2 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { createClient } from '@/lib/db/supabase-client';
 import { AvatarUpload } from '@/components/dashboard/avatar-upload';
@@ -193,6 +193,32 @@ export default function SettingsPage() {
             <Link href="/copilot/subscribe">
               <Button variant={agent?.ai_copilot_tier === 'none' ? 'default' : 'outline'}>
                 {agent?.ai_copilot_tier === 'none' ? t('subscribe') : t('managePlan')}
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Banking Settings Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Building2 className="h-5 w-5" />
+            Banking Information
+          </CardTitle>
+          <CardDescription>Manage your bank account for withdrawals</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between p-4 rounded-lg border">
+            <div>
+              <p className="font-semibold">Payment Details</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Add or update your bank account to receive withdrawals
+              </p>
+            </div>
+            <Link href="/dashboard/settings/banking">
+              <Button variant="outline">
+                Manage
               </Button>
             </Link>
           </div>

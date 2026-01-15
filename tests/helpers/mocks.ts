@@ -102,6 +102,14 @@ export function createMockPayout(overrides: Partial<Payout> = {}): Payout {
     status: 'pending',
     processed_at: null,
     created_at: '2024-01-15T00:00:00Z',
+    admin_id: null,
+    admin_notes: null,
+    rejection_reason: null,
+    tracking_number: null,
+    wire_reference: null,
+    ach_trace_number: null,
+    approved_at: null,
+    rejected_at: null,
     ...overrides,
   };
 }

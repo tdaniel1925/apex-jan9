@@ -69,13 +69,17 @@ describe('SmartOffice XML Builder', () => {
   });
 
   describe('buildSearchAgentsRequest', () => {
-    it('should build agent search with ClientType=7 condition', () => {
+    it('should build agent search with proper nested structure', () => {
       const xml = buildSearchAgentsRequest();
 
       expect(xml).toContain('<Agent>');
-      expect(xml).toContain('Contact.ClientType');
-      // Uses expr format with v element
-      expect(xml).toContain('<v>7</v>');
+      // Uses proper nested structure without conditions (returns all agents)
+      expect(xml).toContain('<Contact>');
+      expect(xml).toContain('<ClientType/>');
+      expect(xml).toContain('<LastName/>');
+      expect(xml).toContain('<FirstName/>');
+      // No condition element - returns all agents for better results
+      expect(xml).not.toContain('<condition>');
     });
 
     it('should include pagination options', () => {

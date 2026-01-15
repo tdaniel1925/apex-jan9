@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { headers } from 'next/headers';
 import { createServerSupabaseClient, createAdminClient } from '@/lib/db/supabase-server';
 import {
   validateWithdrawal,
@@ -7,7 +8,19 @@ import {
   createWithdrawalTransaction,
   createPayoutRecord,
 } from '@/lib/engines/wallet-engine';
+import {
+  validateWithdrawalLimits,
+  logWithdrawalAttempt,
+} from '@/lib/services/withdrawal-limits';
+import { sendWithdrawalRequest } from '@/lib/email/email-service';
 import type { Agent, Wallet, Payout } from '@/lib/types/database';
+
+// Estimated days for each withdrawal method
+const ESTIMATED_DAYS: Record<string, string> = {
+  ach: '3-5 business days',
+  wire: '1-2 business days',
+  check: '7-10 business days',
+};
 
 // Zod schema for withdrawal request
 const withdrawSchema = z.object({
@@ -33,7 +46,7 @@ export async function POST(request: NextRequest) {
     // Get agent with explicit typing
     const { data: agentData } = await supabase
       .from('agents')
-      .select('id')
+      .select('id, email, first_name, last_name')
       .eq('user_id', user.id)
       .single();
 
@@ -41,7 +54,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Agent not found' }, { status: 404 });
     }
 
-    const agent = agentData as Pick<Agent, 'id'>;
+    const agent = agentData as Pick<Agent, 'id' | 'email' | 'first_name' | 'last_name'>;
 
     // Parse and validate request body
     const body = await request.json();
@@ -56,6 +69,11 @@ export async function POST(request: NextRequest) {
 
     const { amount, method } = parseResult.data;
 
+    // Get request metadata for audit logging
+    const headersList = await headers();
+    const ipAddress = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'unknown';
+    const userAgent = headersList.get('user-agent') || 'unknown';
+
     // Get wallet with explicit typing
     const { data: walletData, error: walletError } = await adminClient
       .from('wallets')
@@ -69,10 +87,40 @@ export async function POST(request: NextRequest) {
 
     const wallet = walletData as Wallet;
 
-    // Validate withdrawal
+    // Validate withdrawal amount and balance
     const validation = validateWithdrawal(wallet, { amount, method });
     if (!validation.valid) {
+      // Log failed attempt
+      await logWithdrawalAttempt(
+        adminClient,
+        agent.id,
+        'request',
+        amount,
+        method,
+        undefined,
+        validation.error,
+        ipAddress,
+        userAgent
+      );
       return NextResponse.json({ error: validation.error }, { status: 400 });
+    }
+
+    // Validate withdrawal limits (rate limiting, banking info, etc.)
+    const limitsCheck = await validateWithdrawalLimits(adminClient, agent.id, amount, method);
+    if (!limitsCheck.allowed) {
+      // Log failed attempt
+      await logWithdrawalAttempt(
+        adminClient,
+        agent.id,
+        'request',
+        amount,
+        method,
+        undefined,
+        limitsCheck.reason,
+        ipAddress,
+        userAgent
+      );
+      return NextResponse.json({ error: limitsCheck.reason }, { status: 400 });
     }
 
     // Calculate amounts
@@ -111,6 +159,32 @@ export async function POST(request: NextRequest) {
       .update({ balance: wallet.balance - amount } as never)
       .eq('agent_id', agent.id);
 
+    // Log successful withdrawal request
+    await logWithdrawalAttempt(
+      adminClient,
+      agent.id,
+      'request',
+      amount,
+      method,
+      payout.id,
+      'Withdrawal request submitted successfully',
+      ipAddress,
+      userAgent
+    );
+
+    // Send confirmation email (non-blocking)
+    sendWithdrawalRequest({
+      to: agent.email,
+      agentName: agent.first_name || 'Agent',
+      amount: gross,
+      netAmount: net,
+      fee,
+      paymentMethod: method.toUpperCase(),
+      estimatedDays: ESTIMATED_DAYS[method],
+    }).catch((err) => {
+      console.error('Failed to send withdrawal request email:', err);
+    });
+
     return NextResponse.json({
       success: true,
       payout: {
@@ -121,6 +195,7 @@ export async function POST(request: NextRequest) {
         method,
         status: 'pending',
       },
+      limits: limitsCheck.limits, // Include remaining limits in response
     });
   } catch (error) {
     console.error('Withdraw POST error:', error);

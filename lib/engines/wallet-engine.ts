@@ -184,6 +184,14 @@ export function createPayoutRecord(
     net_amount: request.amount - fee,
     status: 'pending',
     processed_at: null,
+    admin_id: null,
+    admin_notes: null,
+    rejection_reason: null,
+    tracking_number: null,
+    wire_reference: null,
+    ach_trace_number: null,
+    approved_at: null,
+    rejected_at: null,
   };
 }
 

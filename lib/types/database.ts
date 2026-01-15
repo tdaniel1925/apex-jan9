@@ -215,12 +215,111 @@ export interface Payout {
   method: 'ach' | 'wire' | 'check';
   fee: number;
   net_amount: number;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'rejected';
   processed_at: string | null;
   created_at: string;
+  // Enhanced fields
+  admin_id: string | null;
+  admin_notes: string | null;
+  rejection_reason: string | null;
+  tracking_number: string | null;
+  wire_reference: string | null;
+  ach_trace_number: string | null;
+  approved_at: string | null;
+  rejected_at: string | null;
 }
 
-export type PayoutInsert = Omit<Payout, 'id' | 'created_at'>;
+export type PayoutInsert = Omit<Payout, 'id' | 'created_at' | 'admin_id' | 'admin_notes' | 'rejection_reason' | 'tracking_number' | 'wire_reference' | 'ach_trace_number' | 'approved_at' | 'rejected_at'>;
+
+// ============================================
+// AGENT BANKING INFO
+// ============================================
+export type BankAccountType = 'checking' | 'savings';
+export type BankAccountStatus = 'pending' | 'verified' | 'failed';
+
+export interface AgentBankingInfo {
+  id: string;
+  agent_id: string;
+
+  // ACH Details
+  bank_name: string | null;
+  account_holder_name: string | null;
+  account_type: BankAccountType;
+  routing_number: string | null;
+  account_number_last4: string | null;
+  account_number_encrypted: string | null;
+
+  // Verification
+  verification_status: BankAccountStatus;
+  verified_at: string | null;
+  verification_attempts: number;
+
+  // Mailing Address (for checks/wires)
+  mailing_address_line1: string | null;
+  mailing_address_line2: string | null;
+  mailing_city: string | null;
+  mailing_state: string | null;
+  mailing_zip: string | null;
+  mailing_country: string;
+
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AgentBankingInfoInsert {
+  agent_id: string;
+  bank_name?: string | null;
+  account_holder_name?: string | null;
+  account_type?: BankAccountType;
+  routing_number?: string | null;
+  account_number_last4?: string | null;
+  account_number_encrypted?: string | null;
+  verification_status?: BankAccountStatus;
+  mailing_address_line1?: string | null;
+  mailing_address_line2?: string | null;
+  mailing_city?: string | null;
+  mailing_state?: string | null;
+  mailing_zip?: string | null;
+  mailing_country?: string;
+}
+
+export type AgentBankingInfoUpdate = Partial<AgentBankingInfoInsert>;
+
+// ============================================
+// WITHDRAWAL LIMITS
+// ============================================
+export interface WithdrawalLimits {
+  id: string;
+  agent_id: string | null;
+  rank: string | null;
+  daily_limit: number;
+  weekly_limit: number;
+  monthly_limit: number;
+  per_transaction_limit: number;
+  min_account_age_days: number;
+  first_withdrawal_hold_hours: number;
+  max_withdrawals_per_day: number;
+  max_withdrawals_per_week: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// ============================================
+// WITHDRAWAL AUDIT LOG
+// ============================================
+export interface WithdrawalAuditLog {
+  id: string;
+  payout_id: string;
+  agent_id: string;
+  admin_id: string | null;
+  action: 'requested' | 'approved' | 'rejected' | 'processed' | 'cancelled';
+  previous_status: Payout['status'] | null;
+  new_status: Payout['status'] | null;
+  notes: string | null;
+  ip_address: string | null;
+  user_agent: string | null;
+  created_at: string;
+}
 
 // ============================================
 // CRM - CONTACTS

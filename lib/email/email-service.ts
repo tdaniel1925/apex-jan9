@@ -8,6 +8,8 @@ import { resend, EMAIL_CONFIG } from './resend-client';
 import { CommissionUpdateEmail } from './templates/commission-update';
 import { BonusApprovalEmail } from './templates/bonus-approval';
 import { PayoutNotificationEmail } from './templates/payout-notification';
+import { WithdrawalRequestEmail } from './templates/withdrawal-request';
+import { WithdrawalRejectedEmail } from './templates/withdrawal-rejected';
 import { WelcomeAgentEmail } from './templates/welcome-agent';
 import { NewLeadNotificationEmail } from './templates/new-lead-notification';
 import { FoundersWelcomeEmail } from './templates/founders-welcome';
@@ -154,6 +156,103 @@ export async function sendPayoutNotification(params: {
     return { success: true, messageId: data?.id };
   } catch (error) {
     console.error('Error sending payout notification email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Send withdrawal request confirmation
+ */
+export async function sendWithdrawalRequest(params: {
+  to: string;
+  agentName: string;
+  amount: number;
+  netAmount: number;
+  fee: number;
+  paymentMethod: string;
+  estimatedDays: string;
+}): Promise<EmailResult> {
+  try {
+    const { to, agentName, amount, netAmount, fee, paymentMethod, estimatedDays } = params;
+
+    const html = await render(
+      WithdrawalRequestEmail({
+        agentName,
+        amount,
+        netAmount,
+        fee,
+        paymentMethod,
+        estimatedDays,
+        viewUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/wallet`,
+      })
+    );
+
+    const { data, error } = await resend.emails.send({
+      from: EMAIL_CONFIG.from,
+      to,
+      subject: `Withdrawal Request Received - $${amount.toFixed(2)}`,
+      html,
+    });
+
+    if (error) {
+      console.error('Failed to send withdrawal request email:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('Withdrawal request email sent:', { to, messageId: data?.id });
+    return { success: true, messageId: data?.id };
+  } catch (error) {
+    console.error('Error sending withdrawal request email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Send withdrawal rejected notification
+ */
+export async function sendWithdrawalRejected(params: {
+  to: string;
+  agentName: string;
+  amount: number;
+  paymentMethod: string;
+  reason?: string;
+}): Promise<EmailResult> {
+  try {
+    const { to, agentName, amount, paymentMethod, reason } = params;
+
+    const html = await render(
+      WithdrawalRejectedEmail({
+        agentName,
+        amount,
+        paymentMethod,
+        reason,
+        viewUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/wallet`,
+        supportEmail: 'support@theapexway.net',
+      })
+    );
+
+    const { data, error } = await resend.emails.send({
+      from: EMAIL_CONFIG.from,
+      to,
+      subject: `Withdrawal Update - Action Required`,
+      html,
+    });
+
+    if (error) {
+      console.error('Failed to send withdrawal rejected email:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('Withdrawal rejected email sent:', { to, messageId: data?.id });
+    return { success: true, messageId: data?.id };
+  } catch (error) {
+    console.error('Error sending withdrawal rejected email:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

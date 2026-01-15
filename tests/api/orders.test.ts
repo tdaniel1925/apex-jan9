@@ -16,7 +16,7 @@ const { mockGetUser, mockFrom } = vi.hoisted(() => {
 
 // Mock Supabase
 vi.mock('@/lib/db/supabase-server', () => ({
-  createServerClient: vi.fn(async () => ({
+  createServerSupabaseClient: vi.fn(async () => ({
     auth: {
       getUser: mockGetUser,
     },

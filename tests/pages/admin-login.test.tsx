@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(),
+  useSearchParams: vi.fn(() => new URLSearchParams()),
 }));
 
 // Mock next/image
@@ -95,7 +96,14 @@ describe('AdminLoginPage', () => {
   });
 
   describe('Corporate Staff Login (RBAC)', () => {
+    // Helper to switch from magic link (default) to password mode
+    const switchToPasswordMode = async (user: ReturnType<typeof userEvent.setup>) => {
+      const passwordModeButton = screen.getByRole('button', { name: /sign in with password instead/i });
+      await user.click(passwordModeButton);
+    };
+
     it('should handle successful corporate login', async () => {
+      const user = userEvent.setup();
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
@@ -105,13 +113,21 @@ describe('AdminLoginPage', () => {
 
       const { container } = render(<AdminLoginPage />);
 
+      // Switch to password mode first (default is magic link)
+      await switchToPasswordMode(user);
+
+      await waitFor(() => {
+        expect(container.querySelector('#corporate-email')).toBeInTheDocument();
+      });
+
       const emailInput = container.querySelector('#corporate-email') as HTMLInputElement;
       const passwordInput = container.querySelector('#corporate-password') as HTMLInputElement;
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
 
-      fireEvent.change(emailInput, { target: { value: 'admin@theapexway.net' } });
-      fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(submitButton);
+      await user.type(emailInput, 'admin@theapexway.net');
+      await user.type(passwordInput, 'password123');
+
+      const submitButton = screen.getByRole('button', { name: /^sign in$/i });
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith('/api/admin/auth/login', expect.objectContaining({
@@ -127,6 +143,7 @@ describe('AdminLoginPage', () => {
     });
 
     it('should handle corporate login error', async () => {
+      const user = userEvent.setup();
       mockFetch.mockResolvedValueOnce({
         ok: false,
         json: async () => ({
@@ -136,13 +153,21 @@ describe('AdminLoginPage', () => {
 
       const { container } = render(<AdminLoginPage />);
 
+      // Switch to password mode first
+      await switchToPasswordMode(user);
+
+      await waitFor(() => {
+        expect(container.querySelector('#corporate-email')).toBeInTheDocument();
+      });
+
       const emailInput = container.querySelector('#corporate-email') as HTMLInputElement;
       const passwordInput = container.querySelector('#corporate-password') as HTMLInputElement;
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
 
-      fireEvent.change(emailInput, { target: { value: 'wrong@email.com' } });
-      fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
-      fireEvent.click(submitButton);
+      await user.type(emailInput, 'wrong@email.com');
+      await user.type(passwordInput, 'wrongpassword');
+
+      const submitButton = screen.getByRole('button', { name: /^sign in$/i });
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
@@ -152,6 +177,7 @@ describe('AdminLoginPage', () => {
     });
 
     it('should show loading state during corporate authentication', async () => {
+      const user = userEvent.setup();
       mockFetch.mockImplementation(() => new Promise(resolve => setTimeout(() => resolve({
         ok: true,
         json: async () => ({ data: { token: 'token' } }),
@@ -159,13 +185,21 @@ describe('AdminLoginPage', () => {
 
       const { container } = render(<AdminLoginPage />);
 
+      // Switch to password mode first
+      await switchToPasswordMode(user);
+
+      await waitFor(() => {
+        expect(container.querySelector('#corporate-email')).toBeInTheDocument();
+      });
+
       const emailInput = container.querySelector('#corporate-email') as HTMLInputElement;
       const passwordInput = container.querySelector('#corporate-password') as HTMLInputElement;
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
 
-      fireEvent.change(emailInput, { target: { value: 'admin@theapexway.net' } });
-      fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(submitButton);
+      await user.type(emailInput, 'admin@theapexway.net');
+      await user.type(passwordInput, 'password123');
+
+      const submitButton = screen.getByRole('button', { name: /^sign in$/i });
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(screen.getByText(/signing in/i)).toBeInTheDocument();
@@ -173,6 +207,7 @@ describe('AdminLoginPage', () => {
     });
 
     it('should disable inputs during loading', async () => {
+      const user = userEvent.setup();
       mockFetch.mockImplementation(() => new Promise(resolve => setTimeout(() => resolve({
         ok: true,
         json: async () => ({ data: { token: 'token' } }),
@@ -180,13 +215,21 @@ describe('AdminLoginPage', () => {
 
       const { container } = render(<AdminLoginPage />);
 
+      // Switch to password mode first
+      await switchToPasswordMode(user);
+
+      await waitFor(() => {
+        expect(container.querySelector('#corporate-email')).toBeInTheDocument();
+      });
+
       const emailInput = container.querySelector('#corporate-email') as HTMLInputElement;
       const passwordInput = container.querySelector('#corporate-password') as HTMLInputElement;
-      const submitButton = screen.getByRole('button', { name: /sign in/i }) as HTMLButtonElement;
 
-      fireEvent.change(emailInput, { target: { value: 'admin@theapexway.net' } });
-      fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(submitButton);
+      await user.type(emailInput, 'admin@theapexway.net');
+      await user.type(passwordInput, 'password123');
+
+      const submitButton = screen.getByRole('button', { name: /^sign in$/i }) as HTMLButtonElement;
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(emailInput.disabled).toBe(true);

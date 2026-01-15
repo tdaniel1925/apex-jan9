@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createAdminClient } from '@/lib/db/supabase-server';
 import { verifyAdmin, forbiddenResponse, badRequestResponse, notFoundResponse, serverErrorResponse } from '@/lib/auth/admin-auth';
+import { sendPayoutNotification, sendWithdrawalRejected } from '@/lib/email/email-service';
 import type { Payout, Wallet } from '@/lib/types/database';
 
 // Update schema
@@ -138,6 +139,41 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     if (error) {
       console.error('Payout update error:', error);
       return serverErrorResponse();
+    }
+
+    // Send notification emails based on status change
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const agentInfo = (data as any)?.agents as { first_name: string; last_name: string; email: string } | null;
+    if (agentInfo && updates.status) {
+      const agentName = agentInfo.first_name || 'Agent';
+      const agentEmail = agentInfo.email;
+      const payoutAmount = currentPayout.net_amount;
+      const paymentMethod = currentPayout.method.toUpperCase();
+
+      if (updates.status === 'processing' || updates.status === 'completed') {
+        // Send processing/completed notification
+        sendPayoutNotification({
+          to: agentEmail,
+          agentName,
+          amount: payoutAmount,
+          status: updates.status,
+          paymentMethod,
+          expectedDate: updates.status === 'processing' ? '1-5 business days' : undefined,
+        }).catch((err) => {
+          console.error('Failed to send payout notification email:', err);
+        });
+      } else if (updates.status === 'failed') {
+        // Send rejection notification
+        sendWithdrawalRejected({
+          to: agentEmail,
+          agentName,
+          amount: currentPayout.amount,
+          paymentMethod,
+          reason: 'Your withdrawal request could not be processed. The funds have been returned to your wallet balance.',
+        }).catch((err) => {
+          console.error('Failed to send withdrawal rejected email:', err);
+        });
+      }
     }
 
     return NextResponse.json(data);
