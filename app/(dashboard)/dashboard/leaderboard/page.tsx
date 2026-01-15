@@ -213,9 +213,9 @@ export default function LeaderboardPage() {
                       <AvatarImage src={data.performers[1]?.agent?.avatarUrl || undefined} />
                       <AvatarFallback className="bg-gray-200 text-lg">
                         {data.performers[1]?.agent?.name
-                          .split(' ')
+                          ?.split(' ')
                           .map((n) => n[0])
-                          .join('')}
+                          .join('') || '??'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center font-bold">
@@ -241,9 +241,9 @@ export default function LeaderboardPage() {
                       <AvatarImage src={data.performers[0]?.agent?.avatarUrl || undefined} />
                       <AvatarFallback className="bg-yellow-100 text-xl">
                         {data.performers[0]?.agent?.name
-                          .split(' ')
+                          ?.split(' ')
                           .map((n) => n[0])
-                          .join('')}
+                          .join('') || '??'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-yellow-400 flex items-center justify-center font-bold">
@@ -268,9 +268,9 @@ export default function LeaderboardPage() {
                       <AvatarImage src={data.performers[2]?.agent?.avatarUrl || undefined} />
                       <AvatarFallback className="bg-amber-100">
                         {data.performers[2]?.agent?.name
-                          .split(' ')
+                          ?.split(' ')
                           .map((n) => n[0])
-                          .join('')}
+                          .join('') || '??'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold">
@@ -328,9 +328,9 @@ export default function LeaderboardPage() {
                           />
                           <AvatarFallback>
                             {performer.agent?.name
-                              .split(' ')
+                              ?.split(' ')
                               .map((n) => n[0])
-                              .join('')}
+                              .join('') || '??'}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
