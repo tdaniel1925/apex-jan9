@@ -22,11 +22,24 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Skip i18n for API routes and static files
+  // Marketing/public pages that don't have i18n yet
+  const marketingPages = ['/', '/about', '/carriers', '/compare', '/professionals',
+                          '/new-to-insurance', '/faq', '/contact', '/opportunity',
+                          '/privacy', '/terms', '/income-disclaimer', '/login',
+                          '/signup', '/admin-login'];
+
+  // Check if this is a marketing page (without locale prefix)
+  const isMarketingPage = marketingPages.includes(pathname) ||
+                          pathname.startsWith('/join') ||
+                          pathname.startsWith('/team');
+
+  // Skip i18n for API routes, static files, images folder, and marketing pages
   const shouldSkipI18n = pathname.startsWith('/api') ||
                          pathname.startsWith('/_next') ||
+                         pathname.startsWith('/images') ||
                          pathname.includes('/favicon.ico') ||
-                         /\.(svg|png|jpg|jpeg|gif|webp|ico)$/.test(pathname);
+                         /\.(svg|png|jpg|jpeg|gif|webp|ico)$/.test(pathname) ||
+                         isMarketingPage;
 
   // Handle /join/[agentCode] to /team/[username] redirects
   // Extract locale-free path for checking
