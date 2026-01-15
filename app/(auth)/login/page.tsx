@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Logo } from '@/components/ui/logo';
 import { useAuth } from '@/lib/auth/auth-context';
+import { useTranslations } from 'next-intl';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,6 +18,8 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { signIn } = useAuth();
+  const t = useTranslations('auth');
+  const tMarketing = useTranslations('marketing');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,8 +50,8 @@ export default function LoginPage() {
           <div className="mx-auto mb-4">
             <Logo size="md" />
           </div>
-          <CardTitle>Welcome Back</CardTitle>
-          <CardDescription>Sign in to your agent portal</CardDescription>
+          <CardTitle>{t('welcomeBack')}</CardTitle>
+          <CardDescription>{t('signInToContinue')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -59,7 +62,7 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -73,12 +76,12 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t('password')}</Label>
                 <Link
                   href="/forgot-password"
                   className="text-sm text-primary hover:underline"
                 >
-                  Forgot password?
+                  {t('forgotPassword')}
                 </Link>
               </div>
               <Input
@@ -93,14 +96,14 @@ export default function LoginPage() {
             </div>
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? `${t('login')}...` : t('login')}
             </Button>
           </form>
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{' '}
+            {t('dontHaveAccount')}{' '}
             <Link href="/signup" className="text-primary hover:underline font-medium">
-              Join Apex
+              {tMarketing('nav.joinApex')}
             </Link>
           </div>
         </CardContent>

@@ -52,6 +52,9 @@
     "resources": "Recursos",
     "certificates": "Certificados",
     "shop": "Tienda",
+    "orders": "Pedidos",
+    "disputes": "Disputas",
+    "replicatedSite": "Sitio Replicado",
     "crm": "CRM",
     "reports": "Reportes",
     "settings": "Configuración",
@@ -362,6 +365,117 @@
     "copyright": "© {year} Apex Insurance Group. Todos los derechos reservados.",
     "terms": "Términos de Servicio",
     "privacy": "Política de Privacidad",
-    "contact": "Contáctanos"
+    "contact": "Contáctanos",
+    "incomeDisclosure": "Divulgación de Ingresos",
+    "company": "Empresa",
+    "aboutUs": "Sobre Nosotros",
+    "ourCarriers": "Nuestras Aseguradoras",
+    "compare": "Comparar",
+    "faq": "Preguntas Frecuentes",
+    "getStarted": "Comenzar",
+    "licensedAgents": "Agentes con Licencia",
+    "newToInsurance": "Nuevo en Seguros",
+    "careerOpportunity": "Oportunidad de Carrera",
+    "joinApex": "Únete a Apex",
+    "products": "Productos",
+    "lifeInsurance": "Seguro de Vida",
+    "annuities": "Anualidades",
+    "iulPolicies": "Pólizas IUL",
+    "termLife": "Seguro de Vida Temporal",
+    "finalExpense": "Gastos Finales",
+    "forAgents": "Para Agentes",
+    "agentLogin": "Inicio de Sesión de Agentes",
+    "brandTagline": "Construyendo futuros financieros a través de soluciones de seguros confiables y oportunidades empresariales desde 2018."
+  },
+  "marketing": {
+    "nav": {
+      "about": "Nosotros",
+      "carriers": "Aseguradoras",
+      "compare": "Comparar",
+      "forAgents": "Para Agentes",
+      "newToInsurance": "Nuevo en Seguros",
+      "faq": "Preguntas Frecuentes",
+      "contact": "Contacto",
+      "signIn": "Iniciar Sesión",
+      "joinApex": "Únete a Apex"
+    },
+    "hero": {
+      "badge": "Calificado #1 IMO en Apoyo a Agentes",
+      "headline": "Construye Tu Negocio de Seguros con",
+      "headlineHighlight": "Apex Affinity Group",
+      "description": "Únete a una red de agentes de seguros de alto rendimiento. Gana comisiones competitivas, construye tu equipo y haz crecer tu negocio con herramientas impulsadas por IA.",
+      "getStarted": "Comenzar",
+      "learnMore": "Más Información",
+      "tagline": "Sin cuotas de inscripción • Derechos desde el día uno • Contratos con las mejores aseguradoras"
+    },
+    "stats": {
+      "activeAgents": "Agentes Activos",
+      "aRatedCarriers": "Aseguradoras Calificadas A",
+      "commissionsPaid": "Comisiones Pagadas",
+      "states": "Estados"
+    },
+    "whyApex": {
+      "title": "Por Qué los Agentes Eligen Apex",
+      "description": "Hemos construido una plataforma que brinda a los agentes independientes todo lo que necesitan para tener éxito sin la burocracia corporativa.",
+      "topCommissions": {
+        "title": "Mejores Comisiones",
+        "description": "Gana hasta 100% de comisión con nuestros mejores contratos. Sin límites, sin trucos."
+      },
+      "teamBuilding": {
+        "title": "Construcción de Equipos",
+        "description": "Construye tu equipo y gana sobrecomisiones hasta 6 generaciones de profundidad."
+      },
+      "aiCopilot": {
+        "title": "Copiloto de IA",
+        "description": "Nuestras herramientas exclusivas de IA te ayudan a cerrar más ventas y gestionar prospectos eficientemente."
+      },
+      "topCarriers": {
+        "title": "7 Mejores Aseguradoras",
+        "description": "Acceso a aseguradoras calificadas A: Columbus Life, AIG, F+G, MOO, NLG, Symetra, NA."
+      }
+    },
+    "testimonials": {
+      "title": "Historias de Éxito de Agentes",
+      "description": "Agentes reales, resultados reales. Mira lo que nuestros agentes dicen sobre construir su negocio con Apex.",
+      "disclaimer": "Los resultados varían. Consulta nuestra",
+      "incomeDisclosure": "divulgación de ingresos",
+      "disclaimerEnd": "para estadísticas reales."
+    },
+    "whatYouGet": {
+      "title": "Todo lo que Necesitas para Tener Éxito",
+      "noEnrollmentFees": {
+        "title": "Sin Cuotas de Inscripción",
+        "description": "Comienza tu negocio sin costos iniciales"
+      },
+      "vestedDayOne": {
+        "title": "Derechos desde el Día Uno",
+        "description": "Tus comisiones y renovaciones son tuyas inmediatamente"
+      },
+      "comprehensiveTraining": {
+        "title": "Capacitación Completa",
+        "description": "Coaching en vivo, entrenamiento de campo y educación continua"
+      },
+      "aiPoweredTools": {
+        "title": "Herramientas con IA",
+        "description": "Tecnología moderna para ayudarte a competir y ganar"
+      },
+      "topCarrierContracts": {
+        "title": "Contratos con las Mejores Aseguradoras",
+        "description": "Acceso a 7 aseguradoras calificadas A con tarifas competitivas"
+      },
+      "supportiveCommunity": {
+        "title": "Comunidad de Apoyo",
+        "description": "Únete a una red de agentes que se ayudan mutuamente a tener éxito"
+      },
+      "ctaTitle": "¿Listo para Construir Tu Futuro?",
+      "ctaDescription": "Da el primer paso hacia la independencia financiera. Únete a miles de agentes que han transformado sus carreras con Apex.",
+      "startApplication": "Comienza Tu Solicitud"
+    },
+    "finalCta": {
+      "title": "¿Listo para Comenzar?",
+      "description": "Únete a Apex Affinity Group hoy. Sin cuotas de inscripción, acceso a las mejores aseguradoras y el apoyo que necesitas para construir un negocio de seguros exitoso.",
+      "applyNow": "Aplicar Ahora",
+      "contactUs": "Contáctanos"
+    }
   }
 }

@@ -22,34 +22,44 @@ import {
   MessageSquareWarning,
   Globe,
   Trophy,
+  LucideIcon,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
+import { useTranslations } from 'next-intl';
 
 interface SidebarProps {
   agent: Agent;
 }
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Team', href: '/dashboard/team', icon: Users },
-  { name: 'Genealogy', href: '/dashboard/genealogy', icon: Network },
-  { name: 'Leaderboard', href: '/dashboard/leaderboard', icon: Trophy },
-  { name: 'Commissions', href: '/dashboard/commissions', icon: DollarSign },
-  { name: 'Bonuses', href: '/dashboard/bonuses', icon: Award },
-  { name: 'Wallet', href: '/dashboard/wallet', icon: Wallet },
-  { name: 'Disputes', href: '/dashboard/disputes', icon: MessageSquareWarning },
-  { name: 'Shop', href: '/dashboard/shop', icon: ShoppingBag },
-  { name: 'Orders', href: '/dashboard/orders', icon: Package },
-  { name: 'CRM', href: '/dashboard/crm', icon: Contact },
-  { name: 'Training', href: '/dashboard/training', icon: BookOpen },
-  { name: 'Reports', href: '/dashboard/reports', icon: BarChart3 },
-  { name: 'Replicated Site', href: '/dashboard/replicated-site', icon: Globe },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+interface NavItem {
+  nameKey: string;
+  href: string;
+  icon: LucideIcon;
+}
+
+const navigation: NavItem[] = [
+  { nameKey: 'dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { nameKey: 'team', href: '/dashboard/team', icon: Users },
+  { nameKey: 'genealogy', href: '/dashboard/genealogy', icon: Network },
+  { nameKey: 'leaderboard', href: '/dashboard/leaderboard', icon: Trophy },
+  { nameKey: 'commissions', href: '/dashboard/commissions', icon: DollarSign },
+  { nameKey: 'bonuses', href: '/dashboard/bonuses', icon: Award },
+  { nameKey: 'wallet', href: '/dashboard/wallet', icon: Wallet },
+  { nameKey: 'disputes', href: '/dashboard/disputes', icon: MessageSquareWarning },
+  { nameKey: 'shop', href: '/dashboard/shop', icon: ShoppingBag },
+  { nameKey: 'orders', href: '/dashboard/orders', icon: Package },
+  { nameKey: 'crm', href: '/dashboard/crm', icon: Contact },
+  { nameKey: 'training', href: '/dashboard/training', icon: BookOpen },
+  { nameKey: 'reports', href: '/dashboard/reports', icon: BarChart3 },
+  { nameKey: 'replicatedSite', href: '/dashboard/replicated-site', icon: Globe },
+  { nameKey: 'settings', href: '/dashboard/settings', icon: Settings },
 ];
 
 export function Sidebar({ agent }: SidebarProps) {
   const pathname = usePathname();
   const rankConfig = RANK_CONFIG[agent.rank];
+  const t = useTranslations('nav');
+  const tCommon = useTranslations('common');
 
   return (
     <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
@@ -84,7 +94,7 @@ export function Sidebar({ agent }: SidebarProps) {
           className="flex items-center gap-x-3 rounded-md p-2 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
         >
           <ExternalLink className="h-5 w-5 shrink-0" />
-          View Website
+          {tCommon('view')} Website
         </a>
 
         {/* Navigation */}
@@ -93,7 +103,7 @@ export function Sidebar({ agent }: SidebarProps) {
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
-                <li key={item.name}>
+                <li key={item.nameKey}>
                   <Link
                     href={item.href}
                     className={cn(
@@ -104,7 +114,7 @@ export function Sidebar({ agent }: SidebarProps) {
                     )}
                   >
                     <item.icon className="h-5 w-5 shrink-0" />
-                    {item.name}
+                    {t(item.nameKey)}
                   </Link>
                 </li>
               );
@@ -125,7 +135,7 @@ export function Sidebar({ agent }: SidebarProps) {
               href="/dashboard/settings/copilot"
               className="mt-3 inline-block text-xs font-medium text-sidebar-primary hover:underline"
             >
-              Learn More
+              {tCommon('learnMore')}
             </Link>
           </div>
         )}

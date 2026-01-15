@@ -52,6 +52,9 @@
     "resources": "资源",
     "certificates": "证书",
     "shop": "商店",
+    "orders": "订单",
+    "disputes": "争议",
+    "replicatedSite": "复制网站",
     "crm": "客户关系管理",
     "reports": "报表",
     "settings": "设置",
@@ -362,6 +365,117 @@
     "copyright": "© {year} Apex Insurance Group. 保留所有权利。",
     "terms": "服务条款",
     "privacy": "隐私政策",
-    "contact": "联系我们"
+    "contact": "联系我们",
+    "incomeDisclosure": "收入披露",
+    "company": "公司",
+    "aboutUs": "关于我们",
+    "ourCarriers": "我们的保险公司",
+    "compare": "对比",
+    "faq": "常见问题",
+    "getStarted": "开始",
+    "licensedAgents": "持牌代理人",
+    "newToInsurance": "保险新手",
+    "careerOpportunity": "职业机会",
+    "joinApex": "加入Apex",
+    "products": "产品",
+    "lifeInsurance": "人寿保险",
+    "annuities": "年金",
+    "iulPolicies": "IUL保单",
+    "termLife": "定期寿险",
+    "finalExpense": "殡葬保险",
+    "forAgents": "代理人专区",
+    "agentLogin": "代理人登录",
+    "brandTagline": "自2018年以来，通过可靠的保险解决方案和创业机会，建设财务未来。"
+  },
+  "marketing": {
+    "nav": {
+      "about": "关于",
+      "carriers": "保险公司",
+      "compare": "对比",
+      "forAgents": "代理人专区",
+      "newToInsurance": "保险新手",
+      "faq": "常见问题",
+      "contact": "联系",
+      "signIn": "登录",
+      "joinApex": "加入Apex"
+    },
+    "hero": {
+      "badge": "代理人支持评分第一的IMO",
+      "headline": "与Apex Affinity Group一起",
+      "headlineHighlight": "建立您的保险事业",
+      "description": "加入顶级保险代理人网络。获得有竞争力的佣金，组建团队，借助AI工具发展业务。",
+      "getStarted": "立即开始",
+      "learnMore": "了解更多",
+      "tagline": "无注册费 • 第一天即归属 • 顶级保险公司合同"
+    },
+    "stats": {
+      "activeAgents": "活跃代理人",
+      "aRatedCarriers": "A级保险公司",
+      "commissionsPaid": "已支付佣金",
+      "states": "覆盖州数"
+    },
+    "whyApex": {
+      "title": "为什么代理人选择Apex",
+      "description": "我们建立了一个平台，为独立代理人提供成功所需的一切，没有企业官僚主义。",
+      "topCommissions": {
+        "title": "顶级佣金",
+        "description": "通过我们的顶级合同获得高达100%的佣金。无上限，无限制。"
+      },
+      "teamBuilding": {
+        "title": "团队建设",
+        "description": "组建您的团队，获得深达6代的管理津贴。"
+      },
+      "aiCopilot": {
+        "title": "AI助手",
+        "description": "我们独家的AI工具帮助您成交更多业务，高效管理客户。"
+      },
+      "topCarriers": {
+        "title": "7家顶级保险公司",
+        "description": "访问A级保险公司：Columbus Life、AIG、F+G、MOO、NLG、Symetra、NA。"
+      }
+    },
+    "testimonials": {
+      "title": "代理人成功故事",
+      "description": "真实的代理人，真实的结果。看看我们的代理人如何评价与Apex一起建立业务。",
+      "disclaimer": "结果因人而异。请参阅我们的",
+      "incomeDisclosure": "收入披露",
+      "disclaimerEnd": "了解实际统计数据。"
+    },
+    "whatYouGet": {
+      "title": "成功所需的一切",
+      "noEnrollmentFees": {
+        "title": "无注册费",
+        "description": "无前期成本启动您的业务"
+      },
+      "vestedDayOne": {
+        "title": "第一天即归属",
+        "description": "您的佣金和续保收入立即归您所有"
+      },
+      "comprehensiveTraining": {
+        "title": "全面培训",
+        "description": "现场指导、实战培训和持续教育"
+      },
+      "aiPoweredTools": {
+        "title": "AI驱动工具",
+        "description": "现代技术帮助您竞争并获胜"
+      },
+      "topCarrierContracts": {
+        "title": "顶级保险公司合同",
+        "description": "访问7家A级保险公司，享有竞争力的费率"
+      },
+      "supportiveCommunity": {
+        "title": "支持型社区",
+        "description": "加入一个互相帮助成功的代理人网络"
+      },
+      "ctaTitle": "准备好建设您的未来了吗？",
+      "ctaDescription": "迈出财务独立的第一步。加入成千上万通过Apex改变职业生涯的代理人。",
+      "startApplication": "开始申请"
+    },
+    "finalCta": {
+      "title": "准备好开始了吗？",
+      "description": "立即加入Apex Affinity Group。无注册费，顶级保险公司访问权，以及建立成功保险业务所需的支持。",
+      "applyNow": "立即申请",
+      "contactUs": "联系我们"
+    }
   }
 }

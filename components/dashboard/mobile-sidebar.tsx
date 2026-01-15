@@ -16,29 +16,38 @@ import {
   BarChart3,
   Network,
   Award,
+  LucideIcon,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
+import { useTranslations } from 'next-intl';
 
 interface MobileSidebarProps {
   agent: Agent;
 }
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Team', href: '/dashboard/team', icon: Users },
-  { name: 'Genealogy', href: '/dashboard/genealogy', icon: Network },
-  { name: 'Commissions', href: '/dashboard/commissions', icon: DollarSign },
-  { name: 'Bonuses', href: '/dashboard/bonuses', icon: Award },
-  { name: 'Wallet', href: '/dashboard/wallet', icon: Wallet },
-  { name: 'CRM', href: '/dashboard/crm', icon: Contact },
-  { name: 'Training', href: '/dashboard/training', icon: BookOpen },
-  { name: 'Reports', href: '/dashboard/reports', icon: BarChart3 },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+interface NavItem {
+  nameKey: string;
+  href: string;
+  icon: LucideIcon;
+}
+
+const navigation: NavItem[] = [
+  { nameKey: 'dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { nameKey: 'team', href: '/dashboard/team', icon: Users },
+  { nameKey: 'genealogy', href: '/dashboard/genealogy', icon: Network },
+  { nameKey: 'commissions', href: '/dashboard/commissions', icon: DollarSign },
+  { nameKey: 'bonuses', href: '/dashboard/bonuses', icon: Award },
+  { nameKey: 'wallet', href: '/dashboard/wallet', icon: Wallet },
+  { nameKey: 'crm', href: '/dashboard/crm', icon: Contact },
+  { nameKey: 'training', href: '/dashboard/training', icon: BookOpen },
+  { nameKey: 'reports', href: '/dashboard/reports', icon: BarChart3 },
+  { nameKey: 'settings', href: '/dashboard/settings', icon: Settings },
 ];
 
 export function MobileSidebar({ agent }: MobileSidebarProps) {
   const pathname = usePathname();
   const rankConfig = RANK_CONFIG[agent.rank];
+  const t = useTranslations('nav');
 
   return (
     <div className="flex h-full flex-col bg-sidebar">
@@ -71,7 +80,7 @@ export function MobileSidebar({ agent }: MobileSidebarProps) {
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
-                <li key={item.name}>
+                <li key={item.nameKey}>
                   <Link
                     href={item.href}
                     className={cn(
@@ -82,7 +91,7 @@ export function MobileSidebar({ agent }: MobileSidebarProps) {
                     )}
                   >
                     <item.icon className="h-5 w-5 shrink-0" />
-                    {item.name}
+                    {t(item.nameKey)}
                   </Link>
                 </li>
               );

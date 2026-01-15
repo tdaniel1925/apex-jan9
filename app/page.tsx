@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { MarketingLanguageSwitcher } from '@/components/marketing-language-switcher';
+import { useTranslations } from 'next-intl';
 
 const testimonials = [
   {
@@ -48,16 +49,11 @@ const testimonials = [
   },
 ];
 
-const stats = [
-  { value: '2,500+', label: 'Active Agents' },
-  { value: '7', label: 'A-Rated Carriers' },
-  { value: '$50M+', label: 'Commissions Paid' },
-  { value: '50', label: 'States' },
-];
-
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const t = useTranslations('marketing');
+  const tFooter = useTranslations('footer');
 
   useEffect(() => {
     if (!loading && user) {
@@ -91,34 +87,34 @@ export default function Home() {
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              About
+              {t('nav.about')}
             </Link>
             <Link href="/carriers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Carriers
+              {t('nav.carriers')}
             </Link>
             <Link href="/compare" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Compare
+              {t('nav.compare')}
             </Link>
             <Link href="/professionals" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              For Agents
+              {t('nav.forAgents')}
             </Link>
             <Link href="/new-to-insurance" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              New to Insurance
+              {t('nav.newToInsurance')}
             </Link>
             <Link href="/faq" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              FAQ
+              {t('nav.faq')}
             </Link>
             <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Contact
+              {t('nav.contact')}
             </Link>
           </nav>
           <div className="flex items-center gap-2 sm:gap-4">
             <MarketingLanguageSwitcher />
             <Link href="/login">
-              <Button variant="ghost">Sign In</Button>
+              <Button variant="ghost">{t('nav.signIn')}</Button>
             </Link>
             <Link href="/signup">
-              <Button>Join Apex</Button>
+              <Button>{t('nav.joinApex')}</Button>
             </Link>
           </div>
         </div>
@@ -129,31 +125,30 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
             <Star className="h-4 w-4" />
-            Rated #1 IMO for Agent Support
+            {t('hero.badge')}
           </div>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight max-w-4xl mx-auto">
-            Build Your Insurance Business with{' '}
-            <span className="text-primary">Apex Affinity Group</span>
+            {t('hero.headline')}{' '}
+            <span className="text-primary">{t('hero.headlineHighlight')}</span>
           </h1>
           <p className="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto">
-            Join a network of top-producing insurance agents. Earn competitive commissions,
-            build your team, and grow your business with AI-powered tools.
+            {t('hero.description')}
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup">
               <Button size="lg" className="text-lg px-8">
-                Get Started
+                {t('hero.getStarted')}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Link href="/opportunity">
               <Button size="lg" variant="outline" className="text-lg px-8">
-                Learn More
+                {t('hero.learnMore')}
               </Button>
             </Link>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
-            No enrollment fees &bull; Vested day one &bull; Top carrier contracts
+            {t('hero.tagline')}
           </p>
         </div>
       </section>
@@ -162,12 +157,22 @@ export default function Home() {
       <section className="py-12 border-y bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary">{stat.value}</div>
-                <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
-              </div>
-            ))}
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-primary">2,500+</div>
+              <div className="text-sm text-muted-foreground mt-1">{t('stats.activeAgents')}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-primary">7</div>
+              <div className="text-sm text-muted-foreground mt-1">{t('stats.aRatedCarriers')}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-primary">$50M+</div>
+              <div className="text-sm text-muted-foreground mt-1">{t('stats.commissionsPaid')}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-primary">50</div>
+              <div className="text-sm text-muted-foreground mt-1">{t('stats.states')}</div>
+            </div>
           </div>
         </div>
       </section>
@@ -176,10 +181,9 @@ export default function Home() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Why Agents Choose Apex</h2>
+            <h2 className="text-3xl font-bold mb-4">{t('whyApex.title')}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              We&apos;ve built a platform that gives independent agents everything they need to
-              succeed without the corporate red tape.
+              {t('whyApex.description')}
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -188,9 +192,9 @@ export default function Home() {
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <DollarSign className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Top Commissions</h3>
+                <h3 className="text-xl font-semibold mb-2">{t('whyApex.topCommissions.title')}</h3>
                 <p className="text-muted-foreground">
-                  Earn up to 100% commission with our top carrier contracts. No caps, no games.
+                  {t('whyApex.topCommissions.description')}
                 </p>
               </CardContent>
             </Card>
@@ -199,9 +203,9 @@ export default function Home() {
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Users className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Team Building</h3>
+                <h3 className="text-xl font-semibold mb-2">{t('whyApex.teamBuilding.title')}</h3>
                 <p className="text-muted-foreground">
-                  Build your team and earn override commissions up to 6 generations deep.
+                  {t('whyApex.teamBuilding.description')}
                 </p>
               </CardContent>
             </Card>
@@ -210,9 +214,9 @@ export default function Home() {
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Sparkles className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">AI Copilot</h3>
+                <h3 className="text-xl font-semibold mb-2">{t('whyApex.aiCopilot.title')}</h3>
                 <p className="text-muted-foreground">
-                  Our exclusive AI tools help you close more deals and manage leads efficiently.
+                  {t('whyApex.aiCopilot.description')}
                 </p>
               </CardContent>
             </Card>
@@ -221,9 +225,9 @@ export default function Home() {
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Shield className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">7 Top Carriers</h3>
+                <h3 className="text-xl font-semibold mb-2">{t('whyApex.topCarriers.title')}</h3>
                 <p className="text-muted-foreground">
-                  Access A-rated carriers: Columbus Life, AIG, F+G, MOO, NLG, Symetra, NA.
+                  {t('whyApex.topCarriers.description')}
                 </p>
               </CardContent>
             </Card>
@@ -235,10 +239,9 @@ export default function Home() {
       <section className="py-20 bg-muted/50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Agent Success Stories</h2>
+            <h2 className="text-3xl font-bold mb-4">{t('testimonials.title')}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Real agents, real results. See what our agents have to say about building
-              their business with Apex.
+              {t('testimonials.description')}
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -271,11 +274,11 @@ export default function Home() {
           </div>
           <div className="text-center mt-8">
             <p className="text-sm text-muted-foreground">
-              Results vary. See our{' '}
+              {t('testimonials.disclaimer')}{' '}
               <Link href="/income-disclaimer" className="text-primary hover:underline">
-                income disclosure
+                {t('testimonials.incomeDisclosure')}
               </Link>{' '}
-              for actual statistics.
+              {t('testimonials.disclaimerEnd')}
             </p>
           </div>
         </div>
@@ -286,59 +289,59 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6">Everything You Need to Succeed</h2>
+              <h2 className="text-3xl font-bold mb-6">{t('whatYouGet.title')}</h2>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-green-500 mt-0.5" />
                   <div>
-                    <div className="font-semibold">No Enrollment Fees</div>
+                    <div className="font-semibold">{t('whatYouGet.noEnrollmentFees.title')}</div>
                     <div className="text-sm text-muted-foreground">
-                      Start your business without upfront costs
+                      {t('whatYouGet.noEnrollmentFees.description')}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-green-500 mt-0.5" />
                   <div>
-                    <div className="font-semibold">Vested from Day One</div>
+                    <div className="font-semibold">{t('whatYouGet.vestedDayOne.title')}</div>
                     <div className="text-sm text-muted-foreground">
-                      Your commissions and renewals are yours immediately
+                      {t('whatYouGet.vestedDayOne.description')}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-green-500 mt-0.5" />
                   <div>
-                    <div className="font-semibold">Comprehensive Training</div>
+                    <div className="font-semibold">{t('whatYouGet.comprehensiveTraining.title')}</div>
                     <div className="text-sm text-muted-foreground">
-                      Live coaching, field training, and ongoing education
+                      {t('whatYouGet.comprehensiveTraining.description')}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-green-500 mt-0.5" />
                   <div>
-                    <div className="font-semibold">AI-Powered Tools</div>
+                    <div className="font-semibold">{t('whatYouGet.aiPoweredTools.title')}</div>
                     <div className="text-sm text-muted-foreground">
-                      Modern technology to help you compete and win
+                      {t('whatYouGet.aiPoweredTools.description')}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-green-500 mt-0.5" />
                   <div>
-                    <div className="font-semibold">Top Carrier Contracts</div>
+                    <div className="font-semibold">{t('whatYouGet.topCarrierContracts.title')}</div>
                     <div className="text-sm text-muted-foreground">
-                      Access to 7 A-rated carriers with competitive rates
+                      {t('whatYouGet.topCarrierContracts.description')}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-green-500 mt-0.5" />
                   <div>
-                    <div className="font-semibold">Supportive Community</div>
+                    <div className="font-semibold">{t('whatYouGet.supportiveCommunity.title')}</div>
                     <div className="text-sm text-muted-foreground">
-                      Join a network of agents who help each other succeed
+                      {t('whatYouGet.supportiveCommunity.description')}
                     </div>
                   </div>
                 </div>
@@ -346,14 +349,13 @@ export default function Home() {
             </div>
             <div className="bg-muted rounded-lg p-8 text-center">
               <TrendingUp className="h-16 w-16 text-primary mx-auto mb-6" />
-              <h3 className="text-2xl font-bold mb-4">Ready to Build Your Future?</h3>
+              <h3 className="text-2xl font-bold mb-4">{t('whatYouGet.ctaTitle')}</h3>
               <p className="text-muted-foreground mb-6">
-                Take the first step toward financial independence. Join thousands of agents
-                who have transformed their careers with Apex.
+                {t('whatYouGet.ctaDescription')}
               </p>
               <Link href="/signup">
                 <Button size="lg" className="w-full sm:w-auto">
-                  Start Your Application
+                  {t('whatYouGet.startApplication')}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -365,21 +367,20 @@ export default function Home() {
       {/* Final CTA Section */}
       <section className="py-20 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('finalCta.title')}</h2>
           <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-            Join Apex Affinity Group today. No enrollment fees, top carrier access,
-            and the support you need to build a successful insurance business.
+            {t('finalCta.description')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup">
               <Button size="lg" variant="secondary" className="text-lg px-8">
-                Apply Now
+                {t('finalCta.applyNow')}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Link href="/contact">
               <Button size="lg" variant="outline" className="text-lg px-8 bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10">
-                Contact Us
+                {t('finalCta.contactUs')}
               </Button>
             </Link>
           </div>
@@ -394,64 +395,63 @@ export default function Home() {
             <div className="space-y-4">
               <Logo size="sm" />
               <p className="text-sm text-muted-foreground">
-                Building financial futures through trusted insurance solutions and
-                entrepreneurial opportunities since 2018.
+                {tFooter('brandTagline')}
               </p>
             </div>
 
             {/* Quick Links */}
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
+              <h4 className="font-semibold mb-4">{tFooter('company')}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/about" className="hover:text-foreground">About Us</Link></li>
-                <li><Link href="/carriers" className="hover:text-foreground">Our Carriers</Link></li>
-                <li><Link href="/compare" className="hover:text-foreground">Compare</Link></li>
-                <li><Link href="/faq" className="hover:text-foreground">FAQ</Link></li>
-                <li><Link href="/contact" className="hover:text-foreground">Contact Us</Link></li>
+                <li><Link href="/about" className="hover:text-foreground">{tFooter('aboutUs')}</Link></li>
+                <li><Link href="/carriers" className="hover:text-foreground">{tFooter('ourCarriers')}</Link></li>
+                <li><Link href="/compare" className="hover:text-foreground">{tFooter('compare')}</Link></li>
+                <li><Link href="/faq" className="hover:text-foreground">{tFooter('faq')}</Link></li>
+                <li><Link href="/contact" className="hover:text-foreground">{tFooter('contact')}</Link></li>
               </ul>
             </div>
 
             {/* Get Started */}
             <div>
-              <h4 className="font-semibold mb-4">Get Started</h4>
+              <h4 className="font-semibold mb-4">{tFooter('getStarted')}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/professionals" className="hover:text-foreground">Licensed Agents</Link></li>
-                <li><Link href="/new-to-insurance" className="hover:text-foreground">New to Insurance</Link></li>
-                <li><Link href="/opportunity" className="hover:text-foreground">Career Opportunity</Link></li>
-                <li><Link href="/join" className="hover:text-foreground">Join Apex</Link></li>
+                <li><Link href="/professionals" className="hover:text-foreground">{tFooter('licensedAgents')}</Link></li>
+                <li><Link href="/new-to-insurance" className="hover:text-foreground">{tFooter('newToInsurance')}</Link></li>
+                <li><Link href="/opportunity" className="hover:text-foreground">{tFooter('careerOpportunity')}</Link></li>
+                <li><Link href="/join" className="hover:text-foreground">{tFooter('joinApex')}</Link></li>
               </ul>
             </div>
 
             {/* Products */}
             <div>
-              <h4 className="font-semibold mb-4">Products</h4>
+              <h4 className="font-semibold mb-4">{tFooter('products')}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/carriers#life-insurance" className="hover:text-foreground">Life Insurance</Link></li>
-                <li><Link href="/carriers#annuities" className="hover:text-foreground">Annuities</Link></li>
-                <li><Link href="/carriers#iul" className="hover:text-foreground">IUL Policies</Link></li>
-                <li><Link href="/carriers#term-life" className="hover:text-foreground">Term Life</Link></li>
-                <li><Link href="/carriers#final-expense" className="hover:text-foreground">Final Expense</Link></li>
+                <li><Link href="/carriers#life-insurance" className="hover:text-foreground">{tFooter('lifeInsurance')}</Link></li>
+                <li><Link href="/carriers#annuities" className="hover:text-foreground">{tFooter('annuities')}</Link></li>
+                <li><Link href="/carriers#iul" className="hover:text-foreground">{tFooter('iulPolicies')}</Link></li>
+                <li><Link href="/carriers#term-life" className="hover:text-foreground">{tFooter('termLife')}</Link></li>
+                <li><Link href="/carriers#final-expense" className="hover:text-foreground">{tFooter('finalExpense')}</Link></li>
               </ul>
             </div>
 
             {/* For Agents */}
             <div>
-              <h4 className="font-semibold mb-4">For Agents</h4>
+              <h4 className="font-semibold mb-4">{tFooter('forAgents')}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/login" className="hover:text-foreground">Agent Login</Link></li>
-                <li><Link href="/signup" className="hover:text-foreground">Join Apex</Link></li>
-                <li><Link href="/income-disclaimer" className="hover:text-foreground">Income Disclosure</Link></li>
+                <li><Link href="/login" className="hover:text-foreground">{tFooter('agentLogin')}</Link></li>
+                <li><Link href="/signup" className="hover:text-foreground">{tFooter('joinApex')}</Link></li>
+                <li><Link href="/income-disclaimer" className="hover:text-foreground">{tFooter('incomeDisclosure')}</Link></li>
               </ul>
             </div>
           </div>
 
           <div className="mt-12 pt-8 border-t">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-              <p>&copy; {new Date().getFullYear()} Apex Affinity Group. All rights reserved.</p>
+              <p>{tFooter('copyright', { year: new Date().getFullYear() })}</p>
               <div className="flex gap-6">
-                <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
-                <Link href="/terms" className="hover:text-foreground">Terms of Service</Link>
-                <Link href="/income-disclaimer" className="hover:text-foreground">Income Disclosure</Link>
+                <Link href="/privacy" className="hover:text-foreground">{tFooter('privacy')}</Link>
+                <Link href="/terms" className="hover:text-foreground">{tFooter('terms')}</Link>
+                <Link href="/income-disclaimer" className="hover:text-foreground">{tFooter('incomeDisclosure')}</Link>
               </div>
             </div>
           </div>

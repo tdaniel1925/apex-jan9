@@ -52,6 +52,9 @@
     "resources": "Resources",
     "certificates": "Certificates",
     "shop": "Shop",
+    "orders": "Orders",
+    "disputes": "Disputes",
+    "replicatedSite": "Replicated Site",
     "crm": "CRM",
     "reports": "Reports",
     "settings": "Settings",
@@ -362,6 +365,117 @@
     "copyright": "© {year} Apex Insurance Group. All rights reserved.",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
-    "contact": "Contact Us"
+    "contact": "Contact Us",
+    "incomeDisclosure": "Income Disclosure",
+    "company": "Company",
+    "aboutUs": "About Us",
+    "ourCarriers": "Our Carriers",
+    "compare": "Compare",
+    "faq": "FAQ",
+    "getStarted": "Get Started",
+    "licensedAgents": "Licensed Agents",
+    "newToInsurance": "New to Insurance",
+    "careerOpportunity": "Career Opportunity",
+    "joinApex": "Join Apex",
+    "products": "Products",
+    "lifeInsurance": "Life Insurance",
+    "annuities": "Annuities",
+    "iulPolicies": "IUL Policies",
+    "termLife": "Term Life",
+    "finalExpense": "Final Expense",
+    "forAgents": "For Agents",
+    "agentLogin": "Agent Login",
+    "brandTagline": "Building financial futures through trusted insurance solutions and entrepreneurial opportunities since 2018."
+  },
+  "marketing": {
+    "nav": {
+      "about": "About",
+      "carriers": "Carriers",
+      "compare": "Compare",
+      "forAgents": "For Agents",
+      "newToInsurance": "New to Insurance",
+      "faq": "FAQ",
+      "contact": "Contact",
+      "signIn": "Sign In",
+      "joinApex": "Join Apex"
+    },
+    "hero": {
+      "badge": "Rated #1 IMO for Agent Support",
+      "headline": "Build Your Insurance Business with",
+      "headlineHighlight": "Apex Affinity Group",
+      "description": "Join a network of top-producing insurance agents. Earn competitive commissions, build your team, and grow your business with AI-powered tools.",
+      "getStarted": "Get Started",
+      "learnMore": "Learn More",
+      "tagline": "No enrollment fees • Vested day one • Top carrier contracts"
+    },
+    "stats": {
+      "activeAgents": "Active Agents",
+      "aRatedCarriers": "A-Rated Carriers",
+      "commissionsPaid": "Commissions Paid",
+      "states": "States"
+    },
+    "whyApex": {
+      "title": "Why Agents Choose Apex",
+      "description": "We've built a platform that gives independent agents everything they need to succeed without the corporate red tape.",
+      "topCommissions": {
+        "title": "Top Commissions",
+        "description": "Earn up to 100% commission with our top carrier contracts. No caps, no games."
+      },
+      "teamBuilding": {
+        "title": "Team Building",
+        "description": "Build your team and earn override commissions up to 6 generations deep."
+      },
+      "aiCopilot": {
+        "title": "AI Copilot",
+        "description": "Our exclusive AI tools help you close more deals and manage leads efficiently."
+      },
+      "topCarriers": {
+        "title": "7 Top Carriers",
+        "description": "Access A-rated carriers: Columbus Life, AIG, F+G, MOO, NLG, Symetra, NA."
+      }
+    },
+    "testimonials": {
+      "title": "Agent Success Stories",
+      "description": "Real agents, real results. See what our agents have to say about building their business with Apex.",
+      "disclaimer": "Results vary. See our",
+      "incomeDisclosure": "income disclosure",
+      "disclaimerEnd": "for actual statistics."
+    },
+    "whatYouGet": {
+      "title": "Everything You Need to Succeed",
+      "noEnrollmentFees": {
+        "title": "No Enrollment Fees",
+        "description": "Start your business without upfront costs"
+      },
+      "vestedDayOne": {
+        "title": "Vested from Day One",
+        "description": "Your commissions and renewals are yours immediately"
+      },
+      "comprehensiveTraining": {
+        "title": "Comprehensive Training",
+        "description": "Live coaching, field training, and ongoing education"
+      },
+      "aiPoweredTools": {
+        "title": "AI-Powered Tools",
+        "description": "Modern technology to help you compete and win"
+      },
+      "topCarrierContracts": {
+        "title": "Top Carrier Contracts",
+        "description": "Access to 7 A-rated carriers with competitive rates"
+      },
+      "supportiveCommunity": {
+        "title": "Supportive Community",
+        "description": "Join a network of agents who help each other succeed"
+      },
+      "ctaTitle": "Ready to Build Your Future?",
+      "ctaDescription": "Take the first step toward financial independence. Join thousands of agents who have transformed their careers with Apex.",
+      "startApplication": "Start Your Application"
+    },
+    "finalCta": {
+      "title": "Ready to Get Started?",
+      "description": "Join Apex Affinity Group today. No enrollment fees, top carrier access, and the support you need to build a successful insurance business.",
+      "applyNow": "Apply Now",
+      "contactUs": "Contact Us"
+    }
   }
 }

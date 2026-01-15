@@ -9,8 +9,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Logo } from '@/components/ui/logo';
+import { useTranslations } from 'next-intl';
 
 function SignupForm() {
+  const t = useTranslations('auth');
+  const tCommon = useTranslations('common');
+  const tMarketing = useTranslations('marketing');
+  const tCrm = useTranslations('crm');
   const router = useRouter();
   const searchParams = useSearchParams();
   const sponsorCode = searchParams.get('ref');
@@ -153,8 +158,8 @@ function SignupForm() {
           <div className="mx-auto mb-4">
             <Logo size="md" />
           </div>
-          <CardTitle>Join Apex</CardTitle>
-          <CardDescription>Create your agent account</CardDescription>
+          <CardTitle>{tMarketing('nav.joinApex')}</CardTitle>
+          <CardDescription>{t('createAccount')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignup} className="space-y-4">
@@ -166,7 +171,7 @@ function SignupForm() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName">{tCrm('firstName')}</Label>
                 <Input
                   id="firstName"
                   name="firstName"
@@ -177,7 +182,7 @@ function SignupForm() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName">{tCrm('lastName')}</Label>
                 <Input
                   id="lastName"
                   name="lastName"
@@ -190,7 +195,7 @@ function SignupForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input
                 id="email"
                 name="email"
@@ -203,7 +208,7 @@ function SignupForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone (Optional)</Label>
+              <Label htmlFor="phone">{tCrm('phone')} ({tCommon('optional')})</Label>
               <Input
                 id="phone"
                 name="phone"
@@ -215,12 +220,12 @@ function SignupForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('password')}</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
-                placeholder="At least 8 characters"
+                placeholder={t('passwordMinLength')}
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -228,12 +233,12 @@ function SignupForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword">{t('confirmPassword')}</Label>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
-                placeholder="Confirm your password"
+                placeholder={t('confirmPassword')}
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
@@ -241,7 +246,7 @@ function SignupForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="sponsorUsername">Sponsor Code (Optional)</Label>
+              <Label htmlFor="sponsorUsername">Sponsor Code ({tCommon('optional')})</Label>
               <Input
                 id="sponsorUsername"
                 name="sponsorUsername"
@@ -257,14 +262,14 @@ function SignupForm() {
             </div>
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating Account...' : 'Create Account'}
+              {loading ? `${t('createAccount')}...` : t('createAccount')}
             </Button>
           </form>
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
-            Already have an account?{' '}
+            {t('alreadyHaveAccount')}{' '}
             <Link href="/login" className="text-primary hover:underline font-medium">
-              Sign In
+              {t('login')}
             </Link>
           </div>
         </CardContent>
