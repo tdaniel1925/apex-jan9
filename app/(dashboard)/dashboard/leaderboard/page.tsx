@@ -24,8 +24,22 @@ import {
   Crown,
   Star,
 } from 'lucide-react';
-import { RANK_CONFIG, Rank } from '@/lib/config/ranks';
+import { RANK_CONFIG, Rank, RANKS } from '@/lib/config/ranks';
 import { formatCurrency } from '@/lib/engines/wallet-engine';
+
+// Helper to safely get rank config - returns undefined if rank is invalid
+function safeGetRankConfig(rank: unknown): { name: string; shortName: string } | undefined {
+  if (!rank || typeof rank !== 'string') return undefined;
+  if (!RANKS.includes(rank as Rank)) return undefined;
+  return RANK_CONFIG[rank as Rank];
+}
+
+// Helper to get rank display name with fallback
+function getRankDisplayName(rank: unknown, short: boolean = false): string {
+  const config = safeGetRankConfig(rank);
+  if (!config) return 'Agent';
+  return short ? config.shortName : config.name;
+}
 
 interface Performer {
   rank: number;
@@ -203,8 +217,9 @@ export default function LeaderboardPage() {
 
         {METRICS.map((m) => (
           <TabsContent key={m.value} value={m.value} className="space-y-4">
-            {/* Top 3 Podium */}
-            {!loading && data && data.performers.length >= 3 && (
+            {/* Top 3 Podium - only render if all 3 performers have valid agents */}
+            {!loading && data && data.performers.length >= 3 &&
+             data.performers[0]?.agent && data.performers[1]?.agent && data.performers[2]?.agent && (
               <div className="grid grid-cols-3 gap-4 py-4">
                 {/* 2nd Place */}
                 <div className="flex flex-col items-center pt-8">
@@ -226,7 +241,7 @@ export default function LeaderboardPage() {
                     {data.performers[1]?.agent?.name}
                   </p>
                   <Badge variant="outline" className="mt-1">
-                    {RANK_CONFIG[data.performers[1]?.agent?.rank as Rank]?.shortName}
+                    {getRankDisplayName(data.performers[1]?.agent?.rank, true)}
                   </Badge>
                   <p className="mt-2 text-lg font-bold text-gray-600">
                     {formatValue(data.performers[1]?.value || 0)}
@@ -254,7 +269,7 @@ export default function LeaderboardPage() {
                     {data.performers[0]?.agent?.name}
                   </p>
                   <Badge variant="outline" className="mt-1">
-                    {RANK_CONFIG[data.performers[0]?.agent?.rank as Rank]?.shortName}
+                    {getRankDisplayName(data.performers[0]?.agent?.rank, true)}
                   </Badge>
                   <p className="mt-2 text-xl font-bold text-yellow-600">
                     {formatValue(data.performers[0]?.value || 0)}
@@ -281,7 +296,7 @@ export default function LeaderboardPage() {
                     {data.performers[2]?.agent?.name}
                   </p>
                   <Badge variant="outline" className="mt-1">
-                    {RANK_CONFIG[data.performers[2]?.agent?.rank as Rank]?.shortName}
+                    {getRankDisplayName(data.performers[2]?.agent?.rank, true)}
                   </Badge>
                   <p className="mt-2 text-lg font-bold text-amber-600">
                     {formatValue(data.performers[2]?.value || 0)}
@@ -335,10 +350,10 @@ export default function LeaderboardPage() {
                         </Avatar>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium truncate">
-                            {performer.agent?.name}
+                            {performer.agent?.name || 'Unknown'}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {RANK_CONFIG[performer.agent?.rank as Rank]?.name}
+                            {getRankDisplayName(performer.agent?.rank)}
                           </p>
                         </div>
                         <div className="text-right">
