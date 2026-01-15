@@ -4,11 +4,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/db/supabase-server';
+import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createServerClient();
+    const supabase = await createServerSupabaseClient();
 
     // Get authenticated user
     const {

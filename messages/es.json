@@ -3,6 +3,7 @@
     "loading": "Cargando...",
     "error": "Ocurrió un error",
     "success": "Éxito",
+    "description": "Descripción",
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",

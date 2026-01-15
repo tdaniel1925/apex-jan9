@@ -3,6 +3,7 @@
     "loading": "加载中...",
     "error": "发生错误",
     "success": "成功",
+    "description": "描述",
     "save": "保存",
     "cancel": "取消",
     "delete": "删除",
