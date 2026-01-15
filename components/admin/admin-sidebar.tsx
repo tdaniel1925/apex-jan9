@@ -29,6 +29,7 @@ import {
   Webhook,
   MessageSquareWarning,
   Layers,
+  Crown,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 
@@ -54,6 +55,7 @@ interface AdminSidebarProps {
 // Navigation items with required permissions
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard, permission: 'dashboard.view' },
+  { name: 'Founders Club', href: '/admin/founders', icon: Crown, permission: 'founders.view' },
   { name: 'Agents', href: '/admin/agents', icon: Users, permission: 'agents.view' },
   { name: 'Bulk Operations', href: '/admin/bulk-operations', icon: Layers, permission: 'agents.manage' },
   { name: 'Products', href: '/admin/products', icon: ShoppingBag, permission: 'products.view' },

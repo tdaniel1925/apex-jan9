@@ -17,6 +17,7 @@ import {
   Shield,
   ArrowLeft,
   Mail,
+  Crown,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 
@@ -26,6 +27,7 @@ interface AdminMobileSidebarProps {
 
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+  { name: 'Founders Club', href: '/admin/founders', icon: Crown },
   { name: 'Agents', href: '/admin/agents', icon: Users },
   { name: 'Import Commissions', href: '/admin/commissions', icon: FileSpreadsheet },
   { name: 'Bonuses', href: '/admin/bonuses', icon: Award },
