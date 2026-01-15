@@ -40,7 +40,7 @@ CREATE TABLE disputes (
 
   -- Related records (optional)
   commission_id UUID REFERENCES commissions(id) ON DELETE SET NULL,
-  clawback_id UUID REFERENCES clawbacks(id) ON DELETE SET NULL,
+  clawback_id UUID,  -- No FK constraint - clawbacks table may not exist yet
   bonus_id UUID REFERENCES bonuses(id) ON DELETE SET NULL,
 
   -- Status
@@ -124,13 +124,25 @@ ALTER TABLE dispute_history ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Agents can view own disputes"
   ON disputes
   FOR SELECT
-  USING (agent_id = auth.uid()::uuid);
+  USING (
+    EXISTS (
+      SELECT 1 FROM agents
+      WHERE agents.id = disputes.agent_id
+      AND agents.user_id = auth.uid()
+    )
+  );
 
 -- Agents can create disputes
 CREATE POLICY "Agents can create disputes"
   ON disputes
   FOR INSERT
-  WITH CHECK (agent_id = auth.uid()::uuid);
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM agents
+      WHERE agents.id = agent_id
+      AND agents.user_id = auth.uid()
+    )
+  );
 
 -- Agents can view comments on their disputes (non-internal only)
 CREATE POLICY "Agents can view non-internal comments"
@@ -139,8 +151,9 @@ CREATE POLICY "Agents can view non-internal comments"
   USING (
     EXISTS (
       SELECT 1 FROM disputes
+      JOIN agents ON agents.id = disputes.agent_id
       WHERE disputes.id = dispute_comments.dispute_id
-      AND disputes.agent_id = auth.uid()::uuid
+      AND agents.user_id = auth.uid()
     )
     AND is_internal = false
   );
@@ -152,10 +165,10 @@ CREATE POLICY "Agents can add comments to own disputes"
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM disputes
+      JOIN agents ON agents.id = disputes.agent_id
       WHERE disputes.id = dispute_comments.dispute_id
-      AND disputes.agent_id = auth.uid()::uuid
+      AND agents.user_id = auth.uid()
     )
-    AND agent_id = auth.uid()::uuid
     AND admin_id IS NULL
     AND is_internal = false
   );
@@ -167,8 +180,9 @@ CREATE POLICY "Agents can view history on own disputes"
   USING (
     EXISTS (
       SELECT 1 FROM disputes
+      JOIN agents ON agents.id = disputes.agent_id
       WHERE disputes.id = dispute_history.dispute_id
-      AND disputes.agent_id = auth.uid()::uuid
+      AND agents.user_id = auth.uid()
     )
   );
 
