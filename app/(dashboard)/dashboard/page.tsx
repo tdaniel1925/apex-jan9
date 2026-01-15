@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { RANK_CONFIG, getNextRank, Rank } from '@/lib/config/ranks';
 import { getRankProgress } from '@/lib/engines/rank-engine';
 import { calculateFastStart } from '@/lib/engines/bonus-engine';
@@ -22,6 +23,11 @@ import {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const t = useTranslations('dashboard');
+  const tCommon = useTranslations('common');
+  const tCommissions = useTranslations('commissions');
+  const tBonuses = useTranslations('bonuses');
+  const tTraining = useTranslations('training');
   const [agent, setAgent] = useState<any>(null);
   const [wallet, setWallet] = useState<any>(null);
   const [stats, setStats] = useState({
@@ -161,10 +167,10 @@ export default function DashboardPage() {
       {/* Welcome Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight">
-          Welcome back, {agent.first_name}
+          {t('welcome', { name: agent.first_name })}
         </h1>
         <p className="text-muted-foreground">
-          Here&apos;s an overview of your business performance.
+          {t('businessOverview')}
         </p>
       </div>
 
@@ -176,15 +182,15 @@ export default function DashboardPage() {
               <Clock className="h-6 w-6 text-primary" />
             </div>
             <div className="flex-1">
-              <p className="font-semibold text-primary">Fast Start Bonus Active</p>
+              <p className="font-semibold text-primary">{t('fastStart.bonusActive')}</p>
               <p className="text-sm text-muted-foreground">
-                {fastStart.daysRemaining} days remaining. Current bonus: {formatCurrency(fastStart.repBonus)}
+                {t('fastStart.daysRemaining', { days: fastStart.daysRemaining, bonus: formatCurrency(fastStart.repBonus) })}
                 {fastStart.nextTier && (
-                  <> — {formatCurrency(fastStart.premiumNeededForNext)} more premium to next tier!</>
+                  <> — {t('fastStart.premiumToNextTier', { amount: formatCurrency(fastStart.premiumNeededForNext) })}</>
                 )}
               </p>
             </div>
-            <Badge variant="secondary">{fastStart.currentTier > 0 ? `Tier ${fastStart.currentTier}` : 'No tier yet'}</Badge>
+            <Badge variant="secondary">{fastStart.currentTier > 0 ? t('fastStart.tier', { tier: fastStart.currentTier }) : t('fastStart.noTierYet')}</Badge>
           </CardContent>
         </Card>
       )}
@@ -193,50 +199,50 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">This Month</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('thisMonth')}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(stats.monthlyTotal)}</div>
             <p className="text-xs text-muted-foreground">
-              Commissions + Overrides + Bonuses
+              {t('earningsSummary')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('availableBalance')}</CardTitle>
             <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(wallet?.balance || 0)}</div>
             <p className="text-xs text-muted-foreground">
-              Pending: {formatCurrency(wallet?.pending_balance || 0)}
+              {t('pending', { amount: formatCurrency(wallet?.pending_balance || 0) })}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Team Size</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teamSize')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.teamCount}</div>
-            <p className="text-xs text-muted-foreground">Direct recruits</p>
+            <p className="text-xs text-muted-foreground">{t('directRecruits')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">90-Day Premium</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('ninetyDayPremium')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(agent.premium_90_days || 0)}</div>
             <p className="text-xs text-muted-foreground">
-              Rolling 90-day total
+              {t('rollingTotal')}
             </p>
           </CardContent>
         </Card>
@@ -249,17 +255,17 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Award className="h-5 w-5" />
-              Rank Progress
+              {t('rankProgress')}
             </CardTitle>
             <CardDescription>
-              Current: {RANK_CONFIG[agent.rank as Rank]?.name || agent.rank}
+              {t('currentRankLabel', { rank: RANK_CONFIG[agent.rank as Rank]?.name || agent.rank })}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {nextRankConfig ? (
               <>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Next: {nextRankConfig.name}</span>
+                  <span className="text-sm font-medium">{t('nextRankLabel', { rank: nextRankConfig.name })}</span>
                   <span className="text-sm text-muted-foreground">{rankProgress.progressToNext}%</span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-secondary">
@@ -271,7 +277,7 @@ export default function DashboardPage() {
               </>
             ) : (
               <p className="text-sm text-muted-foreground">
-                You&apos;ve reached the highest rank!
+                {t('highestRank')}
               </p>
             )}
           </CardContent>
@@ -282,35 +288,35 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5" />
-              This Month&apos;s Breakdown
+              {t('earningsBreakdown')}
             </CardTitle>
-            <CardDescription>Your earnings by category</CardDescription>
+            <CardDescription>{t('earningsByCategory')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="h-3 w-3 rounded-full bg-primary" />
-                <span className="text-sm">Commissions</span>
+                <span className="text-sm">{tCommissions('title')}</span>
               </div>
               <span className="font-medium">{formatCurrency(stats.commissionsTotal)}</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="h-3 w-3 rounded-full bg-blue-400" />
-                <span className="text-sm">Overrides</span>
+                <span className="text-sm">{tCommissions('overrides')}</span>
               </div>
               <span className="font-medium">{formatCurrency(stats.overridesTotal)}</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="h-3 w-3 rounded-full bg-red-500" />
-                <span className="text-sm">Bonuses</span>
+                <span className="text-sm">{tBonuses('title')}</span>
               </div>
               <span className="font-medium">{formatCurrency(stats.bonusesTotal)}</span>
             </div>
             <div className="border-t pt-4">
               <div className="flex items-center justify-between">
-                <span className="font-semibold">Total</span>
+                <span className="font-semibold">{tCommon('total')}</span>
                 <span className="text-lg font-bold">{formatCurrency(stats.monthlyTotal)}</span>
               </div>
             </div>
@@ -321,53 +327,53 @@ export default function DashboardPage() {
       {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
+          <CardTitle>{t('quickActions')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <a
               href="/dashboard/crm"
-              className="flex items-center gap-3 rounded-lg border p-4 transition-colors hover:bg-gray-50"
+              className="flex items-center gap-3 rounded-lg border p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               <Users className="h-8 w-8 text-primary" />
               <div>
-                <p className="font-medium">Add Contact</p>
-                <p className="text-sm text-gray-500">Track a new lead</p>
+                <p className="font-medium">{t('addContact')}</p>
+                <p className="text-sm text-muted-foreground">{t('trackNewLead')}</p>
               </div>
-              <ArrowUpRight className="ml-auto h-4 w-4 text-gray-400" />
+              <ArrowUpRight className="ml-auto h-4 w-4 text-muted-foreground" />
             </a>
             <a
               href="/dashboard/team"
-              className="flex items-center gap-3 rounded-lg border p-4 transition-colors hover:bg-gray-50"
+              className="flex items-center gap-3 rounded-lg border p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               <Users className="h-8 w-8 text-primary" />
               <div>
-                <p className="font-medium">View Team</p>
-                <p className="text-sm text-gray-500">See your downline</p>
+                <p className="font-medium">{t('viewTeam')}</p>
+                <p className="text-sm text-muted-foreground">{t('seeDownline')}</p>
               </div>
-              <ArrowUpRight className="ml-auto h-4 w-4 text-gray-400" />
+              <ArrowUpRight className="ml-auto h-4 w-4 text-muted-foreground" />
             </a>
             <a
               href="/dashboard/wallet"
-              className="flex items-center gap-3 rounded-lg border p-4 transition-colors hover:bg-gray-50"
+              className="flex items-center gap-3 rounded-lg border p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               <Wallet className="h-8 w-8 text-primary" />
               <div>
-                <p className="font-medium">Withdraw</p>
-                <p className="text-sm text-gray-500">Request payout</p>
+                <p className="font-medium">{t('withdraw')}</p>
+                <p className="text-sm text-muted-foreground">{t('requestPayout')}</p>
               </div>
-              <ArrowUpRight className="ml-auto h-4 w-4 text-gray-400" />
+              <ArrowUpRight className="ml-auto h-4 w-4 text-muted-foreground" />
             </a>
             <a
               href="/dashboard/training"
-              className="flex items-center gap-3 rounded-lg border p-4 transition-colors hover:bg-gray-50"
+              className="flex items-center gap-3 rounded-lg border p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               <Target className="h-8 w-8 text-primary" />
               <div>
-                <p className="font-medium">Training</p>
-                <p className="text-sm text-gray-500">Continue learning</p>
+                <p className="font-medium">{tTraining('title')}</p>
+                <p className="text-sm text-muted-foreground">{t('continueLearning')}</p>
               </div>
-              <ArrowUpRight className="ml-auto h-4 w-4 text-gray-400" />
+              <ArrowUpRight className="ml-auto h-4 w-4 text-muted-foreground" />
             </a>
           </div>
         </CardContent>

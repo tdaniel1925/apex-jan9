@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/lib/auth/auth-context';
 import { createClient } from '@/lib/db/supabase-client';
 import { Contact } from '@/lib/types/database';
@@ -63,6 +64,7 @@ const stageColors: Record<string, string> = {
 };
 
 export default function ContactDetailPage() {
+  const t = useTranslations('crm');
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -131,9 +133,9 @@ export default function ContactDetailPage() {
   if (!contact) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">Contact not found</p>
+        <p className="text-muted-foreground">{t('contactNotFound')}</p>
         <Button asChild className="mt-4">
-          <Link href="/dashboard/crm">Back to CRM</Link>
+          <Link href="/dashboard/crm">{t('backToCRM')}</Link>
         </Button>
       </div>
     );
@@ -171,20 +173,20 @@ export default function ContactDetailPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Lead Score</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('leadScore')}</CardTitle>
             <Star className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{leadScore}</div>
             <p className="text-xs text-muted-foreground">
-              {leadScore >= 50 ? 'Hot lead' : leadScore >= 20 ? 'Warm lead' : 'Cold lead'}
+              {leadScore >= 50 ? t('hotLead') : leadScore >= 20 ? t('warmLead') : t('coldLead')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Email Opens</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('emailOpens')}</CardTitle>
             <MailOpen className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
@@ -194,7 +196,7 @@ export default function ContactDetailPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Link Clicks</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('linkClicks')}</CardTitle>
             <MousePointerClick className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
@@ -204,7 +206,7 @@ export default function ContactDetailPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Activities</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalActivities')}</CardTitle>
             <Calendar className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
@@ -220,7 +222,7 @@ export default function ContactDetailPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="h-4 w-4" />
-              Contact Info
+              {t('contactInfo')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -248,13 +250,13 @@ export default function ContactDetailPage() {
             )}
             {contact.source && (
               <div className="pt-4 border-t">
-                <p className="text-sm text-muted-foreground">Source</p>
+                <p className="text-sm text-muted-foreground">{t('source')}</p>
                 <p className="text-sm font-medium">{contact.source}</p>
               </div>
             )}
             {contact.notes && (
               <div className="pt-4 border-t">
-                <p className="text-sm text-muted-foreground">Notes</p>
+                <p className="text-sm text-muted-foreground">{t('notes')}</p>
                 <p className="text-sm">{contact.notes}</p>
               </div>
             )}
@@ -265,15 +267,15 @@ export default function ContactDetailPage() {
         <div className="lg:col-span-2">
           <Tabs defaultValue="activity">
             <TabsList>
-              <TabsTrigger value="activity">Activity Timeline</TabsTrigger>
-              <TabsTrigger value="emails">Email Sequence</TabsTrigger>
+              <TabsTrigger value="activity">{t('activityTimeline')}</TabsTrigger>
+              <TabsTrigger value="emails">{t('emailSequence')}</TabsTrigger>
             </TabsList>
             <TabsContent value="activity" className="mt-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Recent Activity</CardTitle>
+                  <CardTitle>{t('recentActivity')}</CardTitle>
                   <CardDescription>
-                    Track engagement with this lead
+                    {t('trackEngagement')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -286,9 +288,9 @@ export default function ContactDetailPage() {
             <TabsContent value="emails" className="mt-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Email Sequence</CardTitle>
+                  <CardTitle>{t('emailSequence')}</CardTitle>
                   <CardDescription>
-                    Automated nurturing campaign progress
+                    {t('automatedNurturing')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

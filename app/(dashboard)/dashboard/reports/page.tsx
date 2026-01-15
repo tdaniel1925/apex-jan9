@@ -13,11 +13,13 @@ import {
 } from '@/components/ui/select';
 import { BarChart3, TrendingUp, Users, DollarSign, Download, Calendar, FileText, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/lib/auth/auth-context';
 import { createClient } from '@/lib/db/supabase-client';
 import { toast } from 'sonner';
 
 export default function ReportsPage() {
+  const t = useTranslations('reports');
   const { user } = useAuth();
   const [period, setPeriod] = useState('month');
   const [stats, setStats] = useState({
@@ -129,22 +131,17 @@ export default function ReportsPage() {
   const totalEarnings = stats.totalCommissions + stats.totalOverrides + stats.totalBonuses;
 
   const handleExport = () => {
-    const periodLabel = {
-      week: 'Last 7 Days',
-      month: 'This Month',
-      quarter: 'This Quarter',
-      year: 'This Year',
-    }[period] || period;
+    const periodLabel = t(`periods.${period}`);
 
-    const headers = ['Metric', 'Value'];
+    const headers = [t('csvHeaders.metric'), t('csvHeaders.value')];
     const rows = [
-      ['Period', periodLabel],
-      ['Total Premium', `$${stats.totalPremium.toFixed(2)}`],
-      ['Direct Commissions', `$${stats.totalCommissions.toFixed(2)}`],
-      ['Override Commissions', `$${stats.totalOverrides.toFixed(2)}`],
-      ['Bonuses', `$${stats.totalBonuses.toFixed(2)}`],
-      ['Total Earnings', `$${totalEarnings.toFixed(2)}`],
-      ['New Recruits', stats.newRecruits.toString()],
+      [t('csvHeaders.period'), periodLabel],
+      [t('totalPremium'), `$${stats.totalPremium.toFixed(2)}`],
+      [t('directCommissions'), `$${stats.totalCommissions.toFixed(2)}`],
+      [t('overrideCommissions'), `$${stats.totalOverrides.toFixed(2)}`],
+      [t('bonuses'), `$${stats.totalBonuses.toFixed(2)}`],
+      [t('totalEarnings'), `$${totalEarnings.toFixed(2)}`],
+      [t('newRecruits'), stats.newRecruits.toString()],
     ];
 
     const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
@@ -155,16 +152,16 @@ export default function ReportsPage() {
     link.download = `report-${period}-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     URL.revokeObjectURL(url);
-    toast.success('Report exported successfully');
+    toast.success(t('exportSuccess'));
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Analyze your business performance.
+            {t('description')}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -174,15 +171,15 @@ export default function ReportsPage() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="week">Last 7 Days</SelectItem>
-              <SelectItem value="month">This Month</SelectItem>
-              <SelectItem value="quarter">This Quarter</SelectItem>
-              <SelectItem value="year">This Year</SelectItem>
+              <SelectItem value="week">{t('periods.week')}</SelectItem>
+              <SelectItem value="month">{t('periods.month')}</SelectItem>
+              <SelectItem value="quarter">{t('periods.quarter')}</SelectItem>
+              <SelectItem value="year">{t('periods.year')}</SelectItem>
             </SelectContent>
           </Select>
           <Button variant="outline" onClick={handleExport}>
             <Download className="h-4 w-4 mr-2" />
-            Export
+            {t('export')}
           </Button>
         </div>
       </div>
@@ -191,7 +188,7 @@ export default function ReportsPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Premium</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalPremium')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -201,7 +198,7 @@ export default function ReportsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalEarnings')}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -211,7 +208,7 @@ export default function ReportsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">New Recruits</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('newRecruits')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -221,7 +218,7 @@ export default function ReportsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Override Earnings</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('overrideEarnings')}</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -239,9 +236,9 @@ export default function ReportsPage() {
                 <FileText className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <h3 className="font-semibold">Tax Documents</h3>
+                <h3 className="font-semibold">{t('taxDocuments')}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Download income statements and 1099 summaries for tax purposes
+                  {t('taxDocumentsDesc')}
                 </p>
               </div>
             </div>
@@ -253,35 +250,35 @@ export default function ReportsPage() {
       {/* Earnings Breakdown */}
       <Card>
         <CardHeader>
-          <CardTitle>Earnings Breakdown</CardTitle>
-          <CardDescription>How your earnings are distributed</CardDescription>
+          <CardTitle>{t('earningsBreakdown')}</CardTitle>
+          <CardDescription>{t('earningsDistribution')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="h-4 w-4 rounded bg-primary" />
-                <span>Direct Commissions</span>
+                <span>{t('directCommissions')}</span>
               </div>
               <span className="font-semibold">{formatCurrency(stats.totalCommissions)}</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="h-4 w-4 rounded bg-blue-500" />
-                <span>Override Commissions</span>
+                <span>{t('overrideCommissions')}</span>
               </div>
               <span className="font-semibold">{formatCurrency(stats.totalOverrides)}</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="h-4 w-4 rounded bg-red-500" />
-                <span>Bonuses</span>
+                <span>{t('bonuses')}</span>
               </div>
               <span className="font-semibold">{formatCurrency(stats.totalBonuses)}</span>
             </div>
             <div className="border-t pt-4">
               <div className="flex items-center justify-between">
-                <span className="font-semibold">Total</span>
+                <span className="font-semibold">{t('total')}</span>
                 <span className="text-xl font-bold">{formatCurrency(totalEarnings)}</span>
               </div>
             </div>
@@ -292,14 +289,14 @@ export default function ReportsPage() {
       {/* Production Chart Placeholder */}
       <Card>
         <CardHeader>
-          <CardTitle>Production Trend</CardTitle>
-          <CardDescription>Your premium production over time</CardDescription>
+          <CardTitle>{t('productionTrend')}</CardTitle>
+          <CardDescription>{t('productionOverTime')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-[300px] flex items-center justify-center bg-muted/30 rounded-lg">
             <div className="text-center">
               <BarChart3 className="h-12 w-12 mx-auto text-muted-foreground/50" />
-              <p className="mt-2 text-muted-foreground">Chart visualization coming soon</p>
+              <p className="mt-2 text-muted-foreground">{t('chartComingSoon')}</p>
             </div>
           </div>
         </CardContent>

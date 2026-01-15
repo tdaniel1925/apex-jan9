@@ -103,10 +103,44 @@
     "rankProgress": "级别进度",
     "requirements": "要求",
     "achieved": "已达成",
-    "remaining": "剩余"
+    "remaining": "剩余",
+    "businessOverview": "以下是您业务表现的概览。",
+    "currentRankLabel": "当前：{rank}",
+    "nextRankLabel": "下一级：{rank}",
+    "availableBalance": "可用余额",
+    "pending": "待处理：{amount}",
+    "teamSize": "团队规模",
+    "directRecruits": "直接招募",
+    "ninetyDayPremium": "90天保费",
+    "rollingTotal": "滚动90天总计",
+    "highestRank": "您已达到最高级别！",
+    "earningsBreakdown": "本月明细",
+    "earningsByCategory": "您的分类收入",
+    "earningsSummary": "佣金 + 管理津贴 + 奖金",
+    "quickActions": "快捷操作",
+    "addContact": "添加联系人",
+    "trackNewLead": "记录新潜在客户",
+    "viewTeam": "查看团队",
+    "seeDownline": "查看下线",
+    "withdraw": "提现",
+    "requestPayout": "申请付款",
+    "continueLearning": "继续学习",
+    "fastStart": {
+      "bonusActive": "快速启动奖金激活中",
+      "daysRemaining": "剩余 {days} 天。当前奖金：{bonus}",
+      "premiumToNextTier": "还需 {amount} 保费升至下一等级！",
+      "tier": "第 {tier} 等级",
+      "noTierYet": "暂无等级"
+    },
+    "aiCopilot": {
+      "upgradeTitle": "升级到AI助手",
+      "upgradeDescription": "获取AI驱动的销售和招募辅助。"
+    },
+    "viewWebsite": "查看网站"
   },
   "commissions": {
     "title": "佣金",
+    "description": "查看您的佣金历史和收入。",
     "myCommissions": "我的佣金",
     "pending": "待处理",
     "paid": "已支付",
@@ -124,35 +158,84 @@
     "manual": "手动",
     "overrides": "管理津贴",
     "overrideLevel": "管理津贴级别",
-    "fromAgent": "来自代理人"
+    "fromAgent": "来自代理人",
+    "ninetyDayTotal": "90天总计",
+    "lifetime": "累计总额",
+    "commissionHistory": "佣金历史",
+    "recentRecords": "您最近的佣金记录",
+    "noCommissionsYet": "暂无佣金记录"
   },
   "bonuses": {
     "title": "奖金",
+    "description": "追踪您的奖金收入和成就。",
     "myBonuses": "我的奖金",
     "fastStart": "快速启动奖金",
     "rankAdvancement": "晋级奖金",
     "matching": "匹配奖金",
     "contest": "竞赛奖金",
+    "teamBuilder": "团队建设",
     "approved": "已批准",
     "pending": "待处理",
+    "paid": "已支付",
     "denied": "已拒绝",
     "bonusType": "奖金类型",
     "qualificationDate": "资格日期",
-    "payoutDate": "支付日期"
+    "payoutDate": "支付日期",
+    "awaitingPayment": "等待支付",
+    "received": "已收到",
+    "totalEarned": "总收入",
+    "allTime": "历史总计",
+    "availableBonuses": "可获得的奖金",
+    "waysToEarn": "在Apex赚取奖金的方式",
+    "fastStartDesc": "根据签单保费，在前90天内最高可赚取$5,000。",
+    "rankAdvancementDesc": "每次晋级都可获得奖金。",
+    "teamBuilderDesc": "当您的下线达到生产里程碑时获得奖金。",
+    "bonusHistory": "奖金历史",
+    "yourEarnedBonuses": "您获得的奖金",
+    "type": "类型",
+    "amount": "金额",
+    "noBonusesYet": "暂无奖金记录",
+    "keepWorking": "继续努力实现您的目标！"
   },
   "wallet": {
     "title": "钱包",
+    "pageDescription": "管理您的收入和提款。",
     "currentBalance": "当前余额",
+    "availableBalance": "可用余额",
     "pendingBalance": "待处理余额",
     "lifetimeEarnings": "累计收入",
+    "readyToWithdraw": "可提取",
+    "pending": "待处理",
+    "processing": "处理中",
+    "totalEarned": "累计收入",
     "transactions": "交易记录",
     "credit": "收入",
     "debit": "支出",
     "description": "描述",
-    "reference": "参考号"
+    "reference": "参考号",
+    "withdrawalMethods": "提款方式",
+    "choosePreferredMethod": "选择您首选的付款方式",
+    "achTransfer": "ACH转账",
+    "wireTransfer": "电汇",
+    "check": "支票",
+    "fee": "手续费",
+    "min": "最低",
+    "achDays": "2-3个工作日",
+    "wireDays": "1-2个工作日",
+    "checkDays": "5-7个工作日",
+    "pendingPayouts": "待处理支付",
+    "amount": "金额",
+    "method": "方式",
+    "net": "净额",
+    "transactionHistory": "交易历史",
+    "recentActivity": "您最近的钱包活动",
+    "type": "类型",
+    "balance": "余额",
+    "noTransactionsYet": "暂无交易记录"
   },
   "team": {
-    "title": "我的团队",
+    "title": "团队",
+    "pageDescription": "查看和管理您的直接招募。",
     "teamMembers": "团队成员",
     "directRecruits": "直接招募",
     "totalDownline": "下线总数",
@@ -162,31 +245,75 @@
     "memberSince": "加入时间",
     "sponsor": "推荐人",
     "viewProfile": "查看资料",
-    "contactInfo": "联系方式"
+    "contactInfo": "联系方式",
+    "teamPremium": "团队保费",
+    "ninetyDayTotal": "90天总计",
+    "mgas": "MGAs",
+    "inYourFrontline": "在您的前线",
+    "avgPerformance": "平均业绩",
+    "perAgent": "每位代理人",
+    "teamMetrics": "团队指标",
+    "viewMetricsDesc": "查看详细的生产指标、增长趋势和顶级执行者",
+    "agentsYouRecruited": "您亲自招募的代理人",
+    "agent": "代理人",
+    "rank": "级别",
+    "ninetyDayPremium": "90天保费",
+    "joined": "加入日期",
+    "noRecruitsYet": "暂无直接招募",
+    "shareReferralLink": "分享您的推荐链接开始建立团队。",
+    "activeCount": "{count}人活跃"
   },
   "genealogy": {
     "title": "组织架构",
+    "pageDescription": "查看您的下线组织和团队结构。",
     "treeView": "树状视图",
     "listView": "列表视图",
     "level": "层级",
     "depth": "深度",
     "expand": "展开",
-    "collapse": "收起"
+    "collapse": "收起",
+    "totalDownline": "下线总数",
+    "inYourOrganization": "在您的组织中",
+    "activeAgents": "活跃代理人",
+    "producingAgents": "有业绩的代理人",
+    "directRecruits": "直接招募",
+    "personallySponsored": "亲自推荐",
+    "generationsDeep": "代数深度",
+    "levelsInMatrix": "矩阵层级",
+    "organizationTree": "组织结构图",
+    "organizationTreeDesc": "下线的交互式视图。可缩放、平移和探索您的团队结构。",
+    "youRoot": "您（根节点）",
+    "teamMember": "团队成员",
+    "active": "活跃",
+    "inactivePending": "非活跃/待定"
   },
   "leaderboard": {
     "title": "排行榜",
+    "pageDescription": "查看谁在业绩和招募方面领先",
     "topPerformers": "业绩排名",
     "rank": "排名",
     "agent": "代理人",
     "production": "业绩",
+    "commissions": "佣金",
+    "premium": "保费",
+    "recruits": "招募",
     "thisWeek": "本周",
     "thisMonth": "本月",
     "thisQuarter": "本季度",
-    "allTime": "全部时间"
+    "thisYear": "今年",
+    "allTime": "全部时间",
+    "yourPosition": "您的排名",
+    "of": "共",
+    "rankings": "排名",
+    "topPerformersBy": "{period}按{metric}排名的顶级执行者",
+    "noDataYet": "此期间暂无数据"
   },
   "qualification": {
     "title": "级别资格",
+    "description": "追踪您的资格状态，了解晋升下一级别需要什么。",
     "currentRank": "当前级别",
+    "titleRank": "头衔级别",
+    "paidAsRank": "支付级别",
     "nextRank": "下一级别",
     "requirements": "要求",
     "premiumVolume": "保费业绩（90天）",
@@ -197,18 +324,54 @@
     "placementRate": "成交率",
     "met": "已达成",
     "notMet": "未达成",
-    "progress": "进度"
+    "progress": "进度",
+    "gracePeriods": "宽限期",
+    "usedThisYear": "今年已使用 {used} 次",
+    "gracePeriod": "宽限期",
+    "grace": "宽限",
+    "demotionRiskDetected": "检测到降级风险",
+    "currentRankRequirements": "当前级别要求",
+    "progressTowardMaintaining": "您维持 {rank} 的进度",
+    "overallProgress": "总体进度",
+    "nextRankTitle": "下一级别：{rank}",
+    "whatYouNeedToAdvance": "晋升到下一级别需要什么",
+    "progressToNextRank": "晋升下一级别进度",
+    "qualificationTrend": "资格趋势",
+    "trendDirection": "趋势方向",
+    "improving": "改善中",
+    "declining": "下降中",
+    "stable": "稳定",
+    "consecutiveQualifiedMonths": "连续达标月数",
+    "averageRequirementsMet": "平均达成要求",
+    "demotionRisk": "降级风险",
+    "highRisk": "高风险",
+    "mediumRisk": "中等风险",
+    "lowRisk": "低风险",
+    "recommendations": "建议",
+    "youreOnTrack": "您进展顺利！继续保持出色的工作。",
+    "recentQualificationHistory": "近期资格历史",
+    "qualificationStatusOverMonths": "您过去几个月的资格状态",
+    "keyPerformanceMetrics": "关键绩效指标",
+    "ninetyDayPremium": "90天保费",
+    "statusQualified": "已达标",
+    "statusDemoted": "已降级",
+    "ofRequired": "所需 {required}"
   },
   "training": {
     "title": "培训中心",
+    "portalTitle": "培训门户",
+    "portalDescription": "通过我们的培训课程发展您的技能并壮大您的业务。",
     "courses": "课程",
     "myCourses": "我的课程",
+    "myCertificates": "我的证书",
     "allCourses": "全部课程",
     "inProgress": "进行中",
     "completed": "已完成",
     "notStarted": "未开始",
     "startCourse": "开始课程",
     "continueCourse": "继续学习",
+    "continueLearning": "继续学习",
+    "pickUpWhereYouLeftOff": "从您上次离开的地方继续",
     "lessons": "课时",
     "quizzes": "测验",
     "quiz": "测验",
@@ -226,6 +389,15 @@
     "downloadCertificate": "下载证书",
     "resources": "资源",
     "downloadResource": "下载资源",
+    "requiredTraining": "必修培训",
+    "completeToStayCompliant": "完成这些课程以保持合规",
+    "learningPaths": "学习路径",
+    "featuredCourses": "精选课程",
+    "recommendedForSuccess": "推荐培训助您成功",
+    "coursesAvailable": "可用 {count} 门课程",
+    "viewAll": "查看全部",
+    "noCoursesYet": "暂无可用课程。请稍后再来！",
+    "noPathsYet": "暂无可用学习路径。请稍后再来！",
     "categories": {
       "onboarding": "入职培训",
       "products": "产品知识",
@@ -241,23 +413,45 @@
   },
   "shop": {
     "title": "商店",
+    "description": "浏览数字产品和培训资料",
     "products": "商品",
     "addToCart": "加入购物车",
     "removeFromCart": "移出购物车",
     "cart": "购物车",
+    "inCart": "已在购物车",
     "checkout": "结算",
     "orderTotal": "订单总额",
     "orderHistory": "订单历史",
     "myOrders": "我的订单",
     "orderNumber": "订单号",
     "orderDate": "订单日期",
-    "orderStatus": "订单状态"
+    "orderStatus": "订单状态",
+    "items": "{count} 件商品",
+    "searchProducts": "搜索商品...",
+    "noProductsFound": "未找到商品",
+    "cartSummary": "购物车摘要",
+    "addedToCart": "已添加到购物车",
+    "categories": {
+      "all": "全部商品",
+      "training": "培训与教育",
+      "tools": "营销工具",
+      "leads": "潜在客户名单",
+      "software": "软件与应用",
+      "templates": "模板与资源"
+    }
   },
   "crm": {
     "title": "客户关系管理",
+    "description": "管理您的潜在客户、客户和团队成员。",
     "contacts": "联系人",
     "leads": "潜在客户",
     "customers": "客户",
+    "totalContacts": "联系人总数",
+    "activeLeads": "活跃潜在客户",
+    "dueFollowUps": "待跟进",
+    "closedWon": "已成交",
+    "importExport": "导入/导出",
+    "importExportDescription": "从CSV批量导入联系人或导出您的联系人列表",
     "addContact": "添加联系人",
     "editContact": "编辑联系人",
     "firstName": "名",
@@ -277,7 +471,52 @@
       "negotiation": "谈判中",
       "closedWon": "成交",
       "closedLost": "失败"
-    }
+    },
+    "contactNotFound": "未找到联系人",
+    "backToCRM": "返回CRM",
+    "since": "{type}，自 {date}",
+    "leadScore": "线索评分",
+    "hotLead": "热门线索",
+    "warmLead": "温和线索",
+    "coldLead": "冷线索",
+    "emailOpens": "邮件打开次数",
+    "linkClicks": "链接点击次数",
+    "totalActivities": "总活动数",
+    "contactInfo": "联系人信息",
+    "source": "来源",
+    "activityTimeline": "活动时间线",
+    "emailSequence": "邮件序列",
+    "recentActivity": "最近活动",
+    "trackEngagement": "跟踪与此线索的互动",
+    "automatedNurturing": "自动化培育活动进度",
+    "importExportTitle": "导入/导出联系人",
+    "exportContacts": "导出联系人",
+    "downloadContacts": "将所有联系人下载为CSV文件",
+    "exportDescription": "导出包括所有联系人字段：姓名、邮箱、电话、类型、阶段、来源、公司、地址、备注和标签。",
+    "exporting": "正在导出...",
+    "exportAllContacts": "导出所有联系人",
+    "importContacts": "导入联系人",
+    "uploadCsv": "上传CSV文件批量导入联系人",
+    "csvFile": "CSV文件",
+    "skipDuplicates": "跳过重复邮箱",
+    "downloadTemplate": "下载模板",
+    "preview": "预览：{fileName}",
+    "contactsFound": "找到 {count} 个联系人",
+    "imported": "{count} 个已导入",
+    "duplicatesSkipped": "{count} 个重复项已跳过",
+    "errorsCount": "{count} 个错误",
+    "errors": "错误：",
+    "rowError": "第 {row} 行：{errors}",
+    "andMore": "...还有 {count} 个",
+    "andMoreContacts": "...还有 {count} 个联系人",
+    "importing": "正在导入...",
+    "csvFormatGuide": "CSV格式指南",
+    "requiredColumns": "必填列",
+    "optionalColumns": "可选列",
+    "name": "姓名",
+    "type": "类型",
+    "stage": "阶段",
+    "tags": "标签"
   },
   "reports": {
     "title": "报表",
@@ -291,19 +530,258 @@
   },
   "settings": {
     "title": "设置",
+    "description": "管理您的账户设置和偏好。",
     "profile": "个人资料",
+    "profileInfo": "个人资料信息",
+    "updatePersonalInfo": "更新您的个人信息",
     "account": "账户",
     "notifications": "通知",
     "security": "安全",
     "preferences": "偏好设置",
     "personalInfo": "个人信息",
+    "firstName": "名",
+    "lastName": "姓",
+    "email": "电子邮件",
+    "phone": "电话",
+    "saveChanges": "保存更改",
     "changePassword": "修改密码",
     "emailNotifications": "邮件通知",
     "language": "语言",
     "timezone": "时区",
     "avatar": "头像",
     "uploadAvatar": "上传头像",
-    "removeAvatar": "删除头像"
+    "removeAvatar": "删除头像",
+    "aiCopilot": "AI 助手",
+    "manageAiSubscription": "管理您的 AI 助手订阅",
+    "currentPlan": "当前套餐",
+    "notSubscribed": "未订阅",
+    "basicPlan": "基础版 - $49/月",
+    "proPlan": "专业版 - $99/月",
+    "agencyPlan": "代理版 - $199/月",
+    "getAiAssistance": "获取 AI 驱动的销售和招募协助",
+    "aiAssistantActive": "您的 AI 助手已激活并准备就绪",
+    "subscribe": "订阅",
+    "managePlan": "管理套餐",
+    "manageAccountSecurity": "管理您的账户安全",
+    "password": "密码",
+    "changeAccountPassword": "更改您的账户密码",
+    "change": "更改",
+    "twoFactorAuth": "双因素认证",
+    "addExtraSecurity": "为您的账户添加额外的安全保护",
+    "enable": "启用",
+    "manageNotifications": "管理您的通知接收方式",
+    "emailNotifDesc": "通过电子邮件接收更新",
+    "configure": "配置",
+    "pushNotifications": "推送通知",
+    "pushNotifDesc": "接收浏览器通知",
+    "yourReferralLink": "您的推荐链接",
+    "shareToRecruit": "分享此链接以招募新代理人",
+    "profileUpdated": "个人资料更新成功",
+    "failedSaveProfile": "保存个人资料失败",
+    "linkCopied": "推荐链接已复制到剪贴板",
+    "failedCopyLink": "复制链接失败",
+    "passwordChangeEmail": "密码更改将发送到您的邮箱",
+    "twoFactorComingSoon": "双因素认证设置即将推出",
+    "emailNotifComingSoon": "邮件通知设置即将推出",
+    "pushNotifComingSoon": "推送通知设置即将推出"
+  },
+  "reports": {
+    "title": "报告",
+    "description": "分析您的业务表现。",
+    "export": "导出",
+    "exportSuccess": "报告导出成功",
+    "periods": {
+      "week": "过去7天",
+      "month": "本月",
+      "quarter": "本季度",
+      "year": "今年"
+    },
+    "totalPremium": "总保费",
+    "totalEarnings": "总收入",
+    "newRecruits": "新招募",
+    "overrideEarnings": "代理佣金收入",
+    "taxDocuments": "税务文件",
+    "taxDocumentsDesc": "下载收入报表和1099摘要用于报税",
+    "earningsBreakdown": "收入明细",
+    "earningsDistribution": "您的收入分配方式",
+    "directCommissions": "直接佣金",
+    "overrideCommissions": "代理佣金",
+    "bonuses": "奖金",
+    "total": "总计",
+    "productionTrend": "业绩趋势",
+    "productionOverTime": "您的保费业绩随时间变化",
+    "chartComingSoon": "图表可视化即将推出",
+    "csvHeaders": {
+      "metric": "指标",
+      "value": "数值",
+      "period": "期间"
+    },
+    "taxDocumentsPage": {
+      "title": "税务文件",
+      "description": "下载您的收入报表和1099摘要",
+      "form1099Required": "需要1099-NEC表格",
+      "below1099Threshold": "低于1099门槛",
+      "form1099Message": "您的收入{amount}超过了$600的门槛。您将在次年1月31日前收到正式的1099-NEC表格。",
+      "belowThresholdMessage": "您的收入{amount}低于1099申报的$600门槛。但是，您仍需在纳税申报表中申报所有收入。",
+      "downloadDocuments": "下载文件",
+      "downloadDocumentsDesc": "下载您{year}年的税务文件",
+      "incomeStatement": "收入报表",
+      "incomeStatementDesc": "所有收入的详细明细",
+      "form1099Summary": "1099摘要",
+      "form1099SummaryDesc": "用于报税的摘要",
+      "downloadCsv": "下载CSV",
+      "monthlyBreakdown": "月度明细",
+      "monthlyBreakdownDesc": "{year}年各月收入",
+      "month": "月份",
+      "commissions": "佣金",
+      "overrides": "代理佣金",
+      "bonusBreakdown": "奖金明细",
+      "bonusBreakdownDesc": "{year}年各类型奖金",
+      "disclaimer": "免责声明",
+      "tryAgain": "重试"
+    }
+  },
+  "disputes": {
+    "title": "我的争议",
+    "description": "提交并追踪佣金、退款和其他问题的争议",
+    "newDispute": "新建争议",
+    "submitDispute": "提交争议",
+    "submitFirstDispute": "提交您的第一个争议",
+    "submitting": "提交中...",
+    "stats": {
+      "total": "总计",
+      "pending": "待处理",
+      "underReview": "审核中",
+      "resolved": "已解决"
+    },
+    "status": {
+      "pending": "待审核",
+      "underReview": "审核中",
+      "infoRequested": "需补充信息",
+      "approved": "已批准",
+      "denied": "已拒绝",
+      "withdrawn": "已撤回"
+    },
+    "types": {
+      "commission": "佣金问题",
+      "clawback": "退款争议",
+      "bonus": "奖金计算",
+      "override": "代理佣金支付",
+      "rank": "等级计算",
+      "policy": "保单抵扣",
+      "other": "其他问题"
+    },
+    "priority": {
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "critical": "紧急"
+    },
+    "noDisputes": "未找到争议",
+    "noDisputesYet": "您还没有提交过任何争议。",
+    "noDisputesWithStatus": "没有状态为"{status}"的争议。",
+    "disputed": "争议中",
+    "modal": {
+      "title": "提交争议",
+      "description": "描述您的问题，我们会尽快处理。"
+    },
+    "form": {
+      "disputeType": "争议类型",
+      "subject": "主题",
+      "amountDisputed": "争议金额（可选）",
+      "descriptionLabel": "描述",
+      "selectType": "选择类型...",
+      "subjectPlaceholder": "问题简述",
+      "descriptionPlaceholder": "请提供所有相关详情，包括日期、保单号以及其他有助于我们快速解决问题的信息...",
+      "characters": "个字符"
+    },
+    "cancel": "取消",
+    "detail": {
+      "submitted": "已提交",
+      "withdrawDispute": "撤回争议",
+      "withdrawTitle": "撤回争议？",
+      "withdrawDescription": "您确定要撤回此争议吗？此操作无法撤销。",
+      "yesWithdraw": "是，撤回",
+      "descriptionTitle": "描述",
+      "resolution": "解决方案",
+      "amountAdjusted": "调整金额",
+      "comments": "评论",
+      "commentsDescription": "此争议的沟通记录",
+      "noComments": "暂无评论",
+      "staff": "工作人员",
+      "addComment": "添加评论...",
+      "sendComment": "发送评论",
+      "details": "详情",
+      "type": "类型",
+      "priorityLabel": "优先级",
+      "amountDisputedLabel": "争议金额",
+      "created": "创建时间",
+      "lastUpdated": "最后更新",
+      "infoRequested": "需要补充信息",
+      "infoRequestedMessage": "我们的团队需要额外信息来处理您的争议。请查看评论并回复所需的详细信息。",
+      "disputeNotFound": "未找到争议",
+      "backToDisputes": "返回争议列表"
+    }
+  },
+  "replicatedSite": {
+    "title": "复制网站",
+    "description": "自定义您的个人代理网站",
+    "preview": "预览",
+    "saving": "保存中...",
+    "saveChanges": "保存更改",
+    "yourPersonalSite": "您的个人网站",
+    "copied": "已复制",
+    "copyLink": "复制链接",
+    "tabs": {
+      "profile": "个人资料",
+      "appearance": "外观",
+      "socialLinks": "社交链接"
+    },
+    "profile": {
+      "title": "个人资料信息",
+      "description": "此信息将显示在您的复制网站上",
+      "updatePhoto": "在设置中更新个人头像",
+      "bio": "个人简介",
+      "bioPlaceholder": "告诉访客关于您自己以及为什么他们应该加入您的团队...",
+      "characters": "字符",
+      "headline": "自定义标题",
+      "headlinePlaceholder": "您在主页区域的自定义标题...",
+      "headlineHint": "留空以使用默认标题",
+      "ctaText": "行动按钮文字",
+      "contactVisibility": "联系信息可见性",
+      "showPhone": "显示电话号码",
+      "showPhoneDesc": "在网站上显示您的电话号码",
+      "showEmail": "显示电子邮件",
+      "showEmailDesc": "在网站上显示您的电子邮件地址"
+    },
+    "siteStatus": {
+      "title": "网站状态",
+      "description": "启用或禁用您的复制网站",
+      "enabled": "网站已启用",
+      "disabledMessage": "禁用后，访客将看到"即将推出"页面"
+    },
+    "appearance": {
+      "title": "品牌颜色",
+      "description": "自定义您网站的主色调",
+      "primaryColor": "主色调",
+      "presetColors": "预设颜色",
+      "preview": "预览",
+      "sampleButton": "示例按钮",
+      "linksPreview": "链接将显示为这样"
+    },
+    "social": {
+      "title": "社交媒体链接",
+      "description": "添加您的社交媒体资料以在网站上显示"
+    },
+    "toast": {
+      "linkCopied": "链接已复制到剪贴板",
+      "saved": "设置保存成功",
+      "loadError": "加载设置失败",
+      "saveError": "保存设置失败"
+    },
+    "error": {
+      "unableToLoad": "无法加载设置"
+    }
   },
   "admin": {
     "title": "管理后台",
@@ -386,6 +864,883 @@
     "forAgents": "代理人专区",
     "agentLogin": "代理人登录",
     "brandTagline": "自2018年以来，通过可靠的保险解决方案和创业机会，建设财务未来。"
+  },
+  "replicated": {
+    "yourAgent": "您的代理人",
+    "joinOurTeam": "加入我们的团队",
+    "nav": {
+      "home": "首页",
+      "aboutMe": "关于我",
+      "carriers": "保险公司",
+      "compare": "对比",
+      "opportunity": "机会",
+      "faq": "常见问题",
+      "contact": "联系"
+    },
+    "home": {
+      "heroTitle": "保护您最重要的",
+      "heroSubtitle": "获取专业人寿保险指导，为您的家庭提供财务保障，让您安枕无忧。",
+      "getQuote": "获取免费报价",
+      "scheduleCall": "预约咨询",
+      "trustedCarriers": "信赖的保险公司",
+      "whyJoin": {
+        "title": "为什么与{agentName}合作？",
+        "personalService": {
+          "title": "个性化服务",
+          "description": "获得一对一指导，找到完全符合您需求的保障。"
+        },
+        "expertKnowledge": {
+          "title": "专业知识",
+          "description": "受益于多年的行业经验和持续的专业发展。"
+        },
+        "clientFirst": {
+          "title": "客户至上",
+          "description": "您的最佳利益始终是建议和规划的核心。"
+        }
+      },
+      "services": {
+        "title": "我们的服务",
+        "lifeInsurance": {
+          "title": "人寿保险",
+          "description": "全面的保障方案，在意外发生时保护您的家人。"
+        },
+        "retirementPlanning": {
+          "title": "退休规划",
+          "description": "通过IUL保单和年金实现财务自由。"
+        },
+        "wealthBuilding": {
+          "title": "财富积累",
+          "description": "通过现金价值人寿保险增长财富的策略。"
+        }
+      },
+      "howItWorks": {
+        "title": "如何运作",
+        "subtitle": "入门很简单。这是您的成功之路。",
+        "step1": "加入团队",
+        "step1Desc": "完成申请并在我们的支持下获得牌照。",
+        "step2": "接受培训",
+        "step2Desc": "完成入职培训计划并学习产品知识。",
+        "step3": "开始销售",
+        "step3Desc": "帮助家庭解决保险需求并赚取佣金。",
+        "step4": "建立团队",
+        "step4Desc": "招募和培训他人以倍增您的收入。"
+      },
+      "whatYouGet": {
+        "title": "加入后您将获得",
+        "items": {
+          "carriers": "获得7家A级保险公司的合作",
+          "training": "全面的培训和认证支持",
+          "dashboard": "个人后台管理系统",
+          "crm": "AI驱动的客户管理系统",
+          "marketing": "营销材料和销售工具",
+          "calls": "每周团队培训电话和导师指导",
+          "fastStart": "快速启动奖金计划",
+          "advancement": "职业晋升机会"
+        },
+        "readyToStart": "准备开始您的旅程了吗？",
+        "joinTeamToday": "今天就加入{agentName}的团队",
+        "applyNow": "立即申请"
+      },
+      "cta": {
+        "title": "迈出第一步",
+        "description": "加入数千名已通过Apex Affinity Group改变生活的成功代理人。您的旅程从这里开始。",
+        "joinNow": "立即加入",
+        "askQuestions": "先提问"
+      }
+    },
+    "aboutMe": {
+      "title": "关于{agentName}",
+      "atApex": "{rankName}于Apex Affinity Group",
+      "yearsWithApex": "{years}+年与Apex合作",
+      "newAgent": "新代理人",
+      "joinMyTeam": "加入我的团队",
+      "contactMe": "联系我",
+      "aboutMeTitle": "关于我",
+      "getInTouch": "联系方式",
+      "email": "邮箱",
+      "phone": "电话",
+      "sendMessage": "发送消息",
+      "whyWorkWithMe": {
+        "title": "为什么与我合作？",
+        "mentorship": "个人指导",
+        "mentorshipDesc": "我将亲自指导您完成建立保险业务的每一步。",
+        "success": "成功经验",
+        "successDesc": "向走过这条路并取得实际成果的人学习。",
+        "teamSupport": "团队支持",
+        "teamSupportDesc": "加入一个相互帮助、共同成功的支持性团队环境。"
+      },
+      "whatYouGet": {
+        "title": "加入我的团队后您将获得",
+        "items": {
+          "carriers": "获得7家A级保险公司的合作",
+          "training": "全面的培训和持续教育",
+          "tools": "AI驱动的工具助力业务增长",
+          "mentorship": "个人指导和支持",
+          "commissions": "高达145%的竞争性佣金",
+          "ownership": "从第一天起完全拥有您的客户簿",
+          "teamBuilding": "建立自己团队的机会",
+          "noCosts": "无启动费用或月费"
+        }
+      },
+      "cta": {
+        "title": "准备开始您的旅程？",
+        "description": "让我们谈谈我如何帮助您在保险行业建立成功的职业生涯。",
+        "joinMyTeam": "加入我的团队",
+        "askQuestions": "先提问"
+      }
+    },
+    "contact": {
+      "title": "联系{agentName}",
+      "subtitle": "对这个机会有疑问？准备开始了？留言给我，让我们联系。",
+      "email": "邮箱",
+      "phone": "电话",
+      "agentMessage": "我在这里回答您的问题，帮助您开始与Apex Affinity Group的旅程。不要犹豫联系我 - 我很乐意听到您的声音！",
+      "form": {
+        "title": "发送消息",
+        "subtitle": "填写下面的表格，我会尽快回复您。",
+        "yourName": "您的姓名",
+        "emailAddress": "电子邮件地址",
+        "phoneOptional": "电话号码（可选）",
+        "message": "留言",
+        "messagePlaceholder": "告诉我您想了解什么...",
+        "sendMessage": "发送消息",
+        "sending": "发送中..."
+      },
+      "success": {
+        "title": "消息已发送！",
+        "description": "感谢您的联系。{agentName}会尽快回复您。"
+      },
+      "faq": {
+        "title": "常见问题",
+        "subtitle": "您可能在以下页面找到答案：",
+        "aboutOpportunity": "关于机会",
+        "ourProducts": "我们的产品",
+        "aboutYourAgent": "关于您的代理人"
+      },
+      "loading": "加载中...",
+      "agentNotFound": "未找到代理人"
+    },
+    "opportunity": {
+      "hero": {
+        "title": "机会",
+        "subtitle": "在保险行业建立有回报的事业，享受无限收入潜力、全面培训和成功之路。"
+      },
+      "incomeStreams": {
+        "title": "多元收入来源",
+        "subtitle": "我们的薪酬计划奖励您的个人业绩和团队建设。",
+        "personalCommissions": {
+          "title": "个人佣金",
+          "subtitle": "个人销售最高可赚取90%",
+          "description": "当您帮助家庭解决保险需求时直接获得报酬。更高级别意味着更高的佣金率。"
+        },
+        "overrideIncome": {
+          "title": "管理津贴",
+          "subtitle": "从6代团队中获得收益",
+          "description": "建立团队并从他们的业绩中获得管理津贴：第1-6代分别为15%、5%、3%、2%、1%和0.5%。"
+        },
+        "fastStartBonus": {
+          "title": "快速启动奖金",
+          "subtitle": "早期业绩额外奖励",
+          "description": "在前90天的业绩中获得额外奖金。达到目标，获得快速起步的奖励。"
+        },
+        "rankAdvancementBonus": {
+          "title": "晋级奖金",
+          "subtitle": "晋升时获得奖励",
+          "description": "每次晋级时，您都会获得一次性奖金。级别越高，晋级奖金越大。"
+        },
+        "matchingBonus": {
+          "title": "匹配奖金",
+          "subtitle": "匹配团队的奖金",
+          "description": "获得组织中代理人所获奖金的一定比例匹配。领导力有其回报。"
+        },
+        "carBonus": {
+          "title": "汽车奖金",
+          "subtitle": "每月汽车津贴",
+          "description": "符合条件可参与我们的汽车奖金计划，获得每月汽车津贴。在建立业务的同时享受驾驶乐趣。"
+        }
+      },
+      "careerPath": {
+        "title": "您的职业发展路径",
+        "subtitle": "明确的晋升机会，每个级别都有更多福利。",
+        "premium90Days": "90天保费",
+        "personalRecruits": "个人招募",
+        "additionalRanks": "以及4个更高的领导级别：区域MGA、全国MGA、执行MGA、首席MGA"
+      },
+      "training": {
+        "title": "培训与支持",
+        "subtitle": "我们不会只给您一份合同就祝您好运。我们全面的培训和支持系统确保您拥有成功所需的一切。",
+        "items": {
+          "onboarding": "新代理人入职培训计划",
+          "productTraining": "所有保险公司的产品培训",
+          "salesSkills": "销售和演示技巧",
+          "weeklyCalls": "每周团队培训电话",
+          "mentorship": "一对一导师指导",
+          "marketing": "营销材料和工具",
+          "aiCrm": "AI驱动的客户管理系统",
+          "dashboard": "后台管理系统"
+        }
+      },
+      "rightForYou": {
+        "title": "这适合您吗？",
+        "subtitle": "这个机会非常适合以下人群：",
+        "items": {
+          "motivated": "自我激励和有进取心",
+          "unlimitedIncome": "寻求无限收入潜力",
+          "willingToLearn": "愿意学习和成长",
+          "helpingOthers": "有兴趣帮助他人",
+          "buildBusiness": "准备建立自己的事业"
+        },
+        "applyNow": "立即申请"
+      },
+      "faq": {
+        "title": "常见问题",
+        "questions": {
+          "licensed": {
+            "q": "我需要持牌吗？",
+            "a": "是的，您需要人寿保险牌照才能销售。如果您还没有牌照，我们会帮助您获得。"
+          },
+          "cost": {
+            "q": "加入需要费用吗？",
+            "a": "加入Apex没有任何费用。您可能需要支付在您所在州获得牌照的相关费用。"
+          },
+          "pyramid": {
+            "q": "这是传销吗？",
+            "a": "不是。这是一个合法的保险业务。您通过销售保险产品赚取佣金，而不是通过招募。团队建设是可选的，可以提供管理津贴收入。"
+          },
+          "earnings": {
+            "q": "我能赚多少钱？",
+            "a": "您的收入取决于您的努力。有些代理人赚取兼职收入，有些人建立了六位数的业务。收入没有上限。"
+          },
+          "leads": {
+            "q": "我能获得客户资源吗？",
+            "a": "我们提供客户开发培训。许多代理人最初从自然市场开始，然后学习通过各种方法开发客户。"
+          }
+        }
+      },
+      "cta": {
+        "title": "准备开始了吗？",
+        "subtitle": "今天就加入{agentName}的团队，在保险行业开始建立您的未来。",
+        "applyNow": "立即申请",
+        "askQuestions": "咨询问题"
+      }
+    },
+    "signup": {
+      "title": "加入{agentName}的团队",
+      "subtitle": "开始您在Apex Affinity Group的旅程，在保险行业建立有回报的职业生涯。",
+      "yourSponsor": "您的推荐人",
+      "whatYouGet": "您将获得：",
+      "benefits": {
+        "carriers": "与7家A级保险公司合作",
+        "training": "全面的培训计划",
+        "tools": "AI驱动的客户管理系统和后台办公",
+        "commissions": "高达90%的佣金比例",
+        "overrides": "6代管理津贴收入",
+        "bonuses": "奖金和激励计划",
+        "mentorship": "来自推荐人的一对一指导"
+      },
+      "form": {
+        "title": "创建您的账户",
+        "subtitle": "填写以下表格，开始您在Apex Affinity Group的旅程。",
+        "firstName": "名字",
+        "lastName": "姓氏",
+        "chooseTeamUrl": "选择您的团队网址",
+        "usernameHelp": "这将成为您的个人招募网站网址。3-20个字符，仅限字母、数字和下划线。",
+        "usernameAvailable": "用户名可用！",
+        "email": "电子邮件地址",
+        "phone": "电话号码",
+        "password": "密码",
+        "passwordPlaceholder": "至少8个字符",
+        "confirmPassword": "确认密码",
+        "confirmPasswordPlaceholder": "确认您的密码",
+        "agreeTermsPart1": "我同意",
+        "agreeTermsPart2": "和",
+        "agreeTermsPart3": "我理解需要获得适当的牌照才能销售保险。",
+        "termsOfService": "服务条款",
+        "privacyPolicy": "隐私政策",
+        "createAccount": "创建账户",
+        "creatingAccount": "创建账户中...",
+        "alreadyHaveAccount": "已有账户？",
+        "signIn": "登录"
+      },
+      "errors": {
+        "agreeTerms": "您必须同意条款才能继续。",
+        "usernameRequired": "请为您的团队页面选择一个可用的用户名。",
+        "passwordsNoMatch": "密码不匹配",
+        "passwordMinLength": "密码至少需要8个字符",
+        "emailExists": "该邮箱已注册账户。请直接登录。",
+        "createFailed": "创建账户失败",
+        "profileFailed": "创建代理人档案失败。请联系客服。"
+      },
+      "loading": "加载中...",
+      "agentNotFound": "未找到代理人"
+    },
+    "products": {
+      "hero": {
+        "title": "我们的产品",
+        "subtitle": "我们提供来自顶级保险公司的全面人寿保险和年金产品套餐，满足您客户的多样化需求。"
+      },
+      "productList": {
+        "iul": {
+          "name": "指数型万能寿险 (IUL)",
+          "description": "与市场指数挂钩的现金价值增长型终身人寿保险。",
+          "benefits": {
+            "taxFree": "免税身故赔偿",
+            "cashValue": "现金价值积累",
+            "marketLinked": "与市场挂钩的增长，同时有下跌保护",
+            "flexiblePremium": "灵活的保费支付",
+            "policyLoans": "可使用保单贷款"
+          }
+        },
+        "term": {
+          "name": "定期人寿保险",
+          "description": "在特定时期内提供实惠的保障。",
+          "benefits": {
+            "lowerPremiums": "较低的初始保费",
+            "coverage": "10年、20年或30年的保障期限",
+            "convertible": "可转换为终身保险",
+            "simple": "简单的申请流程",
+            "highCoverage": "高保额可选"
+          }
+        },
+        "annuities": {
+          "name": "固定指数年金",
+          "description": "具有本金保护和增长潜力的退休收入产品。",
+          "benefits": {
+            "principalProtection": "本金保护",
+            "taxDeferred": "税收递延增长",
+            "guaranteedIncome": "终身收入保障选项",
+            "noMarketLoss": "无市场损失",
+            "flexiblePayout": "灵活的支付选项"
+          }
+        },
+        "finalExpense": {
+          "name": "最终费用保险",
+          "description": "专为支付临终费用设计的终身寿险。",
+          "benefits": {
+            "guaranteed": "保证承保选项",
+            "smallFace": "小额保额（$5k-$50k）",
+            "fixedPremiums": "固定保费",
+            "noExam": "无需体检",
+            "quickApproval": "快速审批流程"
+          }
+        }
+      },
+      "carriers": {
+        "title": "我们的合作保险公司",
+        "subtitle": "我们与A级保险公司合作，为我们的代理人提供最佳产品和具有竞争力的佣金率。",
+        "aRated": "A级评级"
+      },
+      "whySell": {
+        "title": "为什么销售我们的产品？",
+        "commissions": {
+          "title": "有竞争力的佣金",
+          "description": "人寿保险佣金高达90%，年金产品佣金同样具有竞争力。"
+        },
+        "carriers": {
+          "title": "值得信赖的保险公司",
+          "description": "我们所有的保险公司都拥有A级或更高评级，让您在向客户介绍时充满信心。"
+        },
+        "process": {
+          "title": "简便的申请流程",
+          "description": "简化的电子申请和快速核保，加速保单生效。"
+        }
+      },
+      "cta": {
+        "title": "准备了解更多？",
+        "subtitle": "联系{agentName}了解我们的产品组合。",
+        "joinTeam": "加入团队",
+        "contact": "联系我们"
+      }
+    },
+    "testimonials": {
+      "hero": {
+        "title": "成功故事",
+        "subtitle": "听听那些与Apex Affinity Group一起改变人生的代理人的故事。"
+      },
+      "featured": {
+        "quote": "当我加入Apex时，完全没想到它会彻底改变我的生活。三年后，我已经建立了一个超过50名代理人的团队，实现了财务自由。系统、培训和支持让一切变得不同。",
+        "name": "James Davis",
+        "role": "执行MGA | 在Apex {years} 年"
+      },
+      "grid": {
+        "title": "更多成功故事",
+        "yearsWithApex": "在Apex {years} 年",
+        "yearsWithApexPlural": "在Apex {years} 年"
+      },
+      "stories": {
+        "michael": {
+          "name": "Michael Johnson",
+          "role": "区域MGA",
+          "quote": "加入Apex是我做过的最好的决定。仅仅2年时间，我从一个在公司苦苦挣扎的人变成了经营自己成功保险业务的人。培训和支持无与伦比。"
+        },
+        "sarah": {
+          "name": "Sarah Williams",
+          "role": "高级MGA",
+          "quote": "我曾是一位全职妈妈，想为家庭收入做贡献。Apex让我能够按照自己的时间安排工作，同时建立真正的职业生涯。现在我的收入比以前任何工作都高。"
+        },
+        "david": {
+          "name": "David Chen",
+          "role": "MGA",
+          "quote": "薪酬计划太棒了。我从管理津贴中赚的比个人业绩还多。建立团队是我成功的关键。"
+        },
+        "amanda": {
+          "name": "Amanda Rodriguez",
+          "role": "助理MGA",
+          "quote": "我最喜欢Apex的是文化氛围。每个人都愿意帮助你成功。我的上线就像我的导师，随时回答问题并提供指导。"
+        },
+        "robert": {
+          "name": "Robert Thompson",
+          "role": "全国MGA",
+          "quote": "我在保险行业工作了20年，从未见过比Apex更好的机会。保险公司合约、薪酬计划、技术——都是世界一流的。"
+        },
+        "jennifer": {
+          "name": "Jennifer Martinez",
+          "role": "高级代理人",
+          "quote": "起初我持怀疑态度，但看到第一张佣金支票后，我就被吸引了。当你相信自己提供的产品时，产品自己就能卖出去。"
+        }
+      },
+      "stats": {
+        "title": "真实成果",
+        "subtitle": "我们的代理人正在取得令人难以置信的成果。这就是Apex的成功模样。",
+        "avgIncome": "顶级代理人平均收入",
+        "satisfaction": "代理人满意度",
+        "newMGAs": "今年新晋MGA",
+        "bonuses": "上季度发放奖金"
+      },
+      "videos": {
+        "title": "视频见证",
+        "subtitle": "观看我们的代理人用自己的话分享他们的故事。",
+        "comingSoon": "即将推出"
+      },
+      "cta": {
+        "title": "书写您的成功故事",
+        "subtitle": "加入{agentName}和数百名正在与Apex Affinity Group一起实现梦想的代理人。",
+        "startJourney": "开始您的旅程"
+      }
+    },
+    "terms": {
+      "title": "服务条款",
+      "lastUpdated": "最后更新：2026年1月",
+      "importantNotice": {
+        "title": "重要法律协议",
+        "description": "在使用我们的服务或申请成为独立代理人之前，请仔细阅读这些条款。使用我们的网站或服务即表示您同意受这些条款的约束。"
+      },
+      "agreement": {
+        "title": "条款同意",
+        "content1": "这些服务条款（"条款"）构成您与Apex Affinity Group（"公司"、"我们"或"我们的"）之间具有法律约束力的协议，管辖您对我们网站、服务和代理机会的使用。",
+        "content2": "通过访问我们的网站、提交申请或参与我们的代理计划，您确认您已阅读、理解并同意受这些条款的约束。"
+      },
+      "contractor": {
+        "title": "独立承包商身份",
+        "intro": "您是独立承包商，而非雇员。这意味着：",
+        "items": {
+          "control": "您控制自己的工作时间、方法和业务实践",
+          "taxes": "您负责自己的税务，包括自雇税",
+          "benefits": "您无权享受员工福利（健康保险、401k等）",
+          "licenses": "您必须自费获取并维护所需的保险执照",
+          "represent": "您可以代表其他公司，但须遵守保险公司的委任规则",
+          "noGuarantee": "我们不保证任何最低收入或成功"
+        },
+        "agreement": "作为入职流程的一部分，您同意签署独立承包商协议，该协议提供了有关这种关系的更多详细信息。"
+      },
+      "eligibility": {
+        "title": "资格要求",
+        "intro": "要成为Apex Affinity Group代理人，您必须：",
+        "items": {
+          "age": "年满18周岁",
+          "authorized": "在美国拥有合法工作授权",
+          "background": "通过背景调查（保险公司要求）",
+          "license": "获得所需的州保险执照",
+          "training": "完成我们的入职培训计划",
+          "truthful": "在申请中提供准确真实的信息",
+          "noFelony": "没有与金融犯罪相关的重罪定罪记录"
+        },
+        "reserve": "我们保留自行决定拒绝任何申请或终止任何代理关系的权利。"
+      },
+      "compensation": {
+        "title": "薪酬与佣金",
+        "intro": "您的薪酬完全基于您销售的保险产品的佣金以及您团队业绩的管理津贴。关键条款包括：",
+        "structure": {
+          "title": "佣金结构",
+          "description": "佣金率因产品和您当前的级别而异。请参阅我们的薪酬计划文档了解当前费率。"
+        },
+        "chargebacks": {
+          "title": "佣金退还",
+          "description": "如果保单在退还期内（通常为6-12个月，具体取决于保险公司）失效或取消，佣金可能会从未来收入或您的账户余额中扣回。"
+        },
+        "schedule": {
+          "title": "支付时间表",
+          "description": "佣金按照我们公布的支付时间表支付，通常为每周或每两周一次，具体取决于保险公司付款的到账时间。"
+        },
+        "minimum": {
+          "title": "最低支付金额",
+          "description": "支付前可能需要达到最低余额。低于最低金额的款项将结转到下一个支付周期。"
+        }
+      },
+      "conduct": {
+        "title": "行为准则",
+        "intro": "作为Apex代理人，您同意：",
+        "items": {
+          "honesty": "在所有业务往来中诚实守信",
+          "comply": "遵守所有适用的法律、法规和保险公司指南",
+          "noClaims": "绝不向潜在客户做出误导性收入声明或保证",
+          "accurate": "准确地介绍产品及其利益",
+          "protect": "保护客户机密信息",
+          "noRebating": "不参与返佣、诱导转保或其他禁止行为",
+          "noRecruit": "未经许可不得从其他Apex团队招募代理人",
+          "professional": "在社交媒体上保持专业行为"
+        },
+        "violations": "违规行为可能导致终止合作、佣金没收和法律诉讼。"
+      },
+      "termination": {
+        "title": "终止",
+        "voluntary": {
+          "title": "自愿终止",
+          "description": "您可以随时通过书面通知终止代理关系。待付佣金将按正常时间表支付，但须遵守佣金退还规定。"
+        },
+        "cause": {
+          "title": "因故终止",
+          "intro": "在以下情况下，我们可能立即终止您的合作关系：",
+          "items": {
+            "violation": "违反这些条款或行为准则",
+            "fraud": "欺诈活动或虚假陈述",
+            "license": "丧失所需执照",
+            "production": "未能达到最低业绩要求",
+            "reputation": "损害公司声誉的行为"
+          }
+        },
+        "effect": {
+          "title": "终止的效果",
+          "description": "终止后，您对我们系统的访问权限将被撤销，您的复制网站将被停用，您将不再能够以Apex代理人的身份自居。"
+        }
+      },
+      "ip": {
+        "title": "知识产权",
+        "content1": "我们网站上的所有商标、徽标、内容和材料均为Apex Affinity Group或我们的许可方所有。在您的活跃代理身份期间，您被授予有限的、非独家的许可，以使用经批准的营销材料。",
+        "content2": "未经书面许可，您不得修改、复制或分发我们的材料。您的复制网站许可不可转让，当您的代理身份结束时终止。"
+      },
+      "liability": {
+        "title": "责任限制",
+        "intro": "在法律允许的最大范围内：",
+        "items": {
+          "asIs": "我们按"原样"提供服务，不做任何形式的保证",
+          "noIndirect": "我们不对间接、附带或后果性损害负责",
+          "limited": "我们的总责任限于在过去12个月内实际支付给您的佣金",
+          "thirdParty": "我们不对保险公司或第三方的行为负责"
+        }
+      },
+      "disputes": {
+        "title": "争议解决",
+        "content": "因这些条款或您的代理关系而产生的任何争议应根据美国仲裁协会的规则通过有约束力的仲裁解决。仲裁将在公司总部所在州进行。",
+        "classAction": "集体诉讼弃权：您同意单独解决争议，并放弃参与集体诉讼的任何权利。"
+      },
+      "modifications": {
+        "title": "条款修改",
+        "content": "我们保留随时修改这些条款的权利。重大变更将通过电子邮件或我们的代理门户进行通知。在变更后继续使用我们的服务即表示接受修改后的条款。"
+      },
+      "governing": {
+        "title": "管辖法律",
+        "content": "这些条款应根据德克萨斯州法律进行解释和执行，不考虑法律冲突原则。"
+      },
+      "contact": {
+        "title": "联系方式",
+        "intro": "对这些条款有疑问？请联系我们：",
+        "email": "电子邮件：legal@theapexway.net",
+        "mail": "邮寄地址：Apex Affinity Group，法务部收"
+      },
+      "footer": {
+        "acknowledgment": "使用我们的服务即表示您确认已阅读并理解这些服务条款，并同意受其约束。",
+        "incomeLink": "有关收入相关披露，请查看我们的"
+      }
+    },
+    "privacy": {
+      "title": "隐私政策",
+      "lastUpdated": "最后更新：2026年1月",
+      "introduction": {
+        "title": "简介",
+        "content1": "Apex Affinity Group（"我们"或"我们的"）致力于保护您的隐私。本隐私政策说明了当您访问我们的网站、使用我们的服务或与我们的独立代理人互动时，我们如何收集、使用、披露和保护您的信息。",
+        "content2": "请仔细阅读本隐私政策。使用我们的服务即表示您同意本政策中描述的数据实践。"
+      },
+      "collect": {
+        "title": "我们收集的信息",
+        "personal": {
+          "title": "您提供的个人信息",
+          "intro": "当您注册、申请或联系我们时，我们可能收集：",
+          "items": {
+            "contact": "姓名、电子邮件地址、电话号码",
+            "address": "邮寄地址和出生日期",
+            "ssn": "社会安全号码（用于执照和税务目的）",
+            "banking": "银行信息（用于佣金支付）",
+            "license": "保险执照信息",
+            "employment": "就业历史和专业背景"
+          }
+        },
+        "automatic": {
+          "title": "自动收集的信息",
+          "intro": "当您访问我们的网站时，我们会自动收集：",
+          "items": {
+            "ip": "IP地址和浏览器类型",
+            "device": "设备信息和操作系统",
+            "pages": "访问的页面和在页面上停留的时间",
+            "referrer": "推荐网站地址",
+            "cookies": "Cookie和类似的跟踪技术"
+          }
+        }
+      },
+      "use": {
+        "title": "我们如何使用您的信息",
+        "intro": "我们使用收集的信息来：",
+        "items": {
+          "application": "处理您的代理申请和入职",
+          "licensing": "协助保险执照办理和任命",
+          "commissions": "计算并支付佣金和奖金",
+          "access": "提供对我们后台系统的访问",
+          "notices": "发送有关您账户的重要通知",
+          "training": "提供培训和教育资源",
+          "marketing": "发送营销和促销信息（经您同意）",
+          "legal": "遵守法律和监管要求",
+          "fraud": "防止欺诈并确保安全",
+          "improve": "改善我们的服务和用户体验"
+        }
+      },
+      "sharing": {
+        "title": "信息共享",
+        "intro": "我们可能与以下各方共享您的信息：",
+        "carriers": {
+          "title": "保险公司",
+          "description": "用于协助执照办理、任命和佣金处理。"
+        },
+        "sponsor": {
+          "title": "您的推荐人和上级",
+          "description": "有限的信息，如姓名、联系方式和业绩数据，以支持指导和团队管理。"
+        },
+        "providers": {
+          "title": "服务提供商",
+          "description": "协助支付处理、电子邮件服务、数据分析和技术基础设施的第三方供应商。"
+        },
+        "legal": {
+          "title": "法律要求",
+          "description": "当法律、法院命令或监管机构要求时。"
+        },
+        "noSell": "我们不会将您的个人信息出售给第三方。"
+      },
+      "security": {
+        "title": "数据安全",
+        "intro": "我们实施适当的技术和组织安全措施来保护您的个人信息，包括：",
+        "items": {
+          "encryption": "传输中和静态敏感数据的加密",
+          "access": "安全的访问控制和身份验证",
+          "assessments": "定期安全评估和监控",
+          "training": "员工数据保护培训",
+          "incident": "事件响应程序"
+        },
+        "disclaimer": "虽然我们努力保护您的信息，但没有任何互联网传输方法是100%安全的。我们无法保证绝对安全。"
+      },
+      "rights": {
+        "title": "您的权利",
+        "intro": "根据您的位置，您可能拥有以下权利：",
+        "access": {
+          "title": "访问和数据可携带性",
+          "description": "要求获取我们持有的关于您的个人信息副本。"
+        },
+        "correction": {
+          "title": "更正",
+          "description": "要求更正不准确或不完整的信息。"
+        },
+        "deletion": {
+          "title": "删除",
+          "description": "要求删除您的个人信息，但须遵守法律保留要求。"
+        },
+        "optOut": {
+          "title": "退出",
+          "description": "随时退出营销通信。"
+        },
+        "ccpa": {
+          "title": "加州居民（CCPA）",
+          "description": "加州居民根据加州消费者隐私法享有额外权利，包括知道收集了哪些信息的权利以及因行使隐私权而不受歧视的权利。"
+        },
+        "contact": "要行使这些权利，请联系我们：privacy@theapexway.net。"
+      },
+      "cookies": {
+        "title": "Cookie和跟踪",
+        "intro": "我们使用Cookie和类似技术来：",
+        "items": {
+          "preferences": "记住您的偏好和设置",
+          "auth": "验证您的登录会话",
+          "analytics": "分析网站流量和使用模式",
+          "tracking": "跟踪推荐和代理归属"
+        },
+        "control": "您可以通过浏览器设置控制Cookie。禁用Cookie可能会影响某些网站功能。"
+      },
+      "children": {
+        "title": "儿童隐私",
+        "content": "我们的服务不面向18岁以下的个人。我们不会故意收集儿童的个人信息。如果您认为我们收集了儿童的信息，请立即联系我们。"
+      },
+      "changes": {
+        "title": "本政策的变更",
+        "content": "我们可能会不时更新本隐私政策。我们将通过在本页面发布新政策并更新"最后更新"日期来通知您任何重大变更。我们建议您定期查看本政策。"
+      },
+      "contact": {
+        "title": "联系我们",
+        "intro": "如果您对本隐私政策或我们的数据实践有疑问：",
+        "email": "电子邮件：privacy@theapexway.net",
+        "mail": "邮寄地址：Apex Affinity Group，隐私官收"
+      },
+      "footer": "本隐私政策适用于Apex Affinity Group网站和服务的所有访问者和用户。"
+    },
+    "incomeDisclaimer": {
+      "title": "收入披露声明",
+      "lastUpdated": "最后更新：2026年1月",
+      "importantNotice": {
+        "title": "重要通知",
+        "description": "本收入披露声明是联邦贸易委员会（FTC）的要求，旨在为您提供有关Apex Affinity Group独立代理人收入的准确信息。"
+      },
+      "overview": {
+        "title": "收入概述",
+        "intro": "Apex Affinity Group独立代理人的收入差异很大。代理人的收入取决于许多因素，包括但不限于：",
+        "items": {
+          "effort": "个人努力和投入业务的时间",
+          "skills": "销售技能和经验",
+          "market": "您所在地区的市场状况",
+          "licensing": "执照状态和产品知识",
+          "relationships": "客户关系的质量",
+          "leadership": "领导力和团队建设能力"
+        }
+      },
+      "statistics": {
+        "title": "收入统计",
+        "intro": "下表显示了最近一个财政年度各级别代理人的百分比及其平均年收入：",
+        "headers": {
+          "rank": "级别",
+          "percentage": "代理人百分比",
+          "avgIncome": "平均年收入",
+          "range": "收入范围"
+        },
+        "footnote": "* 这些数字代表税前和业务费用前的总佣金。个人结果会有所不同。"
+      },
+      "disclosures": {
+        "title": "关键披露",
+        "noGuarantee": {
+          "title": "无收入保证",
+          "description": "Apex Affinity Group不保证任何特定的收入水平或成功。您的收入完全取决于您自己的努力、技能和对业务建设的奉献。"
+        },
+        "majority": {
+          "title": "大多数人收入很少或没有",
+          "description": "加入该机会的大多数人收入很少或没有。大约70%的代理人年收入低于10,000美元，许多人根本没有收入。"
+        },
+        "work": {
+          "title": "收入需要付出努力",
+          "description": "从Apex Affinity Group获得收入需要投入大量时间、精力和奉献。成功不是自动的，需要积极参与销售、团队建设和持续培训。"
+        },
+        "expenses": {
+          "title": "业务费用",
+          "description": "所有代理人都需要自己承担业务费用，包括执照费用、继续教育、营销成本和技术费用。这些成本会减少您的净收入。"
+        },
+        "licensing": {
+          "title": "执照要求",
+          "description": "要销售保险产品，您必须获得并维护适当的州执照。执照要求、成本和时间因州而异。在获得适当执照之前，您无法赚取佣金。"
+        },
+        "commission": {
+          "title": "佣金结构",
+          "description": "佣金基于实际保险产品销售支付。管理佣金基于您下级代理人的业绩支付。佣金率因产品和级别而异。"
+        }
+      },
+      "legal": {
+        "title": "法律声明",
+        "content1": "本收入披露声明是根据FTC关于商业机会披露的指南提供的。所呈现的收入数字代表最近完整财政年度的实际结果。",
+        "content2": "Apex Affinity Group不是"快速致富"计划。建立成功的保险代理机构需要大量的时间、努力、技能发展和毅力。许多加入的人不赚钱，有些人可能因业务费用而亏损。",
+        "content3": "在做出任何加入决定之前，您应该仔细审查本收入披露，与您的财务顾问交谈，并考虑这个机会是否适合您的个人和财务状况。"
+      },
+      "contact": {
+        "intro": "对本收入披露有疑问？",
+        "email": "联系方式：compliance@theapexway.net"
+      }
+    },
+    "signupSuccess": {
+      "loading": "加载中...",
+      "title": "欢迎加入Apex大家庭！",
+      "congratulations": "恭喜，{firstName}！您的账户已成功创建。",
+      "sponsor": {
+        "title": "您的引荐人",
+        "mentorMessage": "{firstName}将作为您的导师，在您开始旅程时为您提供指导。他们很快会联系您，帮助您起步！"
+      },
+      "replicatedSite": {
+        "title": "您的个人招募网站已上线！",
+        "description": "与潜在客户分享此链接，开始建立您的团队",
+        "copied": "已复制！",
+        "copy": "复制",
+        "preview": "预览您的网站"
+      },
+      "nextSteps": {
+        "title": "您的下一步",
+        "description": "完成这些步骤，从正确的起点开始",
+        "profile": {
+          "title": "完善您的个人资料",
+          "description": "添加您的照片和简介，个性化您的招募网站"
+        },
+        "training": {
+          "title": "开始入职培训",
+          "description": "通过我们全面的培训计划学习基础知识"
+        },
+        "license": {
+          "title": "获取执照",
+          "description": "您的引荐人将指导您完成执照申请流程"
+        },
+        "directDeposit": {
+          "title": "设置直接存款",
+          "description": "添加您的银行信息以接收佣金付款"
+        },
+        "go": "前往",
+        "start": "开始",
+        "setUp": "设置"
+      },
+      "dashboard": "前往您的控制台",
+      "checkEmail": "请查收您的邮件，了解更多详情"
+    },
+    "verifyEmail": {
+      "loading": "加载中...",
+      "title": "验证您的电子邮件",
+      "sentTo": "我们已向以下地址发送了验证链接",
+      "instructions": {
+        "click": "点击邮件中的验证链接以激活您的账户",
+        "spam": "如果几分钟内未收到，请检查您的垃圾邮件文件夹",
+        "expires": "链接将在24小时后过期"
+      },
+      "resend": {
+        "prompt": "没有收到邮件？",
+        "button": "重新发送邮件",
+        "sending": "发送中...",
+        "sent": "邮件已发送！"
+      },
+      "joining": "您正在加入",
+      "team": "{firstName} {lastName}的团队",
+      "backToSignup": "返回注册"
+    },
+    "footer": {
+      "brandTagline": "自2018年以来，通过可靠的保险解决方案和创业机会，建设财务未来。",
+      "company": "公司",
+      "aboutYourAgent": "关于您的代理人",
+      "ourCarriers": "我们的保险公司",
+      "compare": "产品对比",
+      "faq": "常见问题",
+      "contactUs": "联系我们",
+      "getStarted": "开始",
+      "licensedAgents": "持牌代理人",
+      "newToInsurance": "保险新手",
+      "careerOpportunity": "职业机会",
+      "joinOurTeam": "加入我们的团队",
+      "products": "产品",
+      "lifeInsurance": "人寿保险",
+      "annuities": "年金",
+      "iulPolicies": "IUL保单",
+      "termLife": "定期寿险",
+      "finalExpense": "殡葬保险",
+      "yourAgent": "您的代理人",
+      "copyright": "© {year} Apex Affinity Group. 保留所有权利。",
+      "privacyPolicy": "隐私政策",
+      "termsOfService": "服务条款",
+      "incomeDisclosure": "收入披露"
+    }
   },
   "marketing": {
     "nav": {

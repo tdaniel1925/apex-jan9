@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,6 +12,7 @@ import { BookOpen, GraduationCap, FileText, Award, ChevronRight } from 'lucide-r
 import type { CourseWithProgress, TrackWithCourses, AgentTrainingStats } from '@/lib/types/training';
 
 export default function TrainingPage() {
+  const t = useTranslations('training');
   const [courses, setCourses] = useState<CourseWithProgress[]>([]);
   const [tracks, setTracks] = useState<TrackWithCourses[]>([]);
   const [stats, setStats] = useState<AgentTrainingStats | null>(null);
@@ -66,9 +68,9 @@ export default function TrainingPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Training Portal</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('portalTitle')}</h1>
           <p className="text-muted-foreground">
-            Build your skills and grow your business with our training courses.
+            {t('portalDescription')}
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-4">
@@ -85,22 +87,22 @@ export default function TrainingPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Training Portal</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('portalTitle')}</h1>
           <p className="text-muted-foreground">
-            Build your skills and grow your business with our training courses.
+            {t('portalDescription')}
           </p>
         </div>
         <div className="flex gap-2">
           <Link href="/dashboard/training/certificates">
             <Button variant="outline" size="sm">
               <Award className="h-4 w-4 mr-2" />
-              My Certificates
+              {t('myCertificates')}
             </Button>
           </Link>
           <Link href="/dashboard/training/resources">
             <Button variant="outline" size="sm">
               <FileText className="h-4 w-4 mr-2" />
-              Resources
+              {t('resources')}
             </Button>
           </Link>
         </div>
@@ -115,9 +117,9 @@ export default function TrainingPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BookOpen className="h-5 w-5" />
-              Continue Learning
+              {t('continueLearning')}
             </CardTitle>
-            <CardDescription>Pick up where you left off</CardDescription>
+            <CardDescription>{t('pickUpWhereYouLeftOff')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {inProgressCourses.slice(0, 3).map(course => (
@@ -131,9 +133,9 @@ export default function TrainingPage() {
       {requiredCourses.length > 0 && (
         <Card className="border-orange-200 bg-orange-50">
           <CardHeader>
-            <CardTitle className="text-orange-800">Required Training</CardTitle>
+            <CardTitle className="text-orange-800">{t('requiredTraining')}</CardTitle>
             <CardDescription className="text-orange-700">
-              Complete these courses to stay compliant
+              {t('completeToStayCompliant')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -149,11 +151,11 @@ export default function TrainingPage() {
         <TabsList>
           <TabsTrigger value="courses" className="gap-2">
             <BookOpen className="h-4 w-4" />
-            Courses
+            {t('courses')}
           </TabsTrigger>
           <TabsTrigger value="tracks" className="gap-2">
             <GraduationCap className="h-4 w-4" />
-            Learning Paths
+            {t('learningPaths')}
           </TabsTrigger>
         </TabsList>
 
@@ -161,8 +163,8 @@ export default function TrainingPage() {
           {featuredCourses.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>Featured Courses</CardTitle>
-                <CardDescription>Recommended training for your success</CardDescription>
+                <CardTitle>{t('featuredCourses')}</CardTitle>
+                <CardDescription>{t('recommendedForSuccess')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {featuredCourses.map(course => (
@@ -175,12 +177,12 @@ export default function TrainingPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>All Courses</CardTitle>
-                <CardDescription>{courses.length} courses available</CardDescription>
+                <CardTitle>{t('allCourses')}</CardTitle>
+                <CardDescription>{t('coursesAvailable', { count: courses.length })}</CardDescription>
               </div>
               <Link href="/dashboard/training/courses">
                 <Button variant="outline" size="sm">
-                  View All
+                  {t('viewAll')}
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </Link>
@@ -191,7 +193,7 @@ export default function TrainingPage() {
               ))}
               {courses.length === 0 && (
                 <p className="text-center text-muted-foreground py-8">
-                  No courses available yet. Check back soon!
+                  {t('noCoursesYet')}
                 </p>
               )}
             </CardContent>
@@ -206,7 +208,7 @@ export default function TrainingPage() {
             {tracks.length === 0 && (
               <Card className="md:col-span-2">
                 <CardContent className="py-8 text-center text-muted-foreground">
-                  No learning paths available yet. Check back soon!
+                  {t('noPathsYet')}
                 </CardContent>
               </Card>
             )}

@@ -31,6 +31,7 @@ import {
   CheckCircle,
   Info,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { formatCurrency } from '@/lib/engines/wallet-engine';
 
 interface TaxDocument {
@@ -62,6 +63,8 @@ interface TaxDocument {
 }
 
 export default function TaxDocumentsPage() {
+  const t = useTranslations('reports.taxDocumentsPage');
+  const tReports = useTranslations('reports');
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [loading, setLoading] = useState(false);
@@ -130,9 +133,9 @@ export default function TaxDocumentsPage() {
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold tracking-tight">Tax Documents</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Download your income statements and 1099 summaries
+            {t('description')}
           </p>
         </div>
         <Select value={selectedYear} onValueChange={setSelectedYear}>
@@ -160,7 +163,7 @@ export default function TaxDocumentsPage() {
             <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
             <p className="text-muted-foreground">{error}</p>
             <Button className="mt-4" onClick={() => fetchDocument(selectedYear)}>
-              Try Again
+              {t('tryAgain')}
             </Button>
           </CardContent>
         </Card>
@@ -178,13 +181,13 @@ export default function TaxDocumentsPage() {
                 <div>
                   <p className="font-medium">
                     {is1099Threshold
-                      ? '1099-NEC Form Required'
-                      : 'Below 1099 Threshold'}
+                      ? t('form1099Required')
+                      : t('below1099Threshold')}
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
                     {is1099Threshold
-                      ? `Your earnings of ${formatCurrency(document.summary.totalEarnings)} exceed the $600 threshold. You will receive an official 1099-NEC form by January 31st of the following year.`
-                      : `Your earnings of ${formatCurrency(document.summary.totalEarnings)} are below the $600 threshold for 1099 reporting. However, you are still required to report all income on your tax return.`}
+                      ? t('form1099Message', { amount: formatCurrency(document.summary.totalEarnings) })
+                      : t('belowThresholdMessage', { amount: formatCurrency(document.summary.totalEarnings) })}
                   </p>
                 </div>
               </div>
@@ -196,7 +199,7 @@ export default function TaxDocumentsPage() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Direct Commissions
+                  {tReports('directCommissions')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -206,7 +209,7 @@ export default function TaxDocumentsPage() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Override Commissions
+                  {tReports('overrideCommissions')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -216,7 +219,7 @@ export default function TaxDocumentsPage() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Bonuses
+                  {tReports('bonuses')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -226,7 +229,7 @@ export default function TaxDocumentsPage() {
             <Card className="bg-primary/5">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Total Earnings
+                  {tReports('totalEarnings')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -238,9 +241,9 @@ export default function TaxDocumentsPage() {
           {/* Download Section */}
           <Card>
             <CardHeader>
-              <CardTitle>Download Documents</CardTitle>
+              <CardTitle>{t('downloadDocuments')}</CardTitle>
               <CardDescription>
-                Download your tax documents for {selectedYear}
+                {t('downloadDocumentsDesc', { year: selectedYear })}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -251,9 +254,9 @@ export default function TaxDocumentsPage() {
                       <FileText className="h-5 w-5 text-blue-600" />
                     </div>
                     <div>
-                      <p className="font-medium">Income Statement</p>
+                      <p className="font-medium">{t('incomeStatement')}</p>
                       <p className="text-sm text-muted-foreground">
-                        Detailed breakdown of all earnings
+                        {t('incomeStatementDesc')}
                       </p>
                     </div>
                   </div>
@@ -263,7 +266,7 @@ export default function TaxDocumentsPage() {
                     onClick={() => handleDownload('income_statement', 'csv')}
                   >
                     <Download className="h-4 w-4 mr-2" />
-                    Download CSV
+                    {t('downloadCsv')}
                   </Button>
                 </div>
 
@@ -273,9 +276,9 @@ export default function TaxDocumentsPage() {
                       <DollarSign className="h-5 w-5 text-green-600" />
                     </div>
                     <div>
-                      <p className="font-medium">1099 Summary</p>
+                      <p className="font-medium">{t('form1099Summary')}</p>
                       <p className="text-sm text-muted-foreground">
-                        Summary for tax filing purposes
+                        {t('form1099SummaryDesc')}
                       </p>
                     </div>
                   </div>
@@ -285,7 +288,7 @@ export default function TaxDocumentsPage() {
                     onClick={() => handleDownload('1099_summary', 'csv')}
                   >
                     <Download className="h-4 w-4 mr-2" />
-                    Download CSV
+                    {t('downloadCsv')}
                   </Button>
                 </div>
               </div>
@@ -295,20 +298,20 @@ export default function TaxDocumentsPage() {
           {/* Monthly Breakdown */}
           <Card>
             <CardHeader>
-              <CardTitle>Monthly Breakdown</CardTitle>
+              <CardTitle>{t('monthlyBreakdown')}</CardTitle>
               <CardDescription>
-                Earnings by month for {selectedYear}
+                {t('monthlyBreakdownDesc', { year: selectedYear })}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Month</TableHead>
-                    <TableHead className="text-right">Commissions</TableHead>
-                    <TableHead className="text-right">Overrides</TableHead>
-                    <TableHead className="text-right">Bonuses</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
+                    <TableHead>{t('month')}</TableHead>
+                    <TableHead className="text-right">{t('commissions')}</TableHead>
+                    <TableHead className="text-right">{t('overrides')}</TableHead>
+                    <TableHead className="text-right">{tReports('bonuses')}</TableHead>
+                    <TableHead className="text-right">{tReports('total')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -322,7 +325,7 @@ export default function TaxDocumentsPage() {
                     </TableRow>
                   ))}
                   <TableRow className="bg-muted/50 font-bold">
-                    <TableCell>Total</TableCell>
+                    <TableCell>{tReports('total')}</TableCell>
                     <TableCell className="text-right">{formatCurrency(document.summary.totalCommissions)}</TableCell>
                     <TableCell className="text-right">{formatCurrency(document.summary.totalOverrides)}</TableCell>
                     <TableCell className="text-right">{formatCurrency(document.summary.totalBonuses)}</TableCell>
@@ -337,9 +340,9 @@ export default function TaxDocumentsPage() {
           {Object.keys(document.bonusByType).length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>Bonus Breakdown</CardTitle>
+                <CardTitle>{t('bonusBreakdown')}</CardTitle>
                 <CardDescription>
-                  Bonuses by type for {selectedYear}
+                  {t('bonusBreakdownDesc', { year: selectedYear })}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -363,7 +366,7 @@ export default function TaxDocumentsPage() {
           <Card className="border-muted">
             <CardContent className="pt-6">
               <p className="text-sm text-muted-foreground">
-                <strong>Disclaimer:</strong> {document.disclaimer}
+                <strong>{t('disclaimer')}:</strong> {document.disclaimer}
               </p>
             </CardContent>
           </Card>

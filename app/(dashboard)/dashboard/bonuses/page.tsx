@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { formatCurrency } from '@/lib/engines/wallet-engine';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +19,8 @@ import { createClient, Tables } from '@/lib/db/supabase-client';
 
 export default function BonusesPage() {
   const { user } = useAuth();
+  const t = useTranslations('bonuses');
+  const tCommon = useTranslations('common');
   const [bonuses, setBonuses] = useState<Tables<'bonuses'>[]>([]);
   const [stats, setStats] = useState({
     pending: 0,
@@ -86,9 +89,9 @@ export default function BonusesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Bonuses</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
         <p className="text-muted-foreground">
-          Track your bonus earnings and achievements.
+          {t('description')}
         </p>
       </div>
 
@@ -96,34 +99,34 @@ export default function BonusesPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('pending')}</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(stats.pending)}</div>
-            <p className="text-xs text-muted-foreground">Awaiting payment</p>
+            <p className="text-xs text-muted-foreground">{t('awaitingPayment')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Paid</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('paid')}</CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{formatCurrency(stats.paid)}</div>
-            <p className="text-xs text-muted-foreground">Received</p>
+            <p className="text-xs text-muted-foreground">{t('received')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Earned</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalEarned')}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(stats.total)}</div>
-            <p className="text-xs text-muted-foreground">All time</p>
+            <p className="text-xs text-muted-foreground">{t('allTime')}</p>
           </CardContent>
         </Card>
       </div>
@@ -131,36 +134,36 @@ export default function BonusesPage() {
       {/* Bonus Types Info */}
       <Card>
         <CardHeader>
-          <CardTitle>Available Bonuses</CardTitle>
-          <CardDescription>Ways to earn bonuses at Apex</CardDescription>
+          <CardTitle>{t('availableBonuses')}</CardTitle>
+          <CardDescription>{t('waysToEarn')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div className="rounded-lg border p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Award className="h-5 w-5 text-primary" />
-                <h4 className="font-semibold">Fast Start</h4>
+                <h4 className="font-semibold">{t('fastStart')}</h4>
               </div>
               <p className="text-sm text-muted-foreground">
-                Earn up to $5,000 in your first 90 days based on premium written.
+                {t('fastStartDesc')}
               </p>
             </div>
             <div className="rounded-lg border p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Award className="h-5 w-5 text-primary" />
-                <h4 className="font-semibold">Rank Advancement</h4>
+                <h4 className="font-semibold">{t('rankAdvancement')}</h4>
               </div>
               <p className="text-sm text-muted-foreground">
-                Bonus for each rank promotion you achieve.
+                {t('rankAdvancementDesc')}
               </p>
             </div>
             <div className="rounded-lg border p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Award className="h-5 w-5 text-primary" />
-                <h4 className="font-semibold">Team Builder</h4>
+                <h4 className="font-semibold">{t('teamBuilder')}</h4>
               </div>
               <p className="text-sm text-muted-foreground">
-                Earn bonuses when your recruits hit production milestones.
+                {t('teamBuilderDesc')}
               </p>
             </div>
           </div>
@@ -170,18 +173,18 @@ export default function BonusesPage() {
       {/* Bonus History */}
       <Card>
         <CardHeader>
-          <CardTitle>Bonus History</CardTitle>
-          <CardDescription>Your earned bonuses</CardDescription>
+          <CardTitle>{t('bonusHistory')}</CardTitle>
+          <CardDescription>{t('yourEarnedBonuses')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Type</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>{t('type')}</TableHead>
+                <TableHead>{t('amount')}</TableHead>
+                <TableHead>{tCommon('description')}</TableHead>
+                <TableHead>{tCommon('status')}</TableHead>
+                <TableHead>{tCommon('date')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -189,9 +192,9 @@ export default function BonusesPage() {
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8">
                     <Award className="mx-auto h-12 w-12 text-muted-foreground/50" />
-                    <p className="mt-2 text-muted-foreground">No bonuses earned yet</p>
+                    <p className="mt-2 text-muted-foreground">{t('noBonusesYet')}</p>
                     <p className="text-sm text-muted-foreground">
-                      Keep working towards your goals!
+                      {t('keepWorking')}
                     </p>
                   </TableCell>
                 </TableRow>
@@ -219,7 +222,7 @@ export default function BonusesPage() {
                             : 'outline'
                         }
                       >
-                        {bonus.status}
+                        {t(bonus.status as 'pending' | 'paid' | 'approved' | 'denied')}
                       </Badge>
                     </TableCell>
                     <TableCell>

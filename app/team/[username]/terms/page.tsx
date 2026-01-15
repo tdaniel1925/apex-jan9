@@ -5,6 +5,7 @@
 
 import { Metadata } from 'next';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
+import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileText, Users, AlertTriangle, Scale, Ban, RefreshCw, Gavel } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -44,23 +45,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function TermsOfServicePage({ params }: PageProps) {
   const { username } = await params;
+  const t = await getTranslations('replicated.terms');
 
   return (
     <div className="py-12">
       <div className="container mx-auto px-4 max-w-4xl">
-        <h1 className="text-3xl font-bold mb-6">Terms of Service</h1>
+        <h1 className="text-3xl font-bold mb-6">{t('title')}</h1>
         <p className="text-muted-foreground mb-8">
-          Last Updated: January 2026
+          {t('lastUpdated')}
         </p>
 
         {/* Important Notice */}
         <Alert className="mb-8">
           <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Important Legal Agreement</AlertTitle>
+          <AlertTitle>{t('importantNotice.title')}</AlertTitle>
           <AlertDescription>
-            Please read these terms carefully before using our services or applying to become
-            an independent agent. By using our website or services, you agree to be bound by
-            these terms.
+            {t('importantNotice.description')}
           </AlertDescription>
         </Alert>
 
@@ -69,19 +69,15 @@ export default async function TermsOfServicePage({ params }: PageProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Agreement to Terms
+              {t('agreement.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              These Terms of Service (&quot;Terms&quot;) constitute a legally binding agreement between
-              you and Apex Affinity Group (&quot;Company,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) governing your
-              use of our website, services, and agent opportunity.
+              {t('agreement.content1')}
             </p>
             <p className="text-muted-foreground">
-              By accessing our website, submitting an application, or participating in our
-              agent program, you acknowledge that you have read, understood, and agree to be
-              bound by these Terms.
+              {t('agreement.content2')}
             </p>
           </CardContent>
         </Card>
@@ -91,24 +87,23 @@ export default async function TermsOfServicePage({ params }: PageProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />
-              Independent Contractor Status
+              {t('contractor.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              <strong>You are an independent contractor, NOT an employee.</strong> This means:
+              <strong>{t('contractor.intro')}</strong>
             </p>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-              <li>You control your own hours, methods, and business practices</li>
-              <li>You are responsible for your own taxes, including self-employment tax</li>
-              <li>You are not entitled to employee benefits (health insurance, 401k, etc.)</li>
-              <li>You must obtain and maintain required insurance licenses at your own expense</li>
-              <li>You may represent other companies, subject to carrier appointment rules</li>
-              <li>We do not guarantee any minimum income or success</li>
+              <li>{t('contractor.items.control')}</li>
+              <li>{t('contractor.items.taxes')}</li>
+              <li>{t('contractor.items.benefits')}</li>
+              <li>{t('contractor.items.licenses')}</li>
+              <li>{t('contractor.items.represent')}</li>
+              <li>{t('contractor.items.noGuarantee')}</li>
             </ul>
             <p className="text-muted-foreground">
-              You agree to sign an Independent Contractor Agreement as part of your onboarding,
-              which provides additional details about this relationship.
+              {t('contractor.agreement')}
             </p>
           </CardContent>
         </Card>
@@ -116,24 +111,23 @@ export default async function TermsOfServicePage({ params }: PageProps) {
         {/* Eligibility */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Eligibility Requirements</CardTitle>
+            <CardTitle>{t('eligibility.title')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              To become an Apex Affinity Group agent, you must:
+              {t('eligibility.intro')}
             </p>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-              <li>Be at least 18 years of age</li>
-              <li>Be legally authorized to work in the United States</li>
-              <li>Pass a background check (required by insurance carriers)</li>
-              <li>Obtain required state insurance licenses</li>
-              <li>Complete our onboarding training program</li>
-              <li>Provide accurate and truthful information on your application</li>
-              <li>Have no felony convictions related to financial crimes</li>
+              <li>{t('eligibility.items.age')}</li>
+              <li>{t('eligibility.items.authorized')}</li>
+              <li>{t('eligibility.items.background')}</li>
+              <li>{t('eligibility.items.license')}</li>
+              <li>{t('eligibility.items.training')}</li>
+              <li>{t('eligibility.items.truthful')}</li>
+              <li>{t('eligibility.items.noFelony')}</li>
             </ul>
             <p className="text-muted-foreground">
-              We reserve the right to reject any application or terminate any agent
-              relationship at our discretion.
+              {t('eligibility.reserve')}
             </p>
           </CardContent>
         </Card>
@@ -143,46 +137,40 @@ export default async function TermsOfServicePage({ params }: PageProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Scale className="h-5 w-5" />
-              Compensation and Commissions
+              {t('compensation.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              Your compensation is based solely on commissions from insurance products you sell
-              and overrides from your team&apos;s production. Key terms include:
+              {t('compensation.intro')}
             </p>
 
             <div className="space-y-4">
               <div>
-                <h3 className="font-semibold mb-2">Commission Structure</h3>
+                <h3 className="font-semibold mb-2">{t('compensation.structure.title')}</h3>
                 <p className="text-muted-foreground">
-                  Commission rates vary by product and your current rank level. See our
-                  Compensation Plan document for current rates.
+                  {t('compensation.structure.description')}
                 </p>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">Chargebacks</h3>
+                <h3 className="font-semibold mb-2">{t('compensation.chargebacks.title')}</h3>
                 <p className="text-muted-foreground">
-                  If a policy lapses or is cancelled within the chargeback period (typically
-                  6-12 months depending on carrier), commissions may be recovered from future
-                  earnings or your account balance.
+                  {t('compensation.chargebacks.description')}
                 </p>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">Payment Schedule</h3>
+                <h3 className="font-semibold mb-2">{t('compensation.schedule.title')}</h3>
                 <p className="text-muted-foreground">
-                  Commissions are paid according to our published payment schedule, typically
-                  weekly or bi-weekly, subject to carrier payment receipt.
+                  {t('compensation.schedule.description')}
                 </p>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">Minimum Payout</h3>
+                <h3 className="font-semibold mb-2">{t('compensation.minimum.title')}</h3>
                 <p className="text-muted-foreground">
-                  A minimum balance may be required before payout. Amounts below the minimum
-                  will carry forward to the next pay period.
+                  {t('compensation.minimum.description')}
                 </p>
               </div>
             </div>
@@ -194,26 +182,26 @@ export default async function TermsOfServicePage({ params }: PageProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Ban className="h-5 w-5" />
-              Code of Conduct
+              {t('conduct.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              As an Apex agent, you agree to:
+              {t('conduct.intro')}
             </p>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-              <li>Act with honesty and integrity in all business dealings</li>
-              <li>Comply with all applicable laws, regulations, and carrier guidelines</li>
-              <li>Never make misleading income claims or guarantees to prospects</li>
-              <li>Accurately represent products and their benefits</li>
-              <li>Protect client confidential information</li>
-              <li>Not engage in rebating, twisting, or other prohibited practices</li>
-              <li>Not recruit agents from other Apex teams without permission</li>
-              <li>Maintain professional conduct on social media</li>
+              <li>{t('conduct.items.honesty')}</li>
+              <li>{t('conduct.items.comply')}</li>
+              <li>{t('conduct.items.noClaims')}</li>
+              <li>{t('conduct.items.accurate')}</li>
+              <li>{t('conduct.items.protect')}</li>
+              <li>{t('conduct.items.noRebating')}</li>
+              <li>{t('conduct.items.noRecruit')}</li>
+              <li>{t('conduct.items.professional')}</li>
             </ul>
 
             <p className="text-muted-foreground font-medium mt-4">
-              Violations may result in termination, commission forfeiture, and legal action.
+              {t('conduct.violations')}
             </p>
           </CardContent>
         </Card>
@@ -223,39 +211,35 @@ export default async function TermsOfServicePage({ params }: PageProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <RefreshCw className="h-5 w-5" />
-              Termination
+              {t('termination.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <h3 className="font-semibold mb-2">Voluntary Termination</h3>
+              <h3 className="font-semibold mb-2">{t('termination.voluntary.title')}</h3>
               <p className="text-muted-foreground">
-                You may terminate your agent relationship at any time by providing written
-                notice. Pending commissions will be paid according to normal schedule, subject
-                to chargebacks.
+                {t('termination.voluntary.description')}
               </p>
             </div>
 
             <div>
-              <h3 className="font-semibold mb-2">Termination for Cause</h3>
+              <h3 className="font-semibold mb-2">{t('termination.cause.title')}</h3>
               <p className="text-muted-foreground">
-                We may terminate your relationship immediately for:
+                {t('termination.cause.intro')}
               </p>
               <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
-                <li>Violation of these Terms or Code of Conduct</li>
-                <li>Fraudulent activity or misrepresentation</li>
-                <li>Loss of required licenses</li>
-                <li>Failure to meet minimum production requirements</li>
-                <li>Actions that harm the company&apos;s reputation</li>
+                <li>{t('termination.cause.items.violation')}</li>
+                <li>{t('termination.cause.items.fraud')}</li>
+                <li>{t('termination.cause.items.license')}</li>
+                <li>{t('termination.cause.items.production')}</li>
+                <li>{t('termination.cause.items.reputation')}</li>
               </ul>
             </div>
 
             <div>
-              <h3 className="font-semibold mb-2">Effect of Termination</h3>
+              <h3 className="font-semibold mb-2">{t('termination.effect.title')}</h3>
               <p className="text-muted-foreground">
-                Upon termination, your access to our systems will be revoked, your replicated
-                website will be deactivated, and you will no longer represent yourself as an
-                Apex agent.
+                {t('termination.effect.description')}
               </p>
             </div>
           </CardContent>
@@ -264,18 +248,14 @@ export default async function TermsOfServicePage({ params }: PageProps) {
         {/* Intellectual Property */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Intellectual Property</CardTitle>
+            <CardTitle>{t('ip.title')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              All trademarks, logos, content, and materials on our website are owned by
-              Apex Affinity Group or our licensors. You are granted a limited, non-exclusive
-              license to use approved marketing materials during your active agent status.
+              {t('ip.content1')}
             </p>
             <p className="text-muted-foreground">
-              You may not modify, reproduce, or distribute our materials without written
-              permission. Your replicated website license is non-transferable and terminates
-              when your agent status ends.
+              {t('ip.content2')}
             </p>
           </CardContent>
         </Card>
@@ -285,27 +265,18 @@ export default async function TermsOfServicePage({ params }: PageProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Gavel className="h-5 w-5" />
-              Limitation of Liability
+              {t('liability.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              TO THE MAXIMUM EXTENT PERMITTED BY LAW:
+              {t('liability.intro')}
             </p>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-              <li>
-                We provide services &quot;as is&quot; without warranties of any kind
-              </li>
-              <li>
-                We are not liable for indirect, incidental, or consequential damages
-              </li>
-              <li>
-                Our total liability is limited to commissions actually paid to you in the
-                preceding 12 months
-              </li>
-              <li>
-                We are not responsible for actions of insurance carriers or third parties
-              </li>
+              <li>{t('liability.items.asIs')}</li>
+              <li>{t('liability.items.noIndirect')}</li>
+              <li>{t('liability.items.limited')}</li>
+              <li>{t('liability.items.thirdParty')}</li>
             </ul>
           </CardContent>
         </Card>
@@ -313,18 +284,14 @@ export default async function TermsOfServicePage({ params }: PageProps) {
         {/* Dispute Resolution */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Dispute Resolution</CardTitle>
+            <CardTitle>{t('disputes.title')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              Any disputes arising from these Terms or your agent relationship shall be
-              resolved through binding arbitration in accordance with the American Arbitration
-              Association rules. Arbitration will take place in the state where the Company
-              is headquartered.
+              {t('disputes.content')}
             </p>
             <p className="text-muted-foreground">
-              <strong>Class Action Waiver:</strong> You agree to resolve disputes individually
-              and waive any right to participate in class action lawsuits.
+              <strong>{t('disputes.classAction')}</strong>
             </p>
           </CardContent>
         </Card>
@@ -332,13 +299,11 @@ export default async function TermsOfServicePage({ params }: PageProps) {
         {/* Modifications */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Modifications to Terms</CardTitle>
+            <CardTitle>{t('modifications.title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              We reserve the right to modify these Terms at any time. Material changes will
-              be communicated via email or through our agent portal. Continued use of our
-              services after changes constitutes acceptance of the modified Terms.
+              {t('modifications.content')}
             </p>
           </CardContent>
         </Card>
@@ -346,12 +311,11 @@ export default async function TermsOfServicePage({ params }: PageProps) {
         {/* Governing Law */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Governing Law</CardTitle>
+            <CardTitle>{t('governing.title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              These Terms shall be governed by and construed in accordance with the laws of
-              the State of Texas, without regard to conflict of law principles.
+              {t('governing.content')}
             </p>
           </CardContent>
         </Card>
@@ -359,15 +323,15 @@ export default async function TermsOfServicePage({ params }: PageProps) {
         {/* Contact */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Contact Information</CardTitle>
+            <CardTitle>{t('contact.title')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-muted-foreground">
-              Questions about these Terms? Contact us:
+              {t('contact.intro')}
             </p>
             <div className="text-muted-foreground">
-              <p><strong>Email:</strong> legal@theapexway.net</p>
-              <p><strong>Mail:</strong> Apex Affinity Group, Attn: Legal Department</p>
+              <p>{t('contact.email')}</p>
+              <p>{t('contact.mail')}</p>
             </div>
           </CardContent>
         </Card>
@@ -375,11 +339,10 @@ export default async function TermsOfServicePage({ params }: PageProps) {
         {/* Footer */}
         <div className="text-center text-sm text-muted-foreground mt-8 space-y-2">
           <p>
-            By using our services, you acknowledge that you have read and understood these
-            Terms of Service and agree to be bound by them.
+            {t('footer.acknowledgment')}
           </p>
           <p>
-            For income-related disclosures, please review our{' '}
+            {t('footer.incomeLink')}{' '}
             <a href={`/team/${username}/income-disclaimer`} className="text-primary hover:underline">
               Income Disclosure Statement
             </a>.

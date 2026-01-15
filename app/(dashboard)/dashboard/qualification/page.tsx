@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { formatCurrency } from '@/lib/engines/wallet-engine';
 import { RANK_CONFIG, Rank } from '@/lib/config/ranks';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -111,6 +112,8 @@ type QualificationData = {
 };
 
 export default function QualificationPage() {
+  const t = useTranslations('qualification');
+  const tCommon = useTranslations('common');
   const { user } = useAuth();
   const [agentId, setAgentId] = useState<string | null>(null);
   const [data, setData] = useState<QualificationData | null>(null);
@@ -211,11 +214,11 @@ export default function QualificationPage() {
   const getRiskBadge = (level: string) => {
     switch (level) {
       case 'high':
-        return <Badge variant="destructive">High Risk</Badge>;
+        return <Badge variant="destructive">{t('highRisk')}</Badge>;
       case 'medium':
-        return <Badge className="bg-yellow-600">Medium Risk</Badge>;
+        return <Badge className="bg-yellow-600">{t('mediumRisk')}</Badge>;
       case 'low':
-        return <Badge variant="secondary">Low Risk</Badge>;
+        return <Badge variant="secondary">{t('lowRisk')}</Badge>;
       default:
         return <Badge variant="outline">{level}</Badge>;
     }
@@ -225,9 +228,9 @@ export default function QualificationPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Rank Qualification</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
         <p className="text-muted-foreground">
-          Track your qualification status and see what's needed for your next rank.
+          {t('description')}
         </p>
       </div>
 
@@ -235,7 +238,7 @@ export default function QualificationPage() {
       {data.demotionRisk.atRisk && (
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Demotion Risk Detected</AlertTitle>
+          <AlertTitle>{t('demotionRiskDetected')}</AlertTitle>
           <AlertDescription>
             <ul className="mt-2 list-disc list-inside space-y-1">
               {data.demotionRisk.reasons.map((reason, i) => (
@@ -252,14 +255,14 @@ export default function QualificationPage() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Award className="h-4 w-4" />
-              Current Rank
+              {t('currentRank')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {RANK_CONFIG[data.rankProgress.currentRank as Rank]?.name || data.rankProgress.currentRank}
             </div>
-            <p className="text-xs text-muted-foreground">Title Rank</p>
+            <p className="text-xs text-muted-foreground">{t('titleRank')}</p>
           </CardContent>
         </Card>
 
@@ -267,7 +270,7 @@ export default function QualificationPage() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
-              Paid-As Rank
+              {t('paidAsRank')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -275,7 +278,7 @@ export default function QualificationPage() {
               {RANK_CONFIG[data.rankProgress.paidAsRank as Rank]?.name || data.rankProgress.paidAsRank}
             </div>
             <Badge className={getStatusColor(data.rankProgress.qualificationStatus)}>
-              {data.rankProgress.qualificationStatus === 'grace_period' ? 'Grace Period' : data.rankProgress.qualificationStatus}
+              {data.rankProgress.qualificationStatus === 'grace_period' ? t('gracePeriod') : data.rankProgress.qualificationStatus}
             </Badge>
           </CardContent>
         </Card>
@@ -284,7 +287,7 @@ export default function QualificationPage() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Shield className="h-4 w-4" />
-              Grace Periods
+              {t('gracePeriods')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -292,7 +295,7 @@ export default function QualificationPage() {
               {data.gracePeriods.remaining} / {data.gracePeriods.total}
             </div>
             <p className="text-xs text-muted-foreground">
-              {data.gracePeriods.used} used this year
+              {t('usedThisYear', { used: data.gracePeriods.used })}
             </p>
           </CardContent>
         </Card>
@@ -303,15 +306,15 @@ export default function QualificationPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
-            Current Rank Requirements
+            {t('currentRankRequirements')}
           </CardTitle>
           <CardDescription>
-            Your progress toward maintaining {RANK_CONFIG[data.requirementsBreakdown.current.rank as Rank]?.name}
+            {t('progressTowardMaintaining', { rank: RANK_CONFIG[data.requirementsBreakdown.current.rank as Rank]?.name })}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
-            <span className="text-lg font-semibold">Overall Progress</span>
+            <span className="text-lg font-semibold">{t('overallProgress')}</span>
             <span className="text-lg font-bold">
               {Math.round(data.requirementsBreakdown.current.percentageMet * 100)}%
             </span>
@@ -330,8 +333,7 @@ export default function QualificationPage() {
                   <div>
                     <p className="font-medium">{req.label}</p>
                     <p className="text-sm text-muted-foreground">
-                      {req.name.includes('Rate') ? `${req.actual}%` : formatCurrency(req.actual)} of{' '}
-                      {req.name.includes('Rate') ? `${req.required}%` : formatCurrency(req.required)}
+                      {req.name.includes('Rate') ? `${req.actual}%` : formatCurrency(req.actual)} {t('ofRequired', { required: req.name.includes('Rate') ? `${req.required}%` : formatCurrency(req.required) })}
                     </p>
                   </div>
                 </div>
@@ -350,15 +352,15 @@ export default function QualificationPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ArrowRight className="h-5 w-5" />
-              Next Rank: {RANK_CONFIG[data.requirementsBreakdown.next.rank as Rank]?.name}
+              {t('nextRankTitle', { rank: RANK_CONFIG[data.requirementsBreakdown.next.rank as Rank]?.name })}
             </CardTitle>
             <CardDescription>
-              What you need to advance to the next level
+              {t('whatYouNeedToAdvance')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
-              <span className="text-lg font-semibold">Progress to Next Rank</span>
+              <span className="text-lg font-semibold">{t('progressToNextRank')}</span>
               <span className="text-lg font-bold">
                 {Math.round(data.requirementsBreakdown.next.percentageMet * 100)}%
               </span>
@@ -377,8 +379,7 @@ export default function QualificationPage() {
                     <div>
                       <p className="font-medium">{req.label}</p>
                       <p className="text-sm text-muted-foreground">
-                        {req.name.includes('Rate') ? `${req.actual}%` : formatCurrency(req.actual)} of{' '}
-                        {req.name.includes('Rate') ? `${req.required}%` : formatCurrency(req.required)}
+                        {req.name.includes('Rate') ? `${req.actual}%` : formatCurrency(req.actual)} {t('ofRequired', { required: req.name.includes('Rate') ? `${req.required}%` : formatCurrency(req.required) })}
                       </p>
                     </div>
                   </div>
@@ -399,26 +400,26 @@ export default function QualificationPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               {getTrendIcon(data.trend.direction)}
-              Qualification Trend
+              {t('qualificationTrend')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <span>Trend Direction</span>
+              <span>{t('trendDirection')}</span>
               <Badge variant={data.trend.direction === 'improving' ? 'default' : data.trend.direction === 'declining' ? 'destructive' : 'secondary'}>
-                {data.trend.direction}
+                {t(data.trend.direction)}
               </Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span>Consecutive Qualified Months</span>
+              <span>{t('consecutiveQualifiedMonths')}</span>
               <span className="font-bold text-green-600">{data.trend.consecutiveQualified}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Average Requirements Met</span>
+              <span>{t('averageRequirementsMet')}</span>
               <span className="font-bold">{Math.round(data.trend.averagePercentageMet * 100)}%</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Demotion Risk</span>
+              <span>{t('demotionRisk')}</span>
               {getRiskBadge(data.demotionRisk.riskLevel)}
             </div>
           </CardContent>
@@ -429,14 +430,14 @@ export default function QualificationPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Lightbulb className="h-5 w-5" />
-              Recommendations
+              {t('recommendations')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {data.recommendations.length === 0 ? (
               <div className="flex items-center gap-2 text-green-600">
                 <CheckCircle className="h-5 w-5" />
-                <span>You're on track! Keep up the great work.</span>
+                <span>{t('youreOnTrack')}</span>
               </div>
             ) : (
               <div className="space-y-3">
@@ -466,8 +467,8 @@ export default function QualificationPage() {
       {data.history.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Recent Qualification History</CardTitle>
-            <CardDescription>Your qualification status over the past months</CardDescription>
+            <CardTitle>{t('recentQualificationHistory')}</CardTitle>
+            <CardDescription>{t('qualificationStatusOverMonths')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex gap-2 overflow-x-auto pb-2">
@@ -488,7 +489,7 @@ export default function QualificationPage() {
                   </p>
                   {h.usedGracePeriod && (
                     <Badge variant="outline" className="mt-1 text-xs">
-                      Grace
+                      {t('grace')}
                     </Badge>
                   )}
                 </div>
@@ -501,35 +502,35 @@ export default function QualificationPage() {
       {/* Key Metrics */}
       <Card>
         <CardHeader>
-          <CardTitle>Key Performance Metrics</CardTitle>
+          <CardTitle>{t('keyPerformanceMetrics')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="p-4 rounded-lg bg-muted/50">
               <div className="flex items-center gap-2 text-muted-foreground mb-1">
                 <DollarSign className="h-4 w-4" />
-                <span className="text-sm">90-Day Premium</span>
+                <span className="text-sm">{t('ninetyDayPremium')}</span>
               </div>
               <p className="text-xl font-bold">{formatCurrency(data.metrics.premium90Days)}</p>
             </div>
             <div className="p-4 rounded-lg bg-muted/50">
               <div className="flex items-center gap-2 text-muted-foreground mb-1">
                 <Users className="h-4 w-4" />
-                <span className="text-sm">Active Agents</span>
+                <span className="text-sm">{t('activeAgents')}</span>
               </div>
               <p className="text-xl font-bold">{data.metrics.activeAgents}</p>
             </div>
             <div className="p-4 rounded-lg bg-muted/50">
               <div className="flex items-center gap-2 text-muted-foreground mb-1">
                 <Activity className="h-4 w-4" />
-                <span className="text-sm">Persistency Rate</span>
+                <span className="text-sm">{t('persistencyRate')}</span>
               </div>
               <p className="text-xl font-bold">{data.metrics.persistencyRate}%</p>
             </div>
             <div className="p-4 rounded-lg bg-muted/50">
               <div className="flex items-center gap-2 text-muted-foreground mb-1">
                 <Target className="h-4 w-4" />
-                <span className="text-sm">Placement Rate</span>
+                <span className="text-sm">{t('placementRate')}</span>
               </div>
               <p className="text-xl font-bold">{data.metrics.placementRate}%</p>
             </div>

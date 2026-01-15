@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/db/supabase-client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +17,7 @@ export default function VerifyEmailPage() {
   const searchParams = useSearchParams();
   const username = params.username as string;
   const email = searchParams.get('email') || '';
+  const t = useTranslations('replicated.verifyEmail');
 
   const [sponsor, setSponsor] = useState<Agent | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,7 +77,7 @@ export default function VerifyEmailPage() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="animate-pulse text-muted-foreground">{t('loading')}</div>
       </div>
     );
   }
@@ -90,9 +92,9 @@ export default function VerifyEmailPage() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <Mail className="h-8 w-8 text-primary" />
             </div>
-            <CardTitle className="text-2xl">Verify Your Email</CardTitle>
+            <CardTitle className="text-2xl">{t('title')}</CardTitle>
             <CardDescription className="text-base">
-              We&apos;ve sent a verification link to
+              {t('sentTo')}
             </CardDescription>
             {email && (
               <p className="mt-2 font-semibold text-foreground">{email}</p>
@@ -104,19 +106,19 @@ export default function VerifyEmailPage() {
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
                 <p className="text-sm">
-                  Click the verification link in your email to activate your account
+                  {t('instructions.click')}
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
                 <p className="text-sm">
-                  Check your spam folder if you don&apos;t see it within a few minutes
+                  {t('instructions.spam')}
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
                 <p className="text-sm">
-                  The link expires in 24 hours
+                  {t('instructions.expires')}
                 </p>
               </div>
             </div>
@@ -131,7 +133,7 @@ export default function VerifyEmailPage() {
             {/* Resend button */}
             <div className="text-center space-y-2">
               <p className="text-sm text-muted-foreground">
-                Didn&apos;t receive the email?
+                {t('resend.prompt')}
               </p>
               <Button
                 variant="outline"
@@ -141,17 +143,17 @@ export default function VerifyEmailPage() {
                 {resending ? (
                   <>
                     <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    Sending...
+                    {t('resend.sending')}
                   </>
                 ) : resent ? (
                   <>
                     <CheckCircle2 className="h-4 w-4 mr-2 text-green-600" />
-                    Email Sent!
+                    {t('resend.sent')}
                   </>
                 ) : (
                   <>
                     <RefreshCw className="h-4 w-4 mr-2" />
-                    Resend Email
+                    {t('resend.button')}
                   </>
                 )}
               </Button>
@@ -161,7 +163,7 @@ export default function VerifyEmailPage() {
             {sponsor && (
               <div className="pt-4 border-t">
                 <p className="text-xs text-muted-foreground text-center mb-3">
-                  You&apos;re joining
+                  {t('joining')}
                 </p>
                 <div className="flex items-center justify-center gap-3">
                   <Avatar className="h-10 w-10">
@@ -172,7 +174,7 @@ export default function VerifyEmailPage() {
                   </Avatar>
                   <div>
                     <p className="font-medium">
-                      {sponsor.first_name} {sponsor.last_name}&apos;s Team
+                      {t('team', { firstName: sponsor.first_name, lastName: sponsor.last_name })}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {sponsorRankConfig?.name}
@@ -189,7 +191,7 @@ export default function VerifyEmailPage() {
                 className="inline-flex items-center text-sm text-muted-foreground hover:text-primary"
               >
                 <ArrowLeft className="h-4 w-4 mr-1" />
-                Back to signup
+                {t('backToSignup')}
               </Link>
             </div>
           </CardContent>

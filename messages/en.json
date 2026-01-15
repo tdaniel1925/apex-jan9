@@ -86,12 +86,15 @@
     "checkYourEmail": "Check your email for a verification link"
   },
   "dashboard": {
-    "welcome": "Welcome, {name}!",
+    "welcome": "Welcome back, {name}",
+    "businessOverview": "Here's an overview of your business performance.",
     "overview": "Overview",
     "quickStats": "Quick Stats",
     "recentActivity": "Recent Activity",
     "currentRank": "Current Rank",
+    "currentRankLabel": "Current: {rank}",
     "nextRank": "Next Rank",
+    "nextRankLabel": "Next: {rank}",
     "progress": "Progress",
     "thisMonth": "This Month",
     "lastMonth": "Last Month",
@@ -103,10 +106,41 @@
     "rankProgress": "Rank Progress",
     "requirements": "Requirements",
     "achieved": "Achieved",
-    "remaining": "Remaining"
+    "remaining": "Remaining",
+    "availableBalance": "Available Balance",
+    "pending": "Pending: {amount}",
+    "teamSize": "Team Size",
+    "directRecruits": "Direct recruits",
+    "ninetyDayPremium": "90-Day Premium",
+    "rollingTotal": "Rolling 90-day total",
+    "highestRank": "You've reached the highest rank!",
+    "earningsBreakdown": "This Month's Breakdown",
+    "earningsByCategory": "Your earnings by category",
+    "earningsSummary": "Commissions + Overrides + Bonuses",
+    "quickActions": "Quick Actions",
+    "addContact": "Add Contact",
+    "trackNewLead": "Track a new lead",
+    "viewTeam": "View Team",
+    "seeDownline": "See your downline",
+    "withdraw": "Withdraw",
+    "requestPayout": "Request payout",
+    "continueLearning": "Continue learning",
+    "fastStart": {
+      "bonusActive": "Fast Start Bonus Active",
+      "daysRemaining": "{days} days remaining. Current bonus: {bonus}",
+      "premiumToNextTier": "{amount} more premium to next tier!",
+      "tier": "Tier {tier}",
+      "noTierYet": "No tier yet"
+    },
+    "aiCopilot": {
+      "upgradeTitle": "Upgrade to AI Copilot",
+      "upgradeDescription": "Get AI-powered assistance for your sales and recruiting."
+    },
+    "viewWebsite": "View Website"
   },
   "commissions": {
     "title": "Commissions",
+    "description": "View your commission history and earnings.",
     "myCommissions": "My Commissions",
     "pending": "Pending",
     "paid": "Paid",
@@ -124,35 +158,84 @@
     "manual": "Manual",
     "overrides": "Overrides",
     "overrideLevel": "Override Level",
-    "fromAgent": "From Agent"
+    "fromAgent": "From Agent",
+    "ninetyDayTotal": "90-Day Total",
+    "lifetime": "Lifetime",
+    "commissionHistory": "Commission History",
+    "recentRecords": "Your recent commission records",
+    "noCommissionsYet": "No commissions yet"
   },
   "bonuses": {
     "title": "Bonuses",
+    "description": "Track your bonus earnings and achievements.",
     "myBonuses": "My Bonuses",
     "fastStart": "Fast Start Bonus",
     "rankAdvancement": "Rank Advancement Bonus",
     "matching": "Matching Bonus",
     "contest": "Contest Bonus",
+    "teamBuilder": "Team Builder",
     "approved": "Approved",
     "pending": "Pending",
+    "paid": "Paid",
     "denied": "Denied",
     "bonusType": "Bonus Type",
     "qualificationDate": "Qualification Date",
-    "payoutDate": "Payout Date"
+    "payoutDate": "Payout Date",
+    "awaitingPayment": "Awaiting payment",
+    "received": "Received",
+    "totalEarned": "Total Earned",
+    "allTime": "All time",
+    "availableBonuses": "Available Bonuses",
+    "waysToEarn": "Ways to earn bonuses at Apex",
+    "fastStartDesc": "Earn up to $5,000 in your first 90 days based on premium written.",
+    "rankAdvancementDesc": "Bonus for each rank promotion you achieve.",
+    "teamBuilderDesc": "Earn bonuses when your recruits hit production milestones.",
+    "bonusHistory": "Bonus History",
+    "yourEarnedBonuses": "Your earned bonuses",
+    "type": "Type",
+    "amount": "Amount",
+    "noBonusesYet": "No bonuses earned yet",
+    "keepWorking": "Keep working towards your goals!"
   },
   "wallet": {
     "title": "Wallet",
+    "pageDescription": "Manage your earnings and withdrawals.",
     "currentBalance": "Current Balance",
+    "availableBalance": "Available Balance",
     "pendingBalance": "Pending Balance",
     "lifetimeEarnings": "Lifetime Earnings",
+    "readyToWithdraw": "Ready to withdraw",
+    "pending": "Pending",
+    "processing": "Processing",
+    "totalEarned": "Total earned",
     "transactions": "Transactions",
     "credit": "Credit",
     "debit": "Debit",
     "description": "Description",
-    "reference": "Reference"
+    "reference": "Reference",
+    "withdrawalMethods": "Withdrawal Methods",
+    "choosePreferredMethod": "Choose your preferred payout method",
+    "achTransfer": "ACH Transfer",
+    "wireTransfer": "Wire Transfer",
+    "check": "Check",
+    "fee": "Fee",
+    "min": "Min",
+    "achDays": "2-3 business days",
+    "wireDays": "1-2 business days",
+    "checkDays": "5-7 business days",
+    "pendingPayouts": "Pending Payouts",
+    "amount": "Amount",
+    "method": "Method",
+    "net": "Net",
+    "transactionHistory": "Transaction History",
+    "recentActivity": "Your recent wallet activity",
+    "type": "Type",
+    "balance": "Balance",
+    "noTransactionsYet": "No transactions yet"
   },
   "team": {
-    "title": "My Team",
+    "title": "Team",
+    "pageDescription": "View and manage your direct recruits.",
     "teamMembers": "Team Members",
     "directRecruits": "Direct Recruits",
     "totalDownline": "Total Downline",
@@ -162,31 +245,75 @@
     "memberSince": "Member Since",
     "sponsor": "Sponsor",
     "viewProfile": "View Profile",
-    "contactInfo": "Contact Info"
+    "contactInfo": "Contact Info",
+    "teamPremium": "Team Premium",
+    "ninetyDayTotal": "90-day total",
+    "mgas": "MGAs",
+    "inYourFrontline": "In your frontline",
+    "avgPerformance": "Avg Performance",
+    "perAgent": "Per agent",
+    "teamMetrics": "Team Metrics",
+    "viewMetricsDesc": "View detailed production metrics, growth trends, and top performers",
+    "agentsYouRecruited": "Agents you have personally recruited",
+    "agent": "Agent",
+    "rank": "Rank",
+    "ninetyDayPremium": "90-Day Premium",
+    "joined": "Joined",
+    "noRecruitsYet": "No direct recruits yet",
+    "shareReferralLink": "Share your referral link to start building your team.",
+    "activeCount": "{count} active"
   },
   "genealogy": {
     "title": "Genealogy",
+    "pageDescription": "View your downline organization and team structure.",
     "treeView": "Tree View",
     "listView": "List View",
     "level": "Level",
     "depth": "Depth",
     "expand": "Expand",
-    "collapse": "Collapse"
+    "collapse": "Collapse",
+    "totalDownline": "Total Downline",
+    "inYourOrganization": "in your organization",
+    "activeAgents": "Active Agents",
+    "producingAgents": "producing agents",
+    "directRecruits": "Direct Recruits",
+    "personallySponsored": "personally sponsored",
+    "generationsDeep": "Generations Deep",
+    "levelsInMatrix": "levels in matrix",
+    "organizationTree": "Organization Tree",
+    "organizationTreeDesc": "Interactive view of your downline. Zoom, pan, and explore your team structure.",
+    "youRoot": "You (Root)",
+    "teamMember": "Team Member",
+    "active": "Active",
+    "inactivePending": "Inactive/Pending"
   },
   "leaderboard": {
     "title": "Leaderboard",
+    "pageDescription": "See who's leading in production and recruiting",
     "topPerformers": "Top Performers",
     "rank": "Rank",
     "agent": "Agent",
     "production": "Production",
+    "commissions": "Commissions",
+    "premium": "Premium",
+    "recruits": "Recruits",
     "thisWeek": "This Week",
     "thisMonth": "This Month",
     "thisQuarter": "This Quarter",
-    "allTime": "All Time"
+    "thisYear": "This Year",
+    "allTime": "All Time",
+    "yourPosition": "Your Position",
+    "of": "of",
+    "rankings": "Rankings",
+    "topPerformersBy": "Top performers by {metric} - {period}",
+    "noDataYet": "No data for this period yet"
   },
   "qualification": {
     "title": "Rank Qualification",
+    "description": "Track your qualification status and see what's needed for your next rank.",
     "currentRank": "Current Rank",
+    "titleRank": "Title Rank",
+    "paidAsRank": "Paid-As Rank",
     "nextRank": "Next Rank",
     "requirements": "Requirements",
     "premiumVolume": "Premium Volume (90 days)",
@@ -197,18 +324,54 @@
     "placementRate": "Placement Rate",
     "met": "Met",
     "notMet": "Not Met",
-    "progress": "Progress"
+    "progress": "Progress",
+    "gracePeriods": "Grace Periods",
+    "usedThisYear": "{used} used this year",
+    "gracePeriod": "Grace Period",
+    "grace": "Grace",
+    "demotionRiskDetected": "Demotion Risk Detected",
+    "currentRankRequirements": "Current Rank Requirements",
+    "progressTowardMaintaining": "Your progress toward maintaining {rank}",
+    "overallProgress": "Overall Progress",
+    "nextRankTitle": "Next Rank: {rank}",
+    "whatYouNeedToAdvance": "What you need to advance to the next level",
+    "progressToNextRank": "Progress to Next Rank",
+    "qualificationTrend": "Qualification Trend",
+    "trendDirection": "Trend Direction",
+    "improving": "Improving",
+    "declining": "Declining",
+    "stable": "Stable",
+    "consecutiveQualifiedMonths": "Consecutive Qualified Months",
+    "averageRequirementsMet": "Average Requirements Met",
+    "demotionRisk": "Demotion Risk",
+    "highRisk": "High Risk",
+    "mediumRisk": "Medium Risk",
+    "lowRisk": "Low Risk",
+    "recommendations": "Recommendations",
+    "youreOnTrack": "You're on track! Keep up the great work.",
+    "recentQualificationHistory": "Recent Qualification History",
+    "qualificationStatusOverMonths": "Your qualification status over the past months",
+    "keyPerformanceMetrics": "Key Performance Metrics",
+    "ninetyDayPremium": "90-Day Premium",
+    "statusQualified": "qualified",
+    "statusDemoted": "demoted",
+    "ofRequired": "of {required}"
   },
   "training": {
     "title": "Training Center",
+    "portalTitle": "Training Portal",
+    "portalDescription": "Build your skills and grow your business with our training courses.",
     "courses": "Courses",
     "myCourses": "My Courses",
+    "myCertificates": "My Certificates",
     "allCourses": "All Courses",
     "inProgress": "In Progress",
     "completed": "Completed",
     "notStarted": "Not Started",
     "startCourse": "Start Course",
     "continueCourse": "Continue Course",
+    "continueLearning": "Continue Learning",
+    "pickUpWhereYouLeftOff": "Pick up where you left off",
     "lessons": "Lessons",
     "quizzes": "Quizzes",
     "quiz": "Quiz",
@@ -226,6 +389,15 @@
     "downloadCertificate": "Download Certificate",
     "resources": "Resources",
     "downloadResource": "Download Resource",
+    "requiredTraining": "Required Training",
+    "completeToStayCompliant": "Complete these courses to stay compliant",
+    "learningPaths": "Learning Paths",
+    "featuredCourses": "Featured Courses",
+    "recommendedForSuccess": "Recommended training for your success",
+    "coursesAvailable": "{count} courses available",
+    "viewAll": "View All",
+    "noCoursesYet": "No courses available yet. Check back soon!",
+    "noPathsYet": "No learning paths available yet. Check back soon!",
     "categories": {
       "onboarding": "Onboarding",
       "products": "Products",
@@ -241,23 +413,45 @@
   },
   "shop": {
     "title": "Shop",
+    "description": "Browse digital products and training materials",
     "products": "Products",
     "addToCart": "Add to Cart",
     "removeFromCart": "Remove from Cart",
     "cart": "Cart",
+    "inCart": "In Cart",
     "checkout": "Checkout",
     "orderTotal": "Order Total",
     "orderHistory": "Order History",
     "myOrders": "My Orders",
     "orderNumber": "Order Number",
     "orderDate": "Order Date",
-    "orderStatus": "Order Status"
+    "orderStatus": "Order Status",
+    "items": "{count} items",
+    "searchProducts": "Search products...",
+    "noProductsFound": "No products found",
+    "cartSummary": "Cart Summary",
+    "addedToCart": "Added to cart",
+    "categories": {
+      "all": "All Products",
+      "training": "Training & Education",
+      "tools": "Marketing Tools",
+      "leads": "Lead Lists",
+      "software": "Software & Apps",
+      "templates": "Templates & Resources"
+    }
   },
   "crm": {
     "title": "CRM",
+    "description": "Manage your leads, customers, and recruits.",
     "contacts": "Contacts",
     "leads": "Leads",
     "customers": "Customers",
+    "totalContacts": "Total Contacts",
+    "activeLeads": "Active Leads",
+    "dueFollowUps": "Due Follow-ups",
+    "closedWon": "Closed Won",
+    "importExport": "Import / Export",
+    "importExportDescription": "Bulk import contacts from CSV or export your contact list",
     "addContact": "Add Contact",
     "editContact": "Edit Contact",
     "firstName": "First Name",
@@ -277,7 +471,53 @@
       "negotiation": "Negotiation",
       "closedWon": "Closed Won",
       "closedLost": "Closed Lost"
-    }
+    },
+    "contactNotFound": "Contact not found",
+    "backToCRM": "Back to CRM",
+    "since": "{type} since {date}",
+    "leadScore": "Lead Score",
+    "hotLead": "Hot lead",
+    "warmLead": "Warm lead",
+    "coldLead": "Cold lead",
+    "emailOpens": "Email Opens",
+    "linkClicks": "Link Clicks",
+    "totalActivities": "Total Activities",
+    "contactInfo": "Contact Info",
+    "source": "Source",
+    "activityTimeline": "Activity Timeline",
+    "emailSequence": "Email Sequence",
+    "recentActivity": "Recent Activity",
+    "trackEngagement": "Track engagement with this lead",
+    "automatedNurturing": "Automated nurturing campaign progress",
+    "importExportTitle": "Import / Export Contacts",
+    "exportContacts": "Export Contacts",
+    "downloadContacts": "Download all your contacts as a CSV file",
+    "exportDescription": "Export includes all contact fields: name, email, phone, type, stage, source, company, address, notes, and tags.",
+    "exporting": "Exporting...",
+    "exportAllContacts": "Export All Contacts",
+    "importContacts": "Import Contacts",
+    "uploadCsv": "Upload a CSV file to bulk import contacts",
+    "csvFile": "CSV File",
+    "skipDuplicates": "Skip duplicate emails",
+    "downloadTemplate": "Download Template",
+    "preview": "Preview: {fileName}",
+    "contactsFound": "{count} contacts found",
+    "imported": "{count} imported",
+    "duplicatesSkipped": "{count} duplicates skipped",
+    "errorsCount": "{count} errors",
+    "errors": "Errors:",
+    "rowError": "Row {row}: {errors}",
+    "andMore": "...and {count} more",
+    "andMoreContacts": "...and {count} more contacts",
+    "importing": "Importing...",
+    "importContacts": "Import {count} Contacts",
+    "csvFormatGuide": "CSV Format Guide",
+    "requiredColumns": "Required Columns",
+    "optionalColumns": "Optional Columns",
+    "name": "Name",
+    "type": "Type",
+    "stage": "Stage",
+    "tags": "Tags"
   },
   "reports": {
     "title": "Reports",
@@ -291,19 +531,258 @@
   },
   "settings": {
     "title": "Settings",
+    "description": "Manage your account settings and preferences.",
     "profile": "Profile",
+    "profileInfo": "Profile Information",
+    "updatePersonalInfo": "Update your personal information",
     "account": "Account",
     "notifications": "Notifications",
     "security": "Security",
     "preferences": "Preferences",
     "personalInfo": "Personal Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "saveChanges": "Save Changes",
     "changePassword": "Change Password",
     "emailNotifications": "Email Notifications",
     "language": "Language",
     "timezone": "Timezone",
     "avatar": "Profile Picture",
     "uploadAvatar": "Upload Picture",
-    "removeAvatar": "Remove Picture"
+    "removeAvatar": "Remove Picture",
+    "aiCopilot": "AI Copilot",
+    "manageAiSubscription": "Manage your AI assistant subscription",
+    "currentPlan": "Current Plan",
+    "notSubscribed": "Not Subscribed",
+    "basicPlan": "Basic - $49/mo",
+    "proPlan": "Pro - $99/mo",
+    "agencyPlan": "Agency - $199/mo",
+    "getAiAssistance": "Get AI-powered assistance for sales and recruiting",
+    "aiAssistantActive": "Your AI assistant is active and ready to help",
+    "subscribe": "Subscribe",
+    "managePlan": "Manage Plan",
+    "manageAccountSecurity": "Manage your account security",
+    "password": "Password",
+    "changeAccountPassword": "Change your account password",
+    "change": "Change",
+    "twoFactorAuth": "Two-Factor Authentication",
+    "addExtraSecurity": "Add extra security to your account",
+    "enable": "Enable",
+    "manageNotifications": "Manage how you receive notifications",
+    "emailNotifDesc": "Receive updates via email",
+    "configure": "Configure",
+    "pushNotifications": "Push Notifications",
+    "pushNotifDesc": "Receive browser notifications",
+    "yourReferralLink": "Your Referral Link",
+    "shareToRecruit": "Share this link to recruit new agents",
+    "profileUpdated": "Profile updated successfully",
+    "failedSaveProfile": "Failed to save profile",
+    "linkCopied": "Referral link copied to clipboard",
+    "failedCopyLink": "Failed to copy link",
+    "passwordChangeEmail": "Password change will be sent to your email",
+    "twoFactorComingSoon": "Two-factor authentication setup coming soon",
+    "emailNotifComingSoon": "Email notification settings coming soon",
+    "pushNotifComingSoon": "Push notification settings coming soon"
+  },
+  "reports": {
+    "title": "Reports",
+    "description": "Analyze your business performance.",
+    "export": "Export",
+    "exportSuccess": "Report exported successfully",
+    "periods": {
+      "week": "Last 7 Days",
+      "month": "This Month",
+      "quarter": "This Quarter",
+      "year": "This Year"
+    },
+    "totalPremium": "Total Premium",
+    "totalEarnings": "Total Earnings",
+    "newRecruits": "New Recruits",
+    "overrideEarnings": "Override Earnings",
+    "taxDocuments": "Tax Documents",
+    "taxDocumentsDesc": "Download income statements and 1099 summaries for tax purposes",
+    "earningsBreakdown": "Earnings Breakdown",
+    "earningsDistribution": "How your earnings are distributed",
+    "directCommissions": "Direct Commissions",
+    "overrideCommissions": "Override Commissions",
+    "bonuses": "Bonuses",
+    "total": "Total",
+    "productionTrend": "Production Trend",
+    "productionOverTime": "Your premium production over time",
+    "chartComingSoon": "Chart visualization coming soon",
+    "csvHeaders": {
+      "metric": "Metric",
+      "value": "Value",
+      "period": "Period"
+    },
+    "taxDocumentsPage": {
+      "title": "Tax Documents",
+      "description": "Download your income statements and 1099 summaries",
+      "form1099Required": "1099-NEC Form Required",
+      "below1099Threshold": "Below 1099 Threshold",
+      "form1099Message": "Your earnings of {amount} exceed the $600 threshold. You will receive an official 1099-NEC form by January 31st of the following year.",
+      "belowThresholdMessage": "Your earnings of {amount} are below the $600 threshold for 1099 reporting. However, you are still required to report all income on your tax return.",
+      "downloadDocuments": "Download Documents",
+      "downloadDocumentsDesc": "Download your tax documents for {year}",
+      "incomeStatement": "Income Statement",
+      "incomeStatementDesc": "Detailed breakdown of all earnings",
+      "form1099Summary": "1099 Summary",
+      "form1099SummaryDesc": "Summary for tax filing purposes",
+      "downloadCsv": "Download CSV",
+      "monthlyBreakdown": "Monthly Breakdown",
+      "monthlyBreakdownDesc": "Earnings by month for {year}",
+      "month": "Month",
+      "commissions": "Commissions",
+      "overrides": "Overrides",
+      "bonusBreakdown": "Bonus Breakdown",
+      "bonusBreakdownDesc": "Bonuses by type for {year}",
+      "disclaimer": "Disclaimer",
+      "tryAgain": "Try Again"
+    }
+  },
+  "disputes": {
+    "title": "My Disputes",
+    "description": "Submit and track disputes for commissions, clawbacks, and other issues",
+    "newDispute": "New Dispute",
+    "submitDispute": "Submit Dispute",
+    "submitFirstDispute": "Submit Your First Dispute",
+    "submitting": "Submitting...",
+    "stats": {
+      "total": "Total",
+      "pending": "Pending",
+      "underReview": "Under Review",
+      "resolved": "Resolved"
+    },
+    "status": {
+      "pending": "Pending Review",
+      "underReview": "Under Review",
+      "infoRequested": "Info Requested",
+      "approved": "Approved",
+      "denied": "Denied",
+      "withdrawn": "Withdrawn"
+    },
+    "types": {
+      "commission": "Commission Issue",
+      "clawback": "Clawback Dispute",
+      "bonus": "Bonus Calculation",
+      "override": "Override Payment",
+      "rank": "Rank Calculation",
+      "policy": "Policy Credit",
+      "other": "Other Issue"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "noDisputes": "No disputes found",
+    "noDisputesYet": "You haven't submitted any disputes yet.",
+    "noDisputesWithStatus": "No disputes with status \"{status}\".",
+    "disputed": "disputed",
+    "modal": {
+      "title": "Submit a Dispute",
+      "description": "Describe your issue and we'll review it as soon as possible."
+    },
+    "form": {
+      "disputeType": "Dispute Type",
+      "subject": "Subject",
+      "amountDisputed": "Amount Disputed (optional)",
+      "descriptionLabel": "Description",
+      "selectType": "Select type...",
+      "subjectPlaceholder": "Brief summary of the issue",
+      "descriptionPlaceholder": "Please provide all relevant details including dates, policy numbers, and any other information that will help us resolve this quickly...",
+      "characters": "characters"
+    },
+    "cancel": "Cancel",
+    "detail": {
+      "submitted": "Submitted",
+      "withdrawDispute": "Withdraw Dispute",
+      "withdrawTitle": "Withdraw Dispute?",
+      "withdrawDescription": "Are you sure you want to withdraw this dispute? This action cannot be undone.",
+      "yesWithdraw": "Yes, Withdraw",
+      "descriptionTitle": "Description",
+      "resolution": "Resolution",
+      "amountAdjusted": "Amount Adjusted",
+      "comments": "Comments",
+      "commentsDescription": "Communication history for this dispute",
+      "noComments": "No comments yet",
+      "staff": "Staff",
+      "addComment": "Add a comment...",
+      "sendComment": "Send Comment",
+      "details": "Details",
+      "type": "Type",
+      "priorityLabel": "Priority",
+      "amountDisputedLabel": "Amount Disputed",
+      "created": "Created",
+      "lastUpdated": "Last Updated",
+      "infoRequested": "Information Requested",
+      "infoRequestedMessage": "Our team needs additional information to process your dispute. Please check the comments and respond with the requested details.",
+      "disputeNotFound": "Dispute not found",
+      "backToDisputes": "Back to Disputes"
+    }
+  },
+  "replicatedSite": {
+    "title": "Replicated Site",
+    "description": "Customize your personal agent website",
+    "preview": "Preview",
+    "saving": "Saving...",
+    "saveChanges": "Save Changes",
+    "yourPersonalSite": "Your Personal Site",
+    "copied": "Copied",
+    "copyLink": "Copy Link",
+    "tabs": {
+      "profile": "Profile",
+      "appearance": "Appearance",
+      "socialLinks": "Social Links"
+    },
+    "profile": {
+      "title": "Profile Information",
+      "description": "This information is displayed on your replicated site",
+      "updatePhoto": "Update profile photo in Settings",
+      "bio": "Personal Bio",
+      "bioPlaceholder": "Tell visitors about yourself and why they should join your team...",
+      "characters": "characters",
+      "headline": "Custom Headline",
+      "headlinePlaceholder": "Your custom headline for the hero section...",
+      "headlineHint": "Leave empty to use the default headline",
+      "ctaText": "Call-to-Action Button Text",
+      "contactVisibility": "Contact Information Visibility",
+      "showPhone": "Show Phone Number",
+      "showPhoneDesc": "Display your phone number on the site",
+      "showEmail": "Show Email Address",
+      "showEmailDesc": "Display your email address on the site"
+    },
+    "siteStatus": {
+      "title": "Site Status",
+      "description": "Enable or disable your replicated site",
+      "enabled": "Site Enabled",
+      "disabledMessage": "When disabled, visitors will see a \"Coming Soon\" page"
+    },
+    "appearance": {
+      "title": "Brand Colors",
+      "description": "Customize your site's primary color",
+      "primaryColor": "Primary Color",
+      "presetColors": "Preset Colors",
+      "preview": "Preview",
+      "sampleButton": "Sample Button",
+      "linksPreview": "This is how links will look"
+    },
+    "social": {
+      "title": "Social Media Links",
+      "description": "Add your social media profiles to display on your site"
+    },
+    "toast": {
+      "linkCopied": "Link copied to clipboard",
+      "saved": "Settings saved successfully",
+      "loadError": "Failed to load settings",
+      "saveError": "Failed to save settings"
+    },
+    "error": {
+      "unableToLoad": "Unable to load settings"
+    }
   },
   "admin": {
     "title": "Admin Dashboard",
@@ -386,6 +865,877 @@
     "forAgents": "For Agents",
     "agentLogin": "Agent Login",
     "brandTagline": "Building financial futures through trusted insurance solutions and entrepreneurial opportunities since 2018."
+  },
+  "replicated": {
+    "yourAgent": "Your Agent",
+    "joinOurTeam": "Join Our Team",
+    "nav": {
+      "home": "Home",
+      "aboutMe": "About Me",
+      "carriers": "Carriers",
+      "compare": "Compare",
+      "opportunity": "Opportunity",
+      "faq": "FAQ",
+      "contact": "Contact"
+    },
+    "home": {
+      "badge": "Join Apex Affinity Group",
+      "headline": "Build Your Financial Future in Insurance",
+      "description": "Partner with {agentName} and join a proven system that helps you build a successful career in the insurance industry with unlimited earning potential.",
+      "getStarted": "Get Started Today",
+      "learnAbout": "Learn About the Opportunity",
+      "activeAgents": "Active Agents",
+      "commissionsPaid": "Commissions Paid",
+      "topCarriers": "Top Carriers",
+      "agentCard": {
+        "readyToHelp": "Ready to help you start your journey with Apex Affinity Group. Let's build your future together.",
+        "joinMyTeam": "Join My Team",
+        "contactMe": "Contact Me"
+      },
+      "whyJoin": {
+        "title": "Why Join Apex?",
+        "subtitle": "We provide everything you need to succeed in the insurance industry.",
+        "highCommissions": "High Commissions",
+        "highCommissionsDesc": "Earn up to 90% commission rates with our top-tier carrier contracts.",
+        "overrideIncome": "Override Income",
+        "overrideIncomeDesc": "Build a team and earn 6 generations of overrides on their production.",
+        "completeTraining": "Complete Training",
+        "completeTrainingDesc": "Access comprehensive training programs to fast-track your success.",
+        "topCarriers": "Top Carriers",
+        "topCarriersDesc": "Work with 7 A-rated carriers offering life insurance and annuities.",
+        "teamSupport": "Team Support",
+        "teamSupportDesc": "Join a supportive community with mentorship at every level.",
+        "bonuses": "Bonuses & Incentives",
+        "bonusesDesc": "Fast start bonuses, rank advancement bonuses, and car bonuses."
+      },
+      "howItWorks": {
+        "title": "How It Works",
+        "subtitle": "Getting started is simple. Here's your path to success.",
+        "step1": "Join the Team",
+        "step1Desc": "Complete your application and get licensed with our support.",
+        "step2": "Get Trained",
+        "step2Desc": "Complete our onboarding program and learn the products.",
+        "step3": "Start Selling",
+        "step3Desc": "Help families with their insurance needs and earn commissions.",
+        "step4": "Build Your Team",
+        "step4Desc": "Recruit and train others to multiply your income."
+      },
+      "whatYouGet": {
+        "title": "What You Get When You Join",
+        "items": {
+          "carriers": "Access to 7 A-rated insurance carriers",
+          "training": "Comprehensive training and certification support",
+          "dashboard": "Personal back office dashboard",
+          "crm": "AI-powered CRM to manage your clients",
+          "marketing": "Marketing materials and sales tools",
+          "calls": "Weekly team calls and mentorship",
+          "fastStart": "Fast start bonus program",
+          "advancement": "Career advancement opportunities"
+        },
+        "readyToStart": "Ready to start your journey?",
+        "joinTeamToday": "Join {agentName}'s Team Today",
+        "applyNow": "Apply Now"
+      },
+      "cta": {
+        "title": "Take the First Step",
+        "description": "Join thousands of successful agents who have transformed their lives with Apex Affinity Group. Your journey starts here.",
+        "joinNow": "Join Now",
+        "askQuestions": "Ask Questions First"
+      }
+    },
+    "aboutMe": {
+      "title": "About {agentName}",
+      "atApex": "{rankName} at Apex Affinity Group",
+      "yearsWithApex": "{years}+ years with Apex",
+      "newAgent": "New Agent",
+      "joinMyTeam": "Join My Team",
+      "contactMe": "Contact Me",
+      "aboutMeTitle": "About Me",
+      "getInTouch": "Get In Touch",
+      "email": "Email",
+      "phone": "Phone",
+      "sendMessage": "Send a Message",
+      "whyWorkWithMe": {
+        "title": "Why Work With Me?",
+        "mentorship": "Personal Mentorship",
+        "mentorshipDesc": "I'll personally guide you through every step of building your insurance business.",
+        "success": "Proven Success",
+        "successDesc": "Learn from someone who has walked the path and achieved real results.",
+        "teamSupport": "Team Support",
+        "teamSupportDesc": "Join a supportive team environment where everyone helps each other succeed."
+      },
+      "whatYouGet": {
+        "title": "What You Get When You Join My Team",
+        "items": {
+          "carriers": "Access to 7 A-rated insurance carriers",
+          "training": "Comprehensive training and ongoing education",
+          "tools": "AI-powered tools to grow your business",
+          "mentorship": "Personal mentorship and support",
+          "commissions": "Competitive commissions up to 145%",
+          "ownership": "Full ownership of your book of business from day one",
+          "teamBuilding": "Opportunity to build your own team",
+          "noCosts": "No startup costs or monthly fees"
+        }
+      },
+      "cta": {
+        "title": "Ready to Start Your Journey?",
+        "description": "Let's talk about how I can help you build a successful career in insurance.",
+        "joinMyTeam": "Join My Team",
+        "askQuestions": "Ask Questions First"
+      }
+    },
+    "contact": {
+      "title": "Contact {agentName}",
+      "subtitle": "Have questions about the opportunity? Ready to get started? Reach out and let's connect.",
+      "email": "Email",
+      "phone": "Phone",
+      "agentMessage": "I'm here to answer your questions and help you get started on your journey with Apex Affinity Group. Don't hesitate to reach out - I'd love to hear from you!",
+      "form": {
+        "title": "Send a Message",
+        "subtitle": "Fill out the form below and I'll get back to you as soon as possible.",
+        "yourName": "Your Name",
+        "emailAddress": "Email Address",
+        "phoneOptional": "Phone Number (Optional)",
+        "message": "Message",
+        "messagePlaceholder": "Tell me what you'd like to know...",
+        "sendMessage": "Send Message",
+        "sending": "Sending..."
+      },
+      "success": {
+        "title": "Message Sent!",
+        "description": "Thanks for reaching out. {agentName} will get back to you soon."
+      },
+      "faq": {
+        "title": "Common Questions",
+        "subtitle": "You might find your answer on one of these pages:",
+        "aboutOpportunity": "About the Opportunity",
+        "ourProducts": "Our Products",
+        "aboutYourAgent": "About Your Agent"
+      },
+      "loading": "Loading...",
+      "agentNotFound": "Agent not found"
+    },
+    "opportunity": {
+      "hero": {
+        "title": "The Opportunity",
+        "subtitle": "Build a rewarding career in insurance with unlimited earning potential, comprehensive training, and a proven path to success."
+      },
+      "incomeStreams": {
+        "title": "Multiple Income Streams",
+        "subtitle": "Our compensation plan rewards you for personal production and team building.",
+        "personalCommissions": {
+          "title": "Personal Commissions",
+          "subtitle": "Earn up to 90% on your personal sales",
+          "description": "Get paid directly when you help a family with their insurance needs. Higher ranks mean higher commission rates."
+        },
+        "overrideIncome": {
+          "title": "Override Income",
+          "subtitle": "Earn on 6 generations of your team",
+          "description": "Build a team and earn override commissions on their production: 15%, 5%, 3%, 2%, 1%, and 0.5% on generations 1-6."
+        },
+        "fastStartBonus": {
+          "title": "Fast Start Bonus",
+          "subtitle": "Extra bonus on early production",
+          "description": "Earn additional bonuses on your first 90 days of production. Hit targets and get rewarded for your quick start."
+        },
+        "rankAdvancementBonus": {
+          "title": "Rank Advancement Bonus",
+          "subtitle": "Get paid when you promote",
+          "description": "Every time you advance in rank, you receive a one-time bonus. Higher ranks mean bigger advancement bonuses."
+        },
+        "matchingBonus": {
+          "title": "Matching Bonus",
+          "subtitle": "Match your team's bonuses",
+          "description": "Earn a percentage match on bonuses earned by agents in your organization. Leadership has its rewards."
+        },
+        "carBonus": {
+          "title": "Car Bonus",
+          "subtitle": "Monthly car allowance",
+          "description": "Qualify for our car bonus program and receive a monthly allowance toward your vehicle. Drive in style while building your business."
+        }
+      },
+      "careerPath": {
+        "title": "Your Career Path",
+        "subtitle": "Clear advancement opportunities with increasing benefits at each level.",
+        "premium90Days": "90-Day Premium",
+        "personalRecruits": "Personal Recruits",
+        "additionalRanks": "Plus 4 additional leadership ranks: Regional MGA, National MGA, Executive MGA, Premier MGA"
+      },
+      "training": {
+        "title": "Training & Support",
+        "subtitle": "We don't just give you a contract and wish you luck. Our comprehensive training and support system ensures you have everything you need to succeed.",
+        "items": {
+          "onboarding": "New agent onboarding program",
+          "productTraining": "Product training for all carriers",
+          "salesSkills": "Sales and presentation skills",
+          "weeklyCalls": "Weekly team training calls",
+          "mentorship": "One-on-one mentorship",
+          "marketing": "Marketing materials and tools",
+          "aiCrm": "AI-powered CRM system",
+          "dashboard": "Back office dashboard"
+        }
+      },
+      "rightForYou": {
+        "title": "Is This Right for You?",
+        "subtitle": "This opportunity is perfect for people who are:",
+        "items": {
+          "motivated": "Self-motivated and driven",
+          "unlimitedIncome": "Looking for unlimited income potential",
+          "willingToLearn": "Willing to learn and grow",
+          "helpingOthers": "Interested in helping others",
+          "buildBusiness": "Ready to build a business"
+        },
+        "applyNow": "Apply Now"
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "questions": {
+          "licensed": {
+            "q": "Do I need to be licensed?",
+            "a": "Yes, you need a life insurance license to sell. We will help you get licensed if you aren't already."
+          },
+          "cost": {
+            "q": "Is there a cost to join?",
+            "a": "There is no cost to join Apex. You may have costs associated with getting licensed in your state."
+          },
+          "pyramid": {
+            "q": "Is this a pyramid scheme?",
+            "a": "No. This is a legitimate insurance business. You earn commissions from selling insurance products, not from recruiting. Team building is optional and provides override income."
+          },
+          "earnings": {
+            "q": "How much can I earn?",
+            "a": "Your income depends on your effort. Some agents earn part-time income, others build six-figure businesses. There is no cap on earnings."
+          },
+          "leads": {
+            "q": "Do I get leads?",
+            "a": "We provide training on lead generation. Many agents work with their natural market initially and then learn to generate leads through various methods."
+          }
+        }
+      },
+      "cta": {
+        "title": "Ready to Start?",
+        "subtitle": "Join {agentName}'s team today and start building your future in the insurance industry.",
+        "applyNow": "Apply Now",
+        "askQuestions": "Ask Questions"
+      }
+    },
+    "signup": {
+      "title": "Join {agentName}'s Team",
+      "subtitle": "Start your journey with Apex Affinity Group and build a rewarding career in the insurance industry.",
+      "yourSponsor": "Your Sponsor",
+      "whatYouGet": "What You Get:",
+      "benefits": {
+        "carriers": "Access to 7 A-rated insurance carriers",
+        "training": "Comprehensive training program",
+        "tools": "AI-powered CRM and back office",
+        "commissions": "Up to 90% commission rates",
+        "overrides": "6 generations of override income",
+        "bonuses": "Bonuses and incentive programs",
+        "mentorship": "Personal mentorship from your sponsor"
+      },
+      "form": {
+        "title": "Create Your Account",
+        "subtitle": "Fill out the form below to get started with Apex Affinity Group.",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "chooseTeamUrl": "Choose Your Team URL",
+        "usernameHelp": "This will be your personal recruiting site URL. 3-20 characters, letters, numbers, and underscores only.",
+        "usernameAvailable": "Username is available!",
+        "email": "Email Address",
+        "phone": "Phone Number",
+        "password": "Password",
+        "passwordPlaceholder": "At least 8 characters",
+        "confirmPassword": "Confirm Password",
+        "confirmPasswordPlaceholder": "Confirm your password",
+        "agreeTermsPart1": "I agree to the",
+        "agreeTermsPart2": "and",
+        "agreeTermsPart3": "I understand that I will need to obtain proper licensing to sell insurance.",
+        "termsOfService": "Terms of Service",
+        "privacyPolicy": "Privacy Policy",
+        "createAccount": "Create Account",
+        "creatingAccount": "Creating Account...",
+        "alreadyHaveAccount": "Already have an account?",
+        "signIn": "Sign In"
+      },
+      "errors": {
+        "agreeTerms": "You must agree to the terms to continue.",
+        "usernameRequired": "Please choose an available username for your team page.",
+        "passwordsNoMatch": "Passwords do not match",
+        "passwordMinLength": "Password must be at least 8 characters",
+        "emailExists": "An account with this email already exists. Please sign in instead.",
+        "createFailed": "Failed to create account",
+        "profileFailed": "Failed to create agent profile. Please contact support."
+      },
+      "loading": "Loading...",
+      "agentNotFound": "Agent not found"
+    },
+    "products": {
+      "hero": {
+        "title": "Our Products",
+        "subtitle": "We offer a comprehensive suite of life insurance and annuity products from top-rated carriers to meet your clients' diverse needs."
+      },
+      "productList": {
+        "iul": {
+          "name": "Indexed Universal Life (IUL)",
+          "description": "Permanent life insurance with cash value growth tied to market indexes.",
+          "benefits": {
+            "taxFree": "Tax-free death benefit",
+            "cashValue": "Cash value accumulation",
+            "marketLinked": "Market-linked growth with downside protection",
+            "flexiblePremium": "Flexible premium payments",
+            "policyLoans": "Policy loans available"
+          }
+        },
+        "term": {
+          "name": "Term Life Insurance",
+          "description": "Affordable protection for a specific period of time.",
+          "benefits": {
+            "lowerPremiums": "Lower initial premiums",
+            "coverage": "Coverage for 10, 20, or 30 years",
+            "convertible": "Convertible to permanent coverage",
+            "simple": "Simple application process",
+            "highCoverage": "High coverage amounts available"
+          }
+        },
+        "annuities": {
+          "name": "Fixed Index Annuities",
+          "description": "Retirement income products with principal protection and growth potential.",
+          "benefits": {
+            "principalProtection": "Principal protection",
+            "taxDeferred": "Tax-deferred growth",
+            "guaranteedIncome": "Guaranteed lifetime income options",
+            "noMarketLoss": "No market loss",
+            "flexiblePayout": "Flexible payout options"
+          }
+        },
+        "finalExpense": {
+          "name": "Final Expense Insurance",
+          "description": "Whole life coverage designed to cover end-of-life costs.",
+          "benefits": {
+            "guaranteed": "Guaranteed acceptance options",
+            "smallFace": "Small face amounts ($5k-$50k)",
+            "fixedPremiums": "Fixed premiums",
+            "noExam": "No medical exam required",
+            "quickApproval": "Quick approval process"
+          }
+        }
+      },
+      "carriers": {
+        "title": "Our Partner Carriers",
+        "subtitle": "We work with A-rated insurance carriers to provide the best products and competitive commission rates for our agents.",
+        "aRated": "A-Rated"
+      },
+      "whySell": {
+        "title": "Why Sell Our Products?",
+        "commissions": {
+          "title": "Competitive Commissions",
+          "description": "Earn up to 90% commission rates on life insurance and competitive rates on annuity products."
+        },
+        "carriers": {
+          "title": "Trusted Carriers",
+          "description": "All our carriers are A-rated or better, giving you confidence when presenting to clients."
+        },
+        "process": {
+          "title": "Easy Application Process",
+          "description": "Streamlined e-applications and quick underwriting for faster policy placement."
+        }
+      },
+      "cta": {
+        "title": "Ready to Learn More?",
+        "subtitle": "Contact {agentName} to learn more about our product portfolio.",
+        "joinTeam": "Join the Team",
+        "contact": "Contact"
+      }
+    },
+    "testimonials": {
+      "hero": {
+        "title": "Success Stories",
+        "subtitle": "Hear from agents who have transformed their lives with Apex Affinity Group."
+      },
+      "featured": {
+        "quote": "When I joined Apex, I had no idea it would completely change my life. Three years later, I've built a team of over 50 agents and achieved financial freedom. The systems, training, and support made all the difference.",
+        "name": "James Davis",
+        "role": "Executive MGA | {years} Years with Apex"
+      },
+      "grid": {
+        "title": "More Success Stories",
+        "yearsWithApex": "{years} year with Apex",
+        "yearsWithApexPlural": "{years} years with Apex"
+      },
+      "stories": {
+        "michael": {
+          "name": "Michael Johnson",
+          "role": "Regional MGA",
+          "quote": "Joining Apex was the best decision I ever made. In just 2 years, I went from struggling in a corporate job to running my own successful insurance business. The training and support are unmatched."
+        },
+        "sarah": {
+          "name": "Sarah Williams",
+          "role": "Senior MGA",
+          "quote": "I was a stay-at-home mom looking for a way to contribute to my family's income. Apex gave me the flexibility to work on my own schedule while building a real career. I'm now earning more than I ever did in my previous career."
+        },
+        "david": {
+          "name": "David Chen",
+          "role": "MGA",
+          "quote": "The compensation plan is incredible. I'm earning more from my overrides than I am from my personal production. Building a team has been the key to my success."
+        },
+        "amanda": {
+          "name": "Amanda Rodriguez",
+          "role": "Associate MGA",
+          "quote": "What I love most about Apex is the culture. Everyone is willing to help you succeed. My upline has been like a mentor to me, always available to answer questions and provide guidance."
+        },
+        "robert": {
+          "name": "Robert Thompson",
+          "role": "National MGA",
+          "quote": "I've been in the insurance industry for 20 years, and I've never seen a better opportunity than Apex. The carrier contracts, the comp plan, the technology - it's all world-class."
+        },
+        "jennifer": {
+          "name": "Jennifer Martinez",
+          "role": "Senior Agent",
+          "quote": "I was skeptical at first, but after seeing my first commission check, I was hooked. The products sell themselves when you believe in what you're offering."
+        }
+      },
+      "stats": {
+        "title": "Real Results",
+        "subtitle": "Our agents are achieving incredible results. Here's what success looks like at Apex.",
+        "avgIncome": "Average top agent income",
+        "satisfaction": "Agent satisfaction rate",
+        "newMGAs": "New MGAs this year",
+        "bonuses": "Bonuses paid last quarter"
+      },
+      "videos": {
+        "title": "Video Testimonials",
+        "subtitle": "Watch our agents share their stories in their own words.",
+        "comingSoon": "Coming Soon"
+      },
+      "cta": {
+        "title": "Write Your Success Story",
+        "subtitle": "Join {agentName} and the hundreds of agents who are building their dreams with Apex Affinity Group.",
+        "startJourney": "Start Your Journey"
+      }
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "lastUpdated": "Last Updated: January 2026",
+      "importantNotice": {
+        "title": "Important Legal Agreement",
+        "description": "Please read these terms carefully before using our services or applying to become an independent agent. By using our website or services, you agree to be bound by these terms."
+      },
+      "agreement": {
+        "title": "Agreement to Terms",
+        "content1": "These Terms of Service (\"Terms\") constitute a legally binding agreement between you and Apex Affinity Group (\"Company,\" \"we,\" \"us,\" or \"our\") governing your use of our website, services, and agent opportunity.",
+        "content2": "By accessing our website, submitting an application, or participating in our agent program, you acknowledge that you have read, understood, and agree to be bound by these Terms."
+      },
+      "contractor": {
+        "title": "Independent Contractor Status",
+        "intro": "You are an independent contractor, NOT an employee. This means:",
+        "items": {
+          "control": "You control your own hours, methods, and business practices",
+          "taxes": "You are responsible for your own taxes, including self-employment tax",
+          "benefits": "You are not entitled to employee benefits (health insurance, 401k, etc.)",
+          "licenses": "You must obtain and maintain required insurance licenses at your own expense",
+          "represent": "You may represent other companies, subject to carrier appointment rules",
+          "noGuarantee": "We do not guarantee any minimum income or success"
+        },
+        "agreement": "You agree to sign an Independent Contractor Agreement as part of your onboarding, which provides additional details about this relationship."
+      },
+      "eligibility": {
+        "title": "Eligibility Requirements",
+        "intro": "To become an Apex Affinity Group agent, you must:",
+        "items": {
+          "age": "Be at least 18 years of age",
+          "authorized": "Be legally authorized to work in the United States",
+          "background": "Pass a background check (required by insurance carriers)",
+          "license": "Obtain required state insurance licenses",
+          "training": "Complete our onboarding training program",
+          "truthful": "Provide accurate and truthful information on your application",
+          "noFelony": "Have no felony convictions related to financial crimes"
+        },
+        "reserve": "We reserve the right to reject any application or terminate any agent relationship at our discretion."
+      },
+      "compensation": {
+        "title": "Compensation and Commissions",
+        "intro": "Your compensation is based solely on commissions from insurance products you sell and overrides from your team's production. Key terms include:",
+        "structure": {
+          "title": "Commission Structure",
+          "description": "Commission rates vary by product and your current rank level. See our Compensation Plan document for current rates."
+        },
+        "chargebacks": {
+          "title": "Chargebacks",
+          "description": "If a policy lapses or is cancelled within the chargeback period (typically 6-12 months depending on carrier), commissions may be recovered from future earnings or your account balance."
+        },
+        "schedule": {
+          "title": "Payment Schedule",
+          "description": "Commissions are paid according to our published payment schedule, typically weekly or bi-weekly, subject to carrier payment receipt."
+        },
+        "minimum": {
+          "title": "Minimum Payout",
+          "description": "A minimum balance may be required before payout. Amounts below the minimum will carry forward to the next pay period."
+        }
+      },
+      "conduct": {
+        "title": "Code of Conduct",
+        "intro": "As an Apex agent, you agree to:",
+        "items": {
+          "honesty": "Act with honesty and integrity in all business dealings",
+          "comply": "Comply with all applicable laws, regulations, and carrier guidelines",
+          "noClaims": "Never make misleading income claims or guarantees to prospects",
+          "accurate": "Accurately represent products and their benefits",
+          "protect": "Protect client confidential information",
+          "noRebating": "Not engage in rebating, twisting, or other prohibited practices",
+          "noRecruit": "Not recruit agents from other Apex teams without permission",
+          "professional": "Maintain professional conduct on social media"
+        },
+        "violations": "Violations may result in termination, commission forfeiture, and legal action."
+      },
+      "termination": {
+        "title": "Termination",
+        "voluntary": {
+          "title": "Voluntary Termination",
+          "description": "You may terminate your agent relationship at any time by providing written notice. Pending commissions will be paid according to normal schedule, subject to chargebacks."
+        },
+        "cause": {
+          "title": "Termination for Cause",
+          "intro": "We may terminate your relationship immediately for:",
+          "items": {
+            "violation": "Violation of these Terms or Code of Conduct",
+            "fraud": "Fraudulent activity or misrepresentation",
+            "license": "Loss of required licenses",
+            "production": "Failure to meet minimum production requirements",
+            "reputation": "Actions that harm the company's reputation"
+          }
+        },
+        "effect": {
+          "title": "Effect of Termination",
+          "description": "Upon termination, your access to our systems will be revoked, your replicated website will be deactivated, and you will no longer represent yourself as an Apex agent."
+        }
+      },
+      "ip": {
+        "title": "Intellectual Property",
+        "content1": "All trademarks, logos, content, and materials on our website are owned by Apex Affinity Group or our licensors. You are granted a limited, non-exclusive license to use approved marketing materials during your active agent status.",
+        "content2": "You may not modify, reproduce, or distribute our materials without written permission. Your replicated website license is non-transferable and terminates when your agent status ends."
+      },
+      "liability": {
+        "title": "Limitation of Liability",
+        "intro": "TO THE MAXIMUM EXTENT PERMITTED BY LAW:",
+        "items": {
+          "asIs": "We provide services \"as is\" without warranties of any kind",
+          "noIndirect": "We are not liable for indirect, incidental, or consequential damages",
+          "limited": "Our total liability is limited to commissions actually paid to you in the preceding 12 months",
+          "thirdParty": "We are not responsible for actions of insurance carriers or third parties"
+        }
+      },
+      "disputes": {
+        "title": "Dispute Resolution",
+        "content": "Any disputes arising from these Terms or your agent relationship shall be resolved through binding arbitration in accordance with the American Arbitration Association rules. Arbitration will take place in the state where the Company is headquartered.",
+        "classAction": "Class Action Waiver: You agree to resolve disputes individually and waive any right to participate in class action lawsuits."
+      },
+      "modifications": {
+        "title": "Modifications to Terms",
+        "content": "We reserve the right to modify these Terms at any time. Material changes will be communicated via email or through our agent portal. Continued use of our services after changes constitutes acceptance of the modified Terms."
+      },
+      "governing": {
+        "title": "Governing Law",
+        "content": "These Terms shall be governed by and construed in accordance with the laws of the State of Texas, without regard to conflict of law principles."
+      },
+      "contact": {
+        "title": "Contact Information",
+        "intro": "Questions about these Terms? Contact us:",
+        "email": "Email: legal@theapexway.net",
+        "mail": "Mail: Apex Affinity Group, Attn: Legal Department"
+      },
+      "footer": {
+        "acknowledgment": "By using our services, you acknowledge that you have read and understood these Terms of Service and agree to be bound by them.",
+        "incomeLink": "For income-related disclosures, please review our"
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "lastUpdated": "Last Updated: January 2026",
+      "introduction": {
+        "title": "Introduction",
+        "content1": "Apex Affinity Group (\"we,\" \"our,\" or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, use our services, or interact with our independent agents.",
+        "content2": "Please read this privacy policy carefully. By using our services, you consent to the data practices described in this policy."
+      },
+      "collect": {
+        "title": "Information We Collect",
+        "personal": {
+          "title": "Personal Information You Provide",
+          "intro": "When you register, apply, or contact us, we may collect:",
+          "items": {
+            "contact": "Name, email address, phone number",
+            "address": "Mailing address and date of birth",
+            "ssn": "Social Security Number (for licensing and tax purposes)",
+            "banking": "Banking information (for commission payments)",
+            "license": "Insurance licensing information",
+            "employment": "Employment history and professional background"
+          }
+        },
+        "automatic": {
+          "title": "Information Automatically Collected",
+          "intro": "When you visit our website, we automatically collect:",
+          "items": {
+            "ip": "IP address and browser type",
+            "device": "Device information and operating system",
+            "pages": "Pages visited and time spent on pages",
+            "referrer": "Referring website addresses",
+            "cookies": "Cookies and similar tracking technologies"
+          }
+        }
+      },
+      "use": {
+        "title": "How We Use Your Information",
+        "intro": "We use the information we collect to:",
+        "items": {
+          "application": "Process your agent application and onboarding",
+          "licensing": "Facilitate insurance licensing and appointments",
+          "commissions": "Calculate and pay commissions and bonuses",
+          "access": "Provide access to our back-office systems",
+          "notices": "Send important notices about your account",
+          "training": "Provide training and educational resources",
+          "marketing": "Communicate marketing and promotional offers (with consent)",
+          "legal": "Comply with legal and regulatory requirements",
+          "fraud": "Prevent fraud and ensure security",
+          "improve": "Improve our services and user experience"
+        }
+      },
+      "sharing": {
+        "title": "Information Sharing",
+        "intro": "We may share your information with:",
+        "carriers": {
+          "title": "Insurance Carriers",
+          "description": "To facilitate licensing, appointments, and commission processing."
+        },
+        "sponsor": {
+          "title": "Your Sponsor and Upline",
+          "description": "Limited information such as name, contact information, and production data to support mentorship and team management."
+        },
+        "providers": {
+          "title": "Service Providers",
+          "description": "Third-party vendors who assist with payment processing, email services, data analytics, and technology infrastructure."
+        },
+        "legal": {
+          "title": "Legal Requirements",
+          "description": "When required by law, court order, or regulatory authority."
+        },
+        "noSell": "We do NOT sell your personal information to third parties."
+      },
+      "security": {
+        "title": "Data Security",
+        "intro": "We implement appropriate technical and organizational security measures to protect your personal information, including:",
+        "items": {
+          "encryption": "Encryption of sensitive data in transit and at rest",
+          "access": "Secure access controls and authentication",
+          "assessments": "Regular security assessments and monitoring",
+          "training": "Employee training on data protection",
+          "incident": "Incident response procedures"
+        },
+        "disclaimer": "While we strive to protect your information, no method of transmission over the Internet is 100% secure. We cannot guarantee absolute security."
+      },
+      "rights": {
+        "title": "Your Rights",
+        "intro": "Depending on your location, you may have the following rights:",
+        "access": {
+          "title": "Access and Portability",
+          "description": "Request a copy of the personal information we hold about you."
+        },
+        "correction": {
+          "title": "Correction",
+          "description": "Request correction of inaccurate or incomplete information."
+        },
+        "deletion": {
+          "title": "Deletion",
+          "description": "Request deletion of your personal information, subject to legal retention requirements."
+        },
+        "optOut": {
+          "title": "Opt-Out",
+          "description": "Opt out of marketing communications at any time."
+        },
+        "ccpa": {
+          "title": "California Residents (CCPA)",
+          "description": "California residents have additional rights under the California Consumer Privacy Act, including the right to know what information is collected and the right to non-discrimination for exercising privacy rights."
+        },
+        "contact": "To exercise any of these rights, contact us at privacy@theapexway.net."
+      },
+      "cookies": {
+        "title": "Cookies and Tracking",
+        "intro": "We use cookies and similar technologies to:",
+        "items": {
+          "preferences": "Remember your preferences and settings",
+          "auth": "Authenticate your login sessions",
+          "analytics": "Analyze website traffic and usage patterns",
+          "tracking": "Track referrals and agent attributions"
+        },
+        "control": "You can control cookies through your browser settings. Disabling cookies may affect some website functionality."
+      },
+      "children": {
+        "title": "Children's Privacy",
+        "content": "Our services are not directed to individuals under 18 years of age. We do not knowingly collect personal information from children. If you believe we have collected information from a child, please contact us immediately."
+      },
+      "changes": {
+        "title": "Changes to This Policy",
+        "content": "We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new policy on this page and updating the \"Last Updated\" date. We encourage you to review this policy periodically."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "intro": "If you have questions about this Privacy Policy or our data practices:",
+        "email": "Email: privacy@theapexway.net",
+        "mail": "Mail: Apex Affinity Group, Attn: Privacy Officer"
+      },
+      "footer": "This privacy policy applies to all visitors and users of Apex Affinity Group websites and services."
+    },
+    "incomeDisclaimer": {
+      "title": "Income Disclosure Statement",
+      "lastUpdated": "Last Updated: January 2026",
+      "importantNotice": {
+        "title": "Important Notice",
+        "description": "This income disclosure statement is required by the Federal Trade Commission (FTC) and is designed to provide you with accurate information about the earnings of Apex Affinity Group independent agents."
+      },
+      "overview": {
+        "title": "Earnings Overview",
+        "intro": "The earnings of Apex Affinity Group independent agents vary significantly. The amount of money an agent earns depends on many factors, including but not limited to:",
+        "items": {
+          "effort": "Individual effort and time committed to the business",
+          "skills": "Sales skills and experience",
+          "market": "Market conditions in your geographic area",
+          "licensing": "Licensing status and product knowledge",
+          "relationships": "Quality of customer relationships",
+          "leadership": "Leadership and team-building abilities"
+        }
+      },
+      "statistics": {
+        "title": "Income Statistics",
+        "intro": "The following table shows the percentage of agents at each rank and their average annual earnings for the most recent fiscal year:",
+        "headers": {
+          "rank": "Rank",
+          "percentage": "% of Agents",
+          "avgIncome": "Avg. Annual Income",
+          "range": "Range"
+        },
+        "footnote": "* These figures represent gross commissions before taxes and business expenses. Individual results will vary."
+      },
+      "disclosures": {
+        "title": "Key Disclosures",
+        "noGuarantee": {
+          "title": "No Guaranteed Income",
+          "description": "Apex Affinity Group does not guarantee any specific level of income or success. Your income depends entirely on your own efforts, skills, and dedication to building your business."
+        },
+        "majority": {
+          "title": "Majority Earn Little or Nothing",
+          "description": "A significant majority of individuals who join the opportunity earn little to no income. Approximately 70% of agents earn less than $10,000 per year, and many earn nothing at all."
+        },
+        "work": {
+          "title": "Income Requires Work",
+          "description": "Income from Apex Affinity Group requires significant time, effort, and dedication. Success is not automatic and requires active engagement in sales, team building, and ongoing training."
+        },
+        "expenses": {
+          "title": "Business Expenses",
+          "description": "All agents are responsible for their own business expenses, including licensing fees, continuing education, marketing costs, and technology expenses. These costs reduce your net income."
+        },
+        "licensing": {
+          "title": "Licensing Requirements",
+          "description": "To sell insurance products, you must obtain and maintain appropriate state licenses. Licensing requirements, costs, and time vary by state. You cannot earn commissions until you are properly licensed."
+        },
+        "commission": {
+          "title": "Commission Structure",
+          "description": "Commissions are paid based on actual insurance product sales. Override commissions are paid on the production of agents in your downline. Commission rates vary by product and rank level."
+        }
+      },
+      "legal": {
+        "title": "Legal Statement",
+        "content1": "This income disclosure statement is provided in compliance with FTC guidelines for business opportunity disclosures. The income figures presented represent actual results from the most recent complete fiscal year.",
+        "content2": "Apex Affinity Group is not a \"get rich quick\" scheme. Building a successful insurance agency requires substantial time, effort, skill development, and persistence. Many people who join do not make any money, and some may lose money due to business expenses.",
+        "content3": "Before making any decision to join, you should carefully review this income disclosure, speak with your financial advisor, and consider whether this opportunity is appropriate for your personal and financial situation."
+      },
+      "contact": {
+        "intro": "Questions about this income disclosure?",
+        "email": "Contact: compliance@theapexway.net"
+      }
+    },
+    "signupSuccess": {
+      "loading": "Loading...",
+      "title": "Welcome to the Apex Family!",
+      "congratulations": "Congratulations, {firstName}! Your account has been created successfully.",
+      "sponsor": {
+        "title": "Your Sponsor",
+        "mentorMessage": "{firstName} will be your mentor and guide as you start your journey. They'll reach out soon to help you get started!"
+      },
+      "replicatedSite": {
+        "title": "Your Personal Recruiting Site is Live!",
+        "description": "Share this link with prospects to start building your team",
+        "copied": "Copied!",
+        "copy": "Copy",
+        "preview": "Preview Your Site"
+      },
+      "nextSteps": {
+        "title": "Your Next Steps",
+        "description": "Complete these steps to get started on the right foot",
+        "profile": {
+          "title": "Complete Your Profile",
+          "description": "Add your photo and bio to personalize your recruiting site"
+        },
+        "training": {
+          "title": "Start Onboarding Training",
+          "description": "Learn the essentials with our comprehensive training program"
+        },
+        "license": {
+          "title": "Get Licensed",
+          "description": "Your sponsor will guide you through the licensing process"
+        },
+        "directDeposit": {
+          "title": "Set Up Direct Deposit",
+          "description": "Add your banking info to receive commission payments"
+        },
+        "go": "Go",
+        "start": "Start",
+        "setUp": "Set Up"
+      },
+      "dashboard": "Go to Your Dashboard",
+      "checkEmail": "Check your email for a welcome message with more details"
+    },
+    "verifyEmail": {
+      "loading": "Loading...",
+      "title": "Verify Your Email",
+      "sentTo": "We've sent a verification link to",
+      "instructions": {
+        "click": "Click the verification link in your email to activate your account",
+        "spam": "Check your spam folder if you don't see it within a few minutes",
+        "expires": "The link expires in 24 hours"
+      },
+      "resend": {
+        "prompt": "Didn't receive the email?",
+        "button": "Resend Email",
+        "sending": "Sending...",
+        "sent": "Email Sent!"
+      },
+      "joining": "You're joining",
+      "team": "{firstName} {lastName}'s Team",
+      "backToSignup": "Back to signup"
+    },
+    "footer": {
+      "brandTagline": "Building financial futures through trusted insurance solutions and entrepreneurial opportunities since 2018.",
+      "company": "Company",
+      "aboutYourAgent": "About Your Agent",
+      "ourCarriers": "Our Carriers",
+      "compare": "Compare",
+      "faq": "FAQ",
+      "contactUs": "Contact Us",
+      "getStarted": "Get Started",
+      "licensedAgents": "Licensed Agents",
+      "newToInsurance": "New to Insurance",
+      "careerOpportunity": "Career Opportunity",
+      "joinOurTeam": "Join Our Team",
+      "products": "Products",
+      "lifeInsurance": "Life Insurance",
+      "annuities": "Annuities",
+      "iulPolicies": "IUL Policies",
+      "termLife": "Term Life",
+      "finalExpense": "Final Expense",
+      "yourAgent": "Your Agent",
+      "copyright": "© {year} Apex Affinity Group. All rights reserved.",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "incomeDisclosure": "Income Disclosure"
+    }
   },
   "marketing": {
     "nav": {

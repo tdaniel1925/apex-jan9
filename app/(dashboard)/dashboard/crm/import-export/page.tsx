@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -56,6 +57,7 @@ interface ParsedRow {
 }
 
 export default function CRMImportExportPage() {
+  const t = useTranslations('crm');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -196,9 +198,9 @@ Jane,Smith,jane@example.com,555-987-6543,client,closed_won,Referral,Tech Inc,Dir
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Import / Export Contacts</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('importExportTitle')}</h1>
           <p className="text-muted-foreground">
-            Bulk import contacts from CSV or export your contact list
+            {t('importExportDescription')}
           </p>
         </div>
       </div>
@@ -209,27 +211,26 @@ Jane,Smith,jane@example.com,555-987-6543,client,closed_won,Referral,Tech Inc,Dir
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Download className="h-5 w-5" />
-              Export Contacts
+              {t('exportContacts')}
             </CardTitle>
             <CardDescription>
-              Download all your contacts as a CSV file
+              {t('downloadContacts')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Export includes all contact fields: name, email, phone, type, stage, source,
-              company, address, notes, and tags.
+              {t('exportDescription')}
             </p>
             <Button onClick={handleExport} disabled={exporting} className="w-full">
               {exporting ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Exporting...
+                  {t('exporting')}
                 </>
               ) : (
                 <>
                   <Download className="h-4 w-4 mr-2" />
-                  Export All Contacts
+                  {t('exportAllContacts')}
                 </>
               )}
             </Button>
@@ -241,15 +242,15 @@ Jane,Smith,jane@example.com,555-987-6543,client,closed_won,Referral,Tech Inc,Dir
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Upload className="h-5 w-5" />
-              Import Contacts
+              {t('importContacts')}
             </CardTitle>
             <CardDescription>
-              Upload a CSV file to bulk import contacts
+              {t('uploadCsv')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="file">CSV File</Label>
+              <Label htmlFor="file">{t('csvFile')}</Label>
               <Input
                 ref={fileInputRef}
                 id="file"
@@ -266,13 +267,13 @@ Jane,Smith,jane@example.com,555-987-6543,client,closed_won,Referral,Tech Inc,Dir
                 onCheckedChange={setSkipDuplicates}
               />
               <Label htmlFor="skip-duplicates" className="text-sm">
-                Skip duplicate emails
+                {t('skipDuplicates')}
               </Label>
             </div>
 
             <Button variant="outline" onClick={downloadTemplate} className="w-full">
               <FileSpreadsheet className="h-4 w-4 mr-2" />
-              Download Template
+              {t('downloadTemplate')}
             </Button>
           </CardContent>
         </Card>
@@ -301,23 +302,23 @@ Jane,Smith,jane@example.com,555-987-6543,client,closed_won,Referral,Tech Inc,Dir
               <div className="space-y-2">
                 <p className="font-medium">{importResult.message}</p>
                 <div className="flex items-center gap-4 text-sm">
-                  <span className="text-green-600">{importResult.imported} imported</span>
+                  <span className="text-green-600">{t('imported', { count: importResult.imported })}</span>
                   {importResult.duplicates > 0 && (
-                    <span className="text-yellow-600">{importResult.duplicates} duplicates skipped</span>
+                    <span className="text-yellow-600">{t('duplicatesSkipped', { count: importResult.duplicates })}</span>
                   )}
                   {importResult.errors && importResult.errors.length > 0 && (
-                    <span className="text-red-600">{importResult.errors.length} errors</span>
+                    <span className="text-red-600">{t('errorsCount', { count: importResult.errors.length })}</span>
                   )}
                 </div>
                 {importResult.errors && importResult.errors.length > 0 && (
                   <div className="mt-2 text-sm">
-                    <p className="font-medium text-red-800">Errors:</p>
+                    <p className="font-medium text-red-800">{t('errors')}</p>
                     <ul className="list-disc list-inside text-red-700">
                       {importResult.errors.slice(0, 5).map((err, i) => (
-                        <li key={i}>Row {err.row}: {err.errors.join(', ')}</li>
+                        <li key={i}>{t('rowError', { row: err.row, errors: err.errors.join(', ') })}</li>
                       ))}
                       {importResult.errors.length > 5 && (
-                        <li>...and {importResult.errors.length - 5} more</li>
+                        <li>{t('andMore', { count: importResult.errors.length - 5 })}</li>
                       )}
                     </ul>
                   </div>
@@ -333,9 +334,9 @@ Jane,Smith,jane@example.com,555-987-6543,client,closed_won,Referral,Tech Inc,Dir
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>Preview: {fileName}</CardTitle>
+              <CardTitle>{t('preview', { fileName: fileName || '' })}</CardTitle>
               <CardDescription>
-                {previewData.length} contacts found
+                {t('contactsFound', { count: previewData.length })}
               </CardDescription>
             </div>
             <Button variant="ghost" size="icon" onClick={handleClearPreview}>
@@ -348,12 +349,12 @@ Jane,Smith,jane@example.com,555-987-6543,client,closed_won,Referral,Tech Inc,Dir
                 <TableHeader>
                   <TableRow>
                     <TableHead>#</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Stage</TableHead>
-                    <TableHead>Tags</TableHead>
+                    <TableHead>{t('name')}</TableHead>
+                    <TableHead>{t('email')}</TableHead>
+                    <TableHead>{t('phone')}</TableHead>
+                    <TableHead>{t('type')}</TableHead>
+                    <TableHead>{t('stage')}</TableHead>
+                    <TableHead>{t('tags')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -379,7 +380,7 @@ Jane,Smith,jane@example.com,555-987-6543,client,closed_won,Referral,Tech Inc,Dir
                   {previewData.length > 10 && (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center text-muted-foreground">
-                        ...and {previewData.length - 10} more contacts
+                        {t('andMoreContacts', { count: previewData.length - 10 })}
                       </TableCell>
                     </TableRow>
                   )}
@@ -392,12 +393,12 @@ Jane,Smith,jane@example.com,555-987-6543,client,closed_won,Referral,Tech Inc,Dir
                 {importing ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Importing...
+                    {t('importing')}
                   </>
                 ) : (
                   <>
                     <Upload className="h-4 w-4 mr-2" />
-                    Import {previewData.length} Contacts
+                    {t('importContacts')} ({previewData.length})
                   </>
                 )}
               </Button>
@@ -409,19 +410,19 @@ Jane,Smith,jane@example.com,555-987-6543,client,closed_won,Referral,Tech Inc,Dir
       {/* Help Section */}
       <Card>
         <CardHeader>
-          <CardTitle>CSV Format Guide</CardTitle>
+          <CardTitle>{t('csvFormatGuide')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid md:grid-cols-2 gap-6 text-sm">
             <div>
-              <h4 className="font-medium mb-2">Required Columns</h4>
+              <h4 className="font-medium mb-2">{t('requiredColumns')}</h4>
               <ul className="list-disc list-inside text-muted-foreground space-y-1">
                 <li><code className="bg-muted px-1">first_name</code> - Contact&apos;s first name</li>
                 <li><code className="bg-muted px-1">last_name</code> - Contact&apos;s last name</li>
               </ul>
             </div>
             <div>
-              <h4 className="font-medium mb-2">Optional Columns</h4>
+              <h4 className="font-medium mb-2">{t('optionalColumns')}</h4>
               <ul className="list-disc list-inside text-muted-foreground space-y-1">
                 <li><code className="bg-muted px-1">email</code>, <code className="bg-muted px-1">phone</code></li>
                 <li><code className="bg-muted px-1">type</code>: lead, client, recruit_prospect, agent</li>

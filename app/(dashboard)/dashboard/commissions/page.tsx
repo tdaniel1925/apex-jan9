@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { formatCurrency } from '@/lib/engines/wallet-engine';
 import { CARRIER_CONFIG } from '@/lib/config/carriers';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,6 +20,9 @@ import { createClient, Tables } from '@/lib/db/supabase-client';
 
 export default function CommissionsPage() {
   const { user } = useAuth();
+  const t = useTranslations('commissions');
+  const tDashboard = useTranslations('dashboard');
+  const tCommon = useTranslations('common');
   const [commissions, setCommissions] = useState<Tables<'commissions'>[]>([]);
   const [stats, setStats] = useState({
     thisMonth: 0,
@@ -98,9 +102,9 @@ export default function CommissionsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Commissions</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
         <p className="text-muted-foreground">
-          View your commission history and earnings.
+          {t('description')}
         </p>
       </div>
 
@@ -108,7 +112,7 @@ export default function CommissionsPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">This Month</CardTitle>
+            <CardTitle className="text-sm font-medium">{tDashboard('thisMonth')}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -118,7 +122,7 @@ export default function CommissionsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Last Month</CardTitle>
+            <CardTitle className="text-sm font-medium">{tDashboard('lastMonth')}</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -128,7 +132,7 @@ export default function CommissionsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">90-Day Total</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('ninetyDayTotal')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -138,7 +142,7 @@ export default function CommissionsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Lifetime</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('lifetime')}</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -150,26 +154,26 @@ export default function CommissionsPage() {
       {/* Commission History */}
       <Card>
         <CardHeader>
-          <CardTitle>Commission History</CardTitle>
-          <CardDescription>Your recent commission records</CardDescription>
+          <CardTitle>{t('commissionHistory')}</CardTitle>
+          <CardDescription>{t('recentRecords')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Carrier</TableHead>
-                <TableHead>Policy #</TableHead>
-                <TableHead>Premium</TableHead>
-                <TableHead>Commission</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>{t('carrier')}</TableHead>
+                <TableHead>{t('policyNumber')}</TableHead>
+                <TableHead>{t('premium')}</TableHead>
+                <TableHead>{t('commissionAmount')}</TableHead>
+                <TableHead>{tCommon('status')}</TableHead>
+                <TableHead>{tCommon('date')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {commissions.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8">
-                    <p className="text-muted-foreground">No commissions yet</p>
+                    <p className="text-muted-foreground">{t('noCommissionsYet')}</p>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -191,7 +195,7 @@ export default function CommissionsPage() {
                       <Badge
                         variant={commission.status === 'paid' ? 'default' : 'secondary'}
                       >
-                        {commission.status}
+                        {t(commission.status as 'pending' | 'paid' | 'reversed')}
                       </Badge>
                     </TableCell>
                     <TableCell>

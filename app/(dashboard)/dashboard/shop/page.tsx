@@ -6,6 +6,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Product } from '@/lib/types/database';
 import { formatCurrency } from '@/lib/engines/wallet-engine';
 import { useCart } from '@/lib/context/cart-context';
@@ -16,16 +17,10 @@ import { Input } from '@/components/ui/input';
 import { ShoppingCart, Star, Search, Check } from 'lucide-react';
 import { toast } from 'sonner';
 
-const CATEGORIES = [
-  { value: 'all', label: 'All Products' },
-  { value: 'training', label: 'Training & Education' },
-  { value: 'tools', label: 'Marketing Tools' },
-  { value: 'leads', label: 'Lead Lists' },
-  { value: 'software', label: 'Software & Apps' },
-  { value: 'templates', label: 'Templates & Resources' },
-];
+const CATEGORY_KEYS = ['all', 'training', 'tools', 'leads', 'software', 'templates'] as const;
 
 export default function ShopPage() {
+  const t = useTranslations('shop');
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('all');
@@ -57,7 +52,7 @@ export default function ShopPage() {
 
   const handleAddToCart = (product: Product) => {
     addItem(product);
-    toast.success('Added to cart', {
+    toast.success(t('addedToCart'), {
       description: product.name,
     });
   };
@@ -79,14 +74,14 @@ export default function ShopPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Shop</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Browse digital products and training materials
+            {t('description')}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <ShoppingCart className="h-5 w-5" />
-          <span className="font-semibold">{totalItems} items</span>
+          <span className="font-semibold">{t('items', { count: totalItems })}</span>
           <span className="text-muted-foreground">|</span>
           <span className="font-semibold">{formatCurrency(totalAmount)}</span>
         </div>
@@ -98,7 +93,7 @@ export default function ShopPage() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search products..."
+              placeholder={t('searchProducts')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10"
@@ -106,14 +101,14 @@ export default function ShopPage() {
           </div>
         </div>
         <div className="flex gap-2">
-          {CATEGORIES.map((cat) => (
+          {CATEGORY_KEYS.map((cat) => (
             <Button
-              key={cat.value}
-              variant={category === cat.value ? 'default' : 'outline'}
+              key={cat}
+              variant={category === cat ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setCategory(cat.value)}
+              onClick={() => setCategory(cat)}
             >
-              {cat.label}
+              {t(`categories.${cat}`)}
             </Button>
           ))}
         </div>
@@ -123,7 +118,7 @@ export default function ShopPage() {
       {products.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">No products found</p>
+            <p className="text-muted-foreground">{t('noProductsFound')}</p>
           </CardContent>
         </Card>
       ) : (
@@ -176,12 +171,12 @@ export default function ShopPage() {
                   {isInCart(product.id) ? (
                     <>
                       <Check className="mr-2 h-4 w-4" />
-                      In Cart
+                      {t('inCart')}
                     </>
                   ) : (
                     <>
                       <ShoppingCart className="mr-2 h-4 w-4" />
-                      Add to Cart
+                      {t('addToCart')}
                     </>
                   )}
                 </Button>
@@ -195,16 +190,16 @@ export default function ShopPage() {
       {totalItems > 0 && (
         <Card className="fixed bottom-4 right-4 w-80">
           <CardHeader>
-            <CardTitle className="text-lg">Cart Summary</CardTitle>
+            <CardTitle className="text-lg">{t('cartSummary')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">{totalItems} items</span>
+                <span className="text-muted-foreground">{t('items', { count: totalItems })}</span>
                 <span className="font-semibold">{formatCurrency(totalAmount)}</span>
               </div>
               <Button className="w-full" size="lg" onClick={() => window.location.href = '/dashboard/shop/cart'}>
-                Checkout
+                {t('checkout')}
               </Button>
             </div>
           </CardContent>

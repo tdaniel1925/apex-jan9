@@ -27,6 +27,7 @@ import {
   Youtube,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 interface SiteSettings {
   id: string;
@@ -67,6 +68,7 @@ const PRESET_COLORS = [
 ];
 
 export default function ReplicatedSitePage() {
+  const t = useTranslations('replicatedSite');
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -112,7 +114,7 @@ export default function ReplicatedSitePage() {
       }
     } catch (error) {
       console.error('Failed to fetch settings:', error);
-      toast.error('Failed to load settings');
+      toast.error(t('toast.loadError'));
     } finally {
       setLoading(false);
     }
@@ -143,14 +145,14 @@ export default function ReplicatedSitePage() {
       if (response.ok) {
         const data = await response.json();
         setSettings(data);
-        toast.success('Settings saved successfully');
+        toast.success(t('toast.saved'));
       } else {
         const error = await response.json();
-        toast.error(error.error || 'Failed to save settings');
+        toast.error(error.error || t('toast.saveError'));
       }
     } catch (error) {
       console.error('Failed to save settings:', error);
-      toast.error('Failed to save settings');
+      toast.error(t('toast.saveError'));
     } finally {
       setSaving(false);
     }
@@ -161,7 +163,7 @@ export default function ReplicatedSitePage() {
     const fullUrl = `${window.location.origin}${settings.site_url}`;
     navigator.clipboard.writeText(fullUrl);
     setCopied(true);
-    toast.success('Link copied to clipboard');
+    toast.success(t('toast.linkCopied'));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -176,7 +178,7 @@ export default function ReplicatedSitePage() {
   if (!settings) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">Unable to load settings</p>
+        <p className="text-muted-foreground">{t('error.unableToLoad')}</p>
       </div>
     );
   }
@@ -186,28 +188,28 @@ export default function ReplicatedSitePage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Replicated Site</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Customize your personal agent website
+            {t('description')}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" asChild>
             <Link href={settings.site_url} target="_blank">
               <Eye className="h-4 w-4 mr-2" />
-              Preview
+              {t('preview')}
             </Link>
           </Button>
           <Button onClick={handleSave} disabled={saving}>
             {saving ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Saving...
+                {t('saving')}
               </>
             ) : (
               <>
                 <Save className="h-4 w-4 mr-2" />
-                Save Changes
+                {t('saveChanges')}
               </>
             )}
           </Button>
@@ -223,7 +225,7 @@ export default function ReplicatedSitePage() {
                 <Globe className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="font-medium">Your Personal Site</p>
+                <p className="font-medium">{t('yourPersonalSite')}</p>
                 <p className="text-sm text-muted-foreground">
                   {typeof window !== 'undefined' ? window.location.origin : ''}{settings.site_url}
                 </p>
@@ -234,12 +236,12 @@ export default function ReplicatedSitePage() {
                 {copied ? (
                   <>
                     <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
-                    Copied
+                    {t('copied')}
                   </>
                 ) : (
                   <>
                     <Copy className="h-4 w-4 mr-2" />
-                    Copy Link
+                    {t('copyLink')}
                   </>
                 )}
               </Button>
@@ -258,15 +260,15 @@ export default function ReplicatedSitePage() {
         <TabsList>
           <TabsTrigger value="profile" className="gap-2">
             <User className="h-4 w-4" />
-            Profile
+            {t('tabs.profile')}
           </TabsTrigger>
           <TabsTrigger value="appearance" className="gap-2">
             <Palette className="h-4 w-4" />
-            Appearance
+            {t('tabs.appearance')}
           </TabsTrigger>
           <TabsTrigger value="social" className="gap-2">
             <Share2 className="h-4 w-4" />
-            Social Links
+            {t('tabs.socialLinks')}
           </TabsTrigger>
         </TabsList>
 
@@ -274,9 +276,9 @@ export default function ReplicatedSitePage() {
         <TabsContent value="profile" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
+              <CardTitle>{t('profile.title')}</CardTitle>
               <CardDescription>
-                This information is displayed on your replicated site
+                {t('profile.description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -294,45 +296,45 @@ export default function ReplicatedSitePage() {
                   </p>
                   <p className="text-sm text-muted-foreground">{settings.email}</p>
                   <Link href="/dashboard/settings" className="text-sm text-primary hover:underline">
-                    Update profile photo in Settings
+                    {t('profile.updatePhoto')}
                   </Link>
                 </div>
               </div>
 
               {/* Bio */}
               <div className="space-y-2">
-                <Label htmlFor="bio">Personal Bio</Label>
+                <Label htmlFor="bio">{t('profile.bio')}</Label>
                 <Textarea
                   id="bio"
-                  placeholder="Tell visitors about yourself and why they should join your team..."
+                  placeholder={t('profile.bioPlaceholder')}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   rows={4}
                   maxLength={500}
                 />
                 <p className="text-xs text-muted-foreground text-right">
-                  {bio.length}/500 characters
+                  {bio.length}/500 {t('profile.characters')}
                 </p>
               </div>
 
               {/* Headline */}
               <div className="space-y-2">
-                <Label htmlFor="headline">Custom Headline</Label>
+                <Label htmlFor="headline">{t('profile.headline')}</Label>
                 <Input
                   id="headline"
-                  placeholder="Your custom headline for the hero section..."
+                  placeholder={t('profile.headlinePlaceholder')}
                   value={headline}
                   onChange={(e) => setHeadline(e.target.value)}
                   maxLength={150}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Leave empty to use the default headline
+                  {t('profile.headlineHint')}
                 </p>
               </div>
 
               {/* CTA Text */}
               <div className="space-y-2">
-                <Label htmlFor="cta">Call-to-Action Button Text</Label>
+                <Label htmlFor="cta">{t('profile.ctaText')}</Label>
                 <Input
                   id="cta"
                   placeholder="Join My Team"
@@ -344,22 +346,22 @@ export default function ReplicatedSitePage() {
 
               {/* Contact visibility */}
               <div className="space-y-4">
-                <Label>Contact Information Visibility</Label>
+                <Label>{t('profile.contactVisibility')}</Label>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-sm">Show Phone Number</p>
+                      <p className="font-medium text-sm">{t('profile.showPhone')}</p>
                       <p className="text-xs text-muted-foreground">
-                        Display your phone number on the site
+                        {t('profile.showPhoneDesc')}
                       </p>
                     </div>
                     <Switch checked={showPhone} onCheckedChange={setShowPhone} />
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-sm">Show Email Address</p>
+                      <p className="font-medium text-sm">{t('profile.showEmail')}</p>
                       <p className="text-xs text-muted-foreground">
-                        Display your email address on the site
+                        {t('profile.showEmailDesc')}
                       </p>
                     </div>
                     <Switch checked={showEmail} onCheckedChange={setShowEmail} />
@@ -372,17 +374,17 @@ export default function ReplicatedSitePage() {
           {/* Site Enable/Disable */}
           <Card>
             <CardHeader>
-              <CardTitle>Site Status</CardTitle>
+              <CardTitle>{t('siteStatus.title')}</CardTitle>
               <CardDescription>
-                Enable or disable your replicated site
+                {t('siteStatus.description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Site Enabled</p>
+                  <p className="font-medium">{t('siteStatus.enabled')}</p>
                   <p className="text-sm text-muted-foreground">
-                    When disabled, visitors will see a &quot;Coming Soon&quot; page
+                    {t('siteStatus.disabledMessage')}
                   </p>
                 </div>
                 <Switch checked={siteEnabled} onCheckedChange={setSiteEnabled} />
@@ -395,15 +397,15 @@ export default function ReplicatedSitePage() {
         <TabsContent value="appearance" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Brand Colors</CardTitle>
+              <CardTitle>{t('appearance.title')}</CardTitle>
               <CardDescription>
-                Customize your site&apos;s primary color
+                {t('appearance.description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Color picker */}
               <div className="space-y-3">
-                <Label>Primary Color</Label>
+                <Label>{t('appearance.primaryColor')}</Label>
                 <div className="flex items-center gap-4">
                   <div
                     className="h-12 w-12 rounded-lg border-2 border-border cursor-pointer"
@@ -429,7 +431,7 @@ export default function ReplicatedSitePage() {
 
               {/* Preset colors */}
               <div className="space-y-3">
-                <Label>Preset Colors</Label>
+                <Label>{t('appearance.presetColors')}</Label>
                 <div className="flex flex-wrap gap-2">
                   {PRESET_COLORS.map((color) => (
                     <button
@@ -448,20 +450,20 @@ export default function ReplicatedSitePage() {
 
               {/* Preview */}
               <div className="space-y-3">
-                <Label>Preview</Label>
+                <Label>{t('appearance.preview')}</Label>
                 <div className="border rounded-lg p-6 space-y-4">
                   <div className="flex items-center gap-3">
                     <div
                       className="h-8 w-8 rounded"
                       style={{ backgroundColor: primaryColor }}
                     />
-                    <span className="font-semibold">Sample Button</span>
+                    <span className="font-semibold">{t('appearance.sampleButton')}</span>
                   </div>
                   <Button style={{ backgroundColor: primaryColor }}>
                     {ctaText || 'Join My Team'}
                   </Button>
                   <p className="text-sm" style={{ color: primaryColor }}>
-                    This is how links will look
+                    {t('appearance.linksPreview')}
                   </p>
                 </div>
               </div>
@@ -473,9 +475,9 @@ export default function ReplicatedSitePage() {
         <TabsContent value="social" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Social Media Links</CardTitle>
+              <CardTitle>{t('social.title')}</CardTitle>
               <CardDescription>
-                Add your social media profiles to display on your site
+                {t('social.description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -565,12 +567,12 @@ export default function ReplicatedSitePage() {
           {saving ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Saving...
+              {t('saving')}
             </>
           ) : (
             <>
               <Save className="h-4 w-4 mr-2" />
-              Save Changes
+              {t('saveChanges')}
             </>
           )}
         </Button>

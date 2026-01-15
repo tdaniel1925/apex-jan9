@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { RANK_CONFIG, Rank } from '@/lib/config/ranks';
 import { formatCurrency } from '@/lib/engines/wallet-engine';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,6 +23,8 @@ import { createClient } from '@/lib/db/supabase-client';
 
 export default function TeamPage() {
   const { user } = useAuth();
+  const t = useTranslations('team');
+  const tCommon = useTranslations('common');
   const [directRecruits, setDirectRecruits] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -75,9 +78,9 @@ export default function TeamPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Team</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
         <p className="text-muted-foreground">
-          View and manage your direct recruits.
+          {t('pageDescription')}
         </p>
       </div>
 
@@ -85,46 +88,46 @@ export default function TeamPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Direct Recruits</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('directRecruits')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalTeam}</div>
             <p className="text-xs text-muted-foreground">
-              {activeTeam} active
+              {t('activeCount', { count: activeTeam })}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Team Premium</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teamPremium')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(teamPremium)}</div>
             <p className="text-xs text-muted-foreground">
-              90-day total
+              {t('ninetyDayTotal')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">MGAs</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('mgas')}</CardTitle>
             <Award className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{mgaCount}</div>
             <p className="text-xs text-muted-foreground">
-              In your frontline
+              {t('inYourFrontline')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Performance</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('avgPerformance')}</CardTitle>
             <UserPlus className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -132,7 +135,7 @@ export default function TeamPage() {
               {totalTeam > 0 ? formatCurrency(teamPremium / totalTeam) : '$0'}
             </div>
             <p className="text-xs text-muted-foreground">
-              Per agent
+              {t('perAgent')}
             </p>
           </CardContent>
         </Card>
@@ -147,9 +150,9 @@ export default function TeamPage() {
                 <BarChart3 className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold">Team Metrics</h3>
+                <h3 className="font-semibold">{t('teamMetrics')}</h3>
                 <p className="text-sm text-muted-foreground">
-                  View detailed production metrics, growth trends, and top performers
+                  {t('viewMetricsDesc')}
                 </p>
               </div>
             </div>
@@ -161,29 +164,29 @@ export default function TeamPage() {
       {/* Team List */}
       <Card>
         <CardHeader>
-          <CardTitle>Direct Recruits</CardTitle>
+          <CardTitle>{t('directRecruits')}</CardTitle>
           <CardDescription>
-            Agents you have personally recruited
+            {t('agentsYouRecruited')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Agent</TableHead>
-                <TableHead>Rank</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>90-Day Premium</TableHead>
-                <TableHead>Joined</TableHead>
+                <TableHead>{t('agent')}</TableHead>
+                <TableHead>{t('rank')}</TableHead>
+                <TableHead>{tCommon('status')}</TableHead>
+                <TableHead>{t('ninetyDayPremium')}</TableHead>
+                <TableHead>{t('joined')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {directRecruits.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8">
-                    <p className="text-muted-foreground">No direct recruits yet</p>
+                    <p className="text-muted-foreground">{t('noRecruitsYet')}</p>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Share your referral link to start building your team.
+                      {t('shareReferralLink')}
                     </p>
                   </TableCell>
                 </TableRow>

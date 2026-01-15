@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { GenealogyTree } from '@/components/genealogy/genealogy-tree';
 import { Users, TrendingUp, Award, Network } from 'lucide-react';
@@ -9,6 +10,7 @@ import { createClient } from '@/lib/db/supabase-client';
 
 export default function GenealogyPage() {
   const { user } = useAuth();
+  const t = useTranslations('genealogy');
   const [downlineStats, setDownlineStats] = useState({
     total: 0,
     active: 0,
@@ -79,9 +81,9 @@ export default function GenealogyPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Genealogy</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
         <p className="text-muted-foreground">
-          View your downline organization and team structure.
+          {t('pageDescription')}
         </p>
       </div>
 
@@ -89,52 +91,52 @@ export default function GenealogyPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Downline</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalDownline')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{downlineStats.total}</div>
             <p className="text-xs text-muted-foreground">
-              in your organization
+              {t('inYourOrganization')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Agents</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('activeAgents')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{downlineStats.active}</div>
             <p className="text-xs text-muted-foreground">
-              producing agents
+              {t('producingAgents')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Direct Recruits</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('directRecruits')}</CardTitle>
             <Award className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{downlineStats.directRecruits}</div>
             <p className="text-xs text-muted-foreground">
-              personally sponsored
+              {t('personallySponsored')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Generations Deep</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('generationsDeep')}</CardTitle>
             <Network className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{downlineStats.generations}</div>
             <p className="text-xs text-muted-foreground">
-              levels in matrix
+              {t('levelsInMatrix')}
             </p>
           </CardContent>
         </Card>
@@ -143,9 +145,9 @@ export default function GenealogyPage() {
       {/* Tree View */}
       <Card>
         <CardHeader>
-          <CardTitle>Organization Tree</CardTitle>
+          <CardTitle>{t('organizationTree')}</CardTitle>
           <CardDescription>
-            Interactive view of your downline. Zoom, pan, and explore your team structure.
+            {t('organizationTreeDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -159,19 +161,19 @@ export default function GenealogyPage() {
           <div className="flex flex-wrap items-center gap-6 text-sm">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded border-2 border-primary bg-background" />
-              <span className="text-muted-foreground">You (Root)</span>
+              <span className="text-muted-foreground">{t('youRoot')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded border-2 border-border bg-background" />
-              <span className="text-muted-foreground">Team Member</span>
+              <span className="text-muted-foreground">{t('teamMember')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-500" />
-              <span className="text-muted-foreground">Active</span>
+              <span className="text-muted-foreground">{t('active')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-gray-300" />
-              <span className="text-muted-foreground">Inactive/Pending</span>
+              <span className="text-muted-foreground">{t('inactivePending')}</span>
             </div>
           </div>
         </CardContent>

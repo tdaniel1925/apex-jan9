@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 interface Dispute {
   id: string;
@@ -76,6 +77,7 @@ const STATUS_BADGES: Record<string, { label: string; variant: 'default' | 'secon
 };
 
 export default function DisputesPage() {
+  const t = useTranslations('disputes');
   const [disputes, setDisputes] = useState<Dispute[]>([]);
   const [stats, setStats] = useState<Stats>({ total: 0, pending: 0, under_review: 0, resolved: 0 });
   const [loading, setLoading] = useState(true);
@@ -172,14 +174,14 @@ export default function DisputesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">My Disputes</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Submit and track disputes for commissions, clawbacks, and other issues
+            {t('description')}
           </p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          New Dispute
+          {t('newDispute')}
         </Button>
       </div>
 
@@ -187,25 +189,25 @@ export default function DisputesPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="cursor-pointer hover:bg-muted/50" onClick={() => setFilter('all')}>
           <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Total</p>
+            <p className="text-sm text-muted-foreground">{t('stats.total')}</p>
             <p className="text-2xl font-bold">{stats.total}</p>
           </CardContent>
         </Card>
         <Card className="cursor-pointer hover:bg-muted/50" onClick={() => setFilter('pending')}>
           <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Pending</p>
+            <p className="text-sm text-muted-foreground">{t('stats.pending')}</p>
             <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
           </CardContent>
         </Card>
         <Card className="cursor-pointer hover:bg-muted/50" onClick={() => setFilter('under_review')}>
           <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Under Review</p>
+            <p className="text-sm text-muted-foreground">{t('stats.underReview')}</p>
             <p className="text-2xl font-bold text-blue-600">{stats.under_review}</p>
           </CardContent>
         </Card>
         <Card className="cursor-pointer hover:bg-muted/50" onClick={() => setFilter('approved')}>
           <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Resolved</p>
+            <p className="text-sm text-muted-foreground">{t('stats.resolved')}</p>
             <p className="text-2xl font-bold text-green-600">{stats.resolved}</p>
           </CardContent>
         </Card>
@@ -216,52 +218,56 @@ export default function DisputesPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <MessageSquare className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">No disputes found</h3>
+            <h3 className="text-lg font-medium mb-2">{t('noDisputes')}</h3>
             <p className="text-muted-foreground text-center mb-4">
               {filter === 'all'
-                ? "You haven't submitted any disputes yet."
-                : `No disputes with status "${filter}".`}
+                ? t('noDisputesYet')
+                : t('noDisputesWithStatus', { status: filter })}
             </p>
             <Button onClick={() => setIsModalOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Submit Your First Dispute
+              {t('submitFirstDispute')}
             </Button>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-4">
-          {disputes.map((dispute) => (
-            <Link key={dispute.id} href={`/dashboard/disputes/${dispute.id}`}>
-              <Card className="hover:bg-muted/50 cursor-pointer transition-colors">
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(dispute.status)}
-                        <h3 className="font-medium">{dispute.subject}</h3>
-                        <Badge variant={STATUS_BADGES[dispute.status]?.variant || 'secondary'}>
-                          {STATUS_BADGES[dispute.status]?.label || dispute.status}
-                        </Badge>
+          {disputes.map((dispute) => {
+            const statusKey = dispute.status === 'under_review' ? 'underReview' :
+                             dispute.status === 'info_requested' ? 'infoRequested' : dispute.status;
+            return (
+              <Link key={dispute.id} href={`/dashboard/disputes/${dispute.id}`}>
+                <Card className="hover:bg-muted/50 cursor-pointer transition-colors">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          {getStatusIcon(dispute.status)}
+                          <h3 className="font-medium">{dispute.subject}</h3>
+                          <Badge variant={STATUS_BADGES[dispute.status]?.variant || 'secondary'}>
+                            {t(`status.${statusKey}`)}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground line-clamp-1">
+                          {dispute.description}
+                        </p>
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                          <span>{t(`types.${dispute.dispute_type}`)}</span>
+                          <span>
+                            {formatDistanceToNow(new Date(dispute.created_at), { addSuffix: true })}
+                          </span>
+                          {dispute.amount_disputed && (
+                            <span>${dispute.amount_disputed.toFixed(2)} {t('disputed')}</span>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-sm text-muted-foreground line-clamp-1">
-                        {dispute.description}
-                      </p>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <span className="capitalize">{dispute.dispute_type.replace('_', ' ')}</span>
-                        <span>
-                          {formatDistanceToNow(new Date(dispute.created_at), { addSuffix: true })}
-                        </span>
-                        {dispute.amount_disputed && (
-                          <span>${dispute.amount_disputed.toFixed(2)} disputed</span>
-                        )}
-                      </div>
+                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
                     </div>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
         </div>
       )}
 
@@ -269,26 +275,26 @@ export default function DisputesPage() {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Submit a Dispute</DialogTitle>
+            <DialogTitle>{t('modal.title')}</DialogTitle>
             <DialogDescription>
-              Describe your issue and we&apos;ll review it as soon as possible.
+              {t('modal.description')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="type">Dispute Type *</Label>
+              <Label htmlFor="type">{t('form.disputeType')} *</Label>
               <Select
                 value={formData.dispute_type}
                 onValueChange={(value) => setFormData((prev) => ({ ...prev, dispute_type: value }))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select type..." />
+                  <SelectValue placeholder={t('form.selectType')} />
                 </SelectTrigger>
                 <SelectContent>
                   {DISPUTE_TYPES.map((type) => (
                     <SelectItem key={type.value} value={type.value}>
-                      {type.label}
+                      {t(`types.${type.value}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -296,18 +302,18 @@ export default function DisputesPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="subject">Subject *</Label>
+              <Label htmlFor="subject">{t('form.subject')} *</Label>
               <Input
                 id="subject"
                 value={formData.subject}
                 onChange={(e) => setFormData((prev) => ({ ...prev, subject: e.target.value }))}
-                placeholder="Brief summary of the issue"
+                placeholder={t('form.subjectPlaceholder')}
                 maxLength={200}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount Disputed (optional)</Label>
+              <Label htmlFor="amount">{t('form.amountDisputed')}</Label>
               <Input
                 id="amount"
                 type="number"
@@ -319,24 +325,24 @@ export default function DisputesPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description *</Label>
+              <Label htmlFor="description">{t('form.descriptionLabel')} *</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                placeholder="Please provide all relevant details including dates, policy numbers, and any other information that will help us resolve this quickly..."
+                placeholder={t('form.descriptionPlaceholder')}
                 rows={5}
                 maxLength={5000}
               />
               <p className="text-xs text-muted-foreground">
-                {formData.description.length}/5000 characters
+                {formData.description.length}/5000 {t('form.characters')}
               </p>
             </div>
           </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               onClick={handleSubmit}
@@ -345,10 +351,10 @@ export default function DisputesPage() {
               {saving ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Submitting...
+                  {t('submitting')}
                 </>
               ) : (
-                'Submit Dispute'
+                t('submitDispute')
               )}
             </Button>
           </DialogFooter>

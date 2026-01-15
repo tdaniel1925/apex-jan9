@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { formatCurrency, WITHDRAWAL_FEES, MIN_WITHDRAWAL } from '@/lib/engines/wallet-engine';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +20,8 @@ import { createClient } from '@/lib/db/supabase-client';
 
 export default function WalletPage() {
   const { user } = useAuth();
+  const t = useTranslations('wallet');
+  const tCommon = useTranslations('common');
   const [wallet, setWallet] = useState<any>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [pendingPayouts, setPendingPayouts] = useState<any[]>([]);
@@ -84,9 +87,9 @@ export default function WalletPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Wallet</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Manage your earnings and withdrawals.
+            {t('pageDescription')}
           </p>
         </div>
         <WithdrawDialog balance={wallet?.balance || 0} />
@@ -96,7 +99,7 @@ export default function WalletPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('availableBalance')}</CardTitle>
             <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -104,14 +107,14 @@ export default function WalletPage() {
               {formatCurrency(wallet?.balance || 0)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Ready to withdraw
+              {t('readyToWithdraw')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('pending')}</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -119,14 +122,14 @@ export default function WalletPage() {
               {formatCurrency(wallet?.pending_balance || 0)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Processing
+              {t('processing')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Lifetime Earnings</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('lifetimeEarnings')}</CardTitle>
             <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -134,7 +137,7 @@ export default function WalletPage() {
               {formatCurrency(wallet?.lifetime_earnings || 0)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Total earned
+              {t('totalEarned')}
             </p>
           </CardContent>
         </Card>
@@ -143,45 +146,45 @@ export default function WalletPage() {
       {/* Withdrawal Info */}
       <Card>
         <CardHeader>
-          <CardTitle>Withdrawal Methods</CardTitle>
-          <CardDescription>Choose your preferred payout method</CardDescription>
+          <CardTitle>{t('withdrawalMethods')}</CardTitle>
+          <CardDescription>{t('choosePreferredMethod')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-lg border p-4">
-              <h4 className="font-semibold">ACH Transfer</h4>
+              <h4 className="font-semibold">{t('achTransfer')}</h4>
               <p className="text-sm text-muted-foreground mt-1">
-                Fee: {formatCurrency(WITHDRAWAL_FEES.ach)}
+                {t('fee')}: {formatCurrency(WITHDRAWAL_FEES.ach)}
               </p>
               <p className="text-sm text-muted-foreground">
-                Min: {formatCurrency(MIN_WITHDRAWAL.ach)}
+                {t('min')}: {formatCurrency(MIN_WITHDRAWAL.ach)}
               </p>
               <p className="text-sm text-muted-foreground">
-                2-3 business days
+                {t('achDays')}
               </p>
             </div>
             <div className="rounded-lg border p-4">
-              <h4 className="font-semibold">Wire Transfer</h4>
+              <h4 className="font-semibold">{t('wireTransfer')}</h4>
               <p className="text-sm text-muted-foreground mt-1">
-                Fee: {formatCurrency(WITHDRAWAL_FEES.wire)}
+                {t('fee')}: {formatCurrency(WITHDRAWAL_FEES.wire)}
               </p>
               <p className="text-sm text-muted-foreground">
-                Min: {formatCurrency(MIN_WITHDRAWAL.wire)}
+                {t('min')}: {formatCurrency(MIN_WITHDRAWAL.wire)}
               </p>
               <p className="text-sm text-muted-foreground">
-                1-2 business days
+                {t('wireDays')}
               </p>
             </div>
             <div className="rounded-lg border p-4">
-              <h4 className="font-semibold">Check</h4>
+              <h4 className="font-semibold">{t('check')}</h4>
               <p className="text-sm text-muted-foreground mt-1">
-                Fee: {formatCurrency(WITHDRAWAL_FEES.check)}
+                {t('fee')}: {formatCurrency(WITHDRAWAL_FEES.check)}
               </p>
               <p className="text-sm text-muted-foreground">
-                Min: {formatCurrency(MIN_WITHDRAWAL.check)}
+                {t('min')}: {formatCurrency(MIN_WITHDRAWAL.check)}
               </p>
               <p className="text-sm text-muted-foreground">
-                5-7 business days
+                {t('checkDays')}
               </p>
             </div>
           </div>
@@ -192,17 +195,17 @@ export default function WalletPage() {
       {pendingPayouts.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Pending Payouts</CardTitle>
+            <CardTitle>{t('pendingPayouts')}</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Method</TableHead>
-                  <TableHead>Net</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
+                  <TableHead>{t('amount')}</TableHead>
+                  <TableHead>{t('method')}</TableHead>
+                  <TableHead>{t('net')}</TableHead>
+                  <TableHead>{tCommon('status')}</TableHead>
+                  <TableHead>{tCommon('date')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -230,25 +233,25 @@ export default function WalletPage() {
       {/* Transaction History */}
       <Card>
         <CardHeader>
-          <CardTitle>Transaction History</CardTitle>
-          <CardDescription>Your recent wallet activity</CardDescription>
+          <CardTitle>{t('transactionHistory')}</CardTitle>
+          <CardDescription>{t('recentActivity')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Type</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Balance</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>{t('type')}</TableHead>
+                <TableHead>{t('description')}</TableHead>
+                <TableHead>{t('amount')}</TableHead>
+                <TableHead>{t('balance')}</TableHead>
+                <TableHead>{tCommon('date')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {transactions.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8">
-                    <p className="text-muted-foreground">No transactions yet</p>
+                    <p className="text-muted-foreground">{t('noTransactionsYet')}</p>
                   </TableCell>
                 </TableRow>
               ) : (

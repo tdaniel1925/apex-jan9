@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,54 +12,10 @@ interface PageProps {
   params: Promise<{ username: string }>;
 }
 
-const testimonials = [
-  {
-    name: 'Michael Johnson',
-    role: 'Regional MGA',
-    image: null,
-    quote: 'Joining Apex was the best decision I ever made. In just 2 years, I went from struggling in a corporate job to running my own successful insurance business. The training and support are unmatched.',
-    years: 3,
-  },
-  {
-    name: 'Sarah Williams',
-    role: 'Senior MGA',
-    image: null,
-    quote: 'I was a stay-at-home mom looking for a way to contribute to my family\'s income. Apex gave me the flexibility to work on my own schedule while building a real career. I\'m now earning more than I ever did in my previous career.',
-    years: 2,
-  },
-  {
-    name: 'David Chen',
-    role: 'MGA',
-    image: null,
-    quote: 'The compensation plan is incredible. I\'m earning more from my overrides than I am from my personal production. Building a team has been the key to my success.',
-    years: 4,
-  },
-  {
-    name: 'Amanda Rodriguez',
-    role: 'Associate MGA',
-    image: null,
-    quote: 'What I love most about Apex is the culture. Everyone is willing to help you succeed. My upline has been like a mentor to me, always available to answer questions and provide guidance.',
-    years: 1,
-  },
-  {
-    name: 'Robert Thompson',
-    role: 'National MGA',
-    image: null,
-    quote: 'I\'ve been in the insurance industry for 20 years, and I\'ve never seen a better opportunity than Apex. The carrier contracts, the comp plan, the technology - it\'s all world-class.',
-    years: 5,
-  },
-  {
-    name: 'Jennifer Martinez',
-    role: 'Senior Agent',
-    image: null,
-    quote: 'I was skeptical at first, but after seeing my first commission check, I was hooked. The products sell themselves when you believe in what you\'re offering.',
-    years: 1,
-  },
-];
-
 export default async function TestimonialsPage({ params }: PageProps) {
   const { username } = await params;
   const supabase = await createServerSupabaseClient();
+  const t = await getTranslations('replicated.testimonials');
 
   const { data: agentData, error } = await supabase
     .from('agents')
@@ -71,15 +28,67 @@ export default async function TestimonialsPage({ params }: PageProps) {
   }
 
   const agent = agentData as Pick<Agent, 'first_name' | 'last_name'>;
+  const agentName = `${agent.first_name} ${agent.last_name}`;
+
+  const testimonials = [
+    {
+      key: 'michael',
+      name: t('stories.michael.name'),
+      role: t('stories.michael.role'),
+      image: null,
+      quote: t('stories.michael.quote'),
+      years: 3,
+    },
+    {
+      key: 'sarah',
+      name: t('stories.sarah.name'),
+      role: t('stories.sarah.role'),
+      image: null,
+      quote: t('stories.sarah.quote'),
+      years: 2,
+    },
+    {
+      key: 'david',
+      name: t('stories.david.name'),
+      role: t('stories.david.role'),
+      image: null,
+      quote: t('stories.david.quote'),
+      years: 4,
+    },
+    {
+      key: 'amanda',
+      name: t('stories.amanda.name'),
+      role: t('stories.amanda.role'),
+      image: null,
+      quote: t('stories.amanda.quote'),
+      years: 1,
+    },
+    {
+      key: 'robert',
+      name: t('stories.robert.name'),
+      role: t('stories.robert.role'),
+      image: null,
+      quote: t('stories.robert.quote'),
+      years: 5,
+    },
+    {
+      key: 'jennifer',
+      name: t('stories.jennifer.name'),
+      role: t('stories.jennifer.role'),
+      image: null,
+      quote: t('stories.jennifer.quote'),
+      years: 1,
+    },
+  ];
 
   return (
     <div>
       {/* Hero */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-4">Success Stories</h1>
+          <h1 className="text-4xl font-bold mb-4">{t('hero.title')}</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Hear from agents who have transformed their lives with Apex Affinity Group.
+            {t('hero.subtitle')}
           </p>
         </div>
       </section>
@@ -91,9 +100,7 @@ export default async function TestimonialsPage({ params }: PageProps) {
             <CardContent className="pt-8 pb-8">
               <Quote className="h-12 w-12 mb-6 opacity-50" />
               <blockquote className="text-2xl font-medium mb-6">
-                &ldquo;When I joined Apex, I had no idea it would completely change my life.
-                Three years later, I&apos;ve built a team of over 50 agents and achieved
-                financial freedom. The systems, training, and support made all the difference.&rdquo;
+                &ldquo;{t('featured.quote')}&rdquo;
               </blockquote>
               <div className="flex items-center gap-4">
                 <Avatar className="h-14 w-14">
@@ -102,8 +109,8 @@ export default async function TestimonialsPage({ params }: PageProps) {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-semibold text-lg">James Davis</p>
-                  <p className="text-primary-foreground/80">Executive MGA | 3 Years with Apex</p>
+                  <p className="font-semibold text-lg">{t('featured.name')}</p>
+                  <p className="text-primary-foreground/80">{t('featured.role', { years: 3 })}</p>
                 </div>
               </div>
             </CardContent>
@@ -114,10 +121,10 @@ export default async function TestimonialsPage({ params }: PageProps) {
       {/* Testimonials Grid */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">More Success Stories</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">{t('grid.title')}</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {testimonials.map((testimonial) => (
-              <Card key={testimonial.name} className="h-full">
+              <Card key={testimonial.key} className="h-full">
                 <CardContent className="pt-6 flex flex-col h-full">
                   <div className="flex gap-1 mb-4">
                     {[...Array(5)].map((_, i) => (
@@ -136,7 +143,7 @@ export default async function TestimonialsPage({ params }: PageProps) {
                     <div>
                       <p className="font-semibold text-sm">{testimonial.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {testimonial.role} | {testimonial.years} year{testimonial.years > 1 ? 's' : ''} with Apex
+                        {testimonial.role} | {testimonial.years > 1 ? t('grid.yearsWithApexPlural', { years: testimonial.years }) : t('grid.yearsWithApex', { years: testimonial.years })}
                       </p>
                     </div>
                   </div>
@@ -151,28 +158,28 @@ export default async function TestimonialsPage({ params }: PageProps) {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Real Results</h2>
+            <h2 className="text-3xl font-bold mb-4">{t('stats.title')}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Our agents are achieving incredible results. Here&apos;s what success looks like at Apex.
+              {t('stats.subtitle')}
             </p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-8 text-center">
             <div className="p-6">
               <p className="text-4xl font-bold text-primary mb-2">$125K+</p>
-              <p className="text-muted-foreground">Average top agent income</p>
+              <p className="text-muted-foreground">{t('stats.avgIncome')}</p>
             </div>
             <div className="p-6">
               <p className="text-4xl font-bold text-primary mb-2">94%</p>
-              <p className="text-muted-foreground">Agent satisfaction rate</p>
+              <p className="text-muted-foreground">{t('stats.satisfaction')}</p>
             </div>
             <div className="p-6">
               <p className="text-4xl font-bold text-primary mb-2">48</p>
-              <p className="text-muted-foreground">New MGAs this year</p>
+              <p className="text-muted-foreground">{t('stats.newMGAs')}</p>
             </div>
             <div className="p-6">
               <p className="text-4xl font-bold text-primary mb-2">$2.5M</p>
-              <p className="text-muted-foreground">Bonuses paid last quarter</p>
+              <p className="text-muted-foreground">{t('stats.bonuses')}</p>
             </div>
           </div>
         </div>
@@ -181,9 +188,9 @@ export default async function TestimonialsPage({ params }: PageProps) {
       {/* Video Testimonials Placeholder */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Video Testimonials</h2>
+          <h2 className="text-3xl font-bold mb-4">{t('videos.title')}</h2>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Watch our agents share their stories in their own words.
+            {t('videos.subtitle')}
           </p>
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[1, 2, 3].map((i) => (
@@ -195,7 +202,7 @@ export default async function TestimonialsPage({ params }: PageProps) {
                   <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-2">
                     <div className="w-0 h-0 border-t-8 border-b-8 border-l-12 border-transparent border-l-primary ml-1" />
                   </div>
-                  <p className="text-sm text-muted-foreground">Coming Soon</p>
+                  <p className="text-sm text-muted-foreground">{t('videos.comingSoon')}</p>
                 </div>
               </div>
             ))}
@@ -206,14 +213,13 @@ export default async function TestimonialsPage({ params }: PageProps) {
       {/* CTA */}
       <section className="py-20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Write Your Success Story</h2>
+          <h2 className="text-3xl font-bold mb-4">{t('cta.title')}</h2>
           <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-            Join {agent.first_name} {agent.last_name} and the hundreds of agents
-            who are building their dreams with Apex Affinity Group.
+            {t('cta.subtitle', { agentName })}
           </p>
           <Button size="lg" asChild>
             <Link href={`/team/${username}/signup`}>
-              Start Your Journey
+              {t('cta.startJourney')}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

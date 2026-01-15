@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/db/supabase-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +20,7 @@ export default function ReplicatedSignupPage() {
   const router = useRouter();
   const params = useParams();
   const username = params.username as string;
+  const t = useTranslations('replicated.signup');
 
   const [agent, setAgent] = useState<Agent | null>(null);
   const [loading, setLoading] = useState(true);
@@ -121,26 +123,26 @@ export default function ReplicatedSignupPage() {
     setError(null);
 
     if (!agreed) {
-      setError('You must agree to the terms to continue.');
+      setError(t('errors.agreeTerms'));
       setSubmitting(false);
       return;
     }
 
     // Validate username
     if (!usernameInput || usernameStatus !== 'available') {
-      setError('Please choose an available username for your team page.');
+      setError(t('errors.usernameRequired'));
       setSubmitting(false);
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('errors.passwordsNoMatch'));
       setSubmitting(false);
       return;
     }
 
     if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters');
+      setError(t('errors.passwordMinLength'));
       setSubmitting(false);
       return;
     }
@@ -155,7 +157,7 @@ export default function ReplicatedSignupPage() {
       .maybeSingle();
 
     if (existingAgent) {
-      setError('An account with this email already exists. Please sign in instead.');
+      setError(t('errors.emailExists'));
       setSubmitting(false);
       return;
     }
@@ -178,7 +180,7 @@ export default function ReplicatedSignupPage() {
     if (authError) {
       // Handle specific Supabase errors
       if (authError.message.includes('already registered')) {
-        setError('An account with this email already exists. Please sign in instead.');
+        setError(t('errors.emailExists'));
       } else {
         setError(authError.message);
       }
@@ -187,7 +189,7 @@ export default function ReplicatedSignupPage() {
     }
 
     if (!authData.user) {
-      setError('Failed to create account');
+      setError(t('errors.createFailed'));
       setSubmitting(false);
       return;
     }
@@ -206,7 +208,7 @@ export default function ReplicatedSignupPage() {
     } as never);
 
     if (agentError) {
-      setError('Failed to create agent profile. Please contact support.');
+      setError(t('errors.profileFailed'));
       setSubmitting(false);
       return;
     }
@@ -218,7 +220,7 @@ export default function ReplicatedSignupPage() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="animate-pulse text-muted-foreground">{t('loading')}</div>
       </div>
     );
   }
@@ -226,7 +228,7 @@ export default function ReplicatedSignupPage() {
   if (!agent) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <p className="text-muted-foreground">Agent not found</p>
+        <p className="text-muted-foreground">{t('agentNotFound')}</p>
       </div>
     );
   }
@@ -240,10 +242,9 @@ export default function ReplicatedSignupPage() {
           {/* Left side - Benefits */}
           <div className="space-y-8">
             <div>
-              <h1 className="text-3xl font-bold mb-4">Join {agent.first_name}&apos;s Team</h1>
+              <h1 className="text-3xl font-bold mb-4">{t('title', { agentName: agent.first_name })}</h1>
               <p className="text-muted-foreground">
-                Start your journey with Apex Affinity Group and build a rewarding career
-                in the insurance industry.
+                {t('subtitle')}
               </p>
             </div>
 
@@ -258,7 +259,7 @@ export default function ReplicatedSignupPage() {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm text-muted-foreground">Your Sponsor</p>
+                    <p className="text-sm text-muted-foreground">{t('yourSponsor')}</p>
                     <p className="text-lg font-semibold">
                       {agent.first_name} {agent.last_name}
                     </p>
@@ -270,16 +271,16 @@ export default function ReplicatedSignupPage() {
 
             {/* Benefits */}
             <div className="space-y-4">
-              <h3 className="font-semibold">What You Get:</h3>
+              <h3 className="font-semibold">{t('whatYouGet')}</h3>
               <ul className="space-y-3">
                 {[
-                  'Access to 7 A-rated insurance carriers',
-                  'Comprehensive training program',
-                  'AI-powered CRM and back office',
-                  'Up to 90% commission rates',
-                  '6 generations of override income',
-                  'Bonuses and incentive programs',
-                  'Personal mentorship from your sponsor',
+                  t('benefits.carriers'),
+                  t('benefits.training'),
+                  t('benefits.tools'),
+                  t('benefits.commissions'),
+                  t('benefits.overrides'),
+                  t('benefits.bonuses'),
+                  t('benefits.mentorship'),
                 ].map((benefit) => (
                   <li key={benefit} className="flex items-center gap-2">
                     <CheckCircle className="h-5 w-5 text-green-600 shrink-0" />
@@ -294,9 +295,9 @@ export default function ReplicatedSignupPage() {
           <div>
             <Card>
               <CardHeader>
-                <CardTitle>Create Your Account</CardTitle>
+                <CardTitle>{t('form.title')}</CardTitle>
                 <CardDescription>
-                  Fill out the form below to get started with Apex Affinity Group.
+                  {t('form.subtitle')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -309,7 +310,7 @@ export default function ReplicatedSignupPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">First Name</Label>
+                      <Label htmlFor="firstName">{t('form.firstName')}</Label>
                       <Input
                         id="firstName"
                         name="firstName"
@@ -320,7 +321,7 @@ export default function ReplicatedSignupPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">Last Name</Label>
+                      <Label htmlFor="lastName">{t('form.lastName')}</Label>
                       <Input
                         id="lastName"
                         name="lastName"
@@ -334,7 +335,7 @@ export default function ReplicatedSignupPage() {
 
                   {/* Username Field */}
                   <div className="space-y-2">
-                    <Label htmlFor="username">Choose Your Team URL</Label>
+                    <Label htmlFor="username">{t('form.chooseTeamUrl')}</Label>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1 text-sm text-muted-foreground whitespace-nowrap">
                         <AtSign className="h-4 w-4" />
@@ -371,15 +372,15 @@ export default function ReplicatedSignupPage() {
                       <p className="text-sm text-red-600">{usernameError}</p>
                     )}
                     {usernameStatus === 'available' && (
-                      <p className="text-sm text-green-600">Username is available!</p>
+                      <p className="text-sm text-green-600">{t('form.usernameAvailable')}</p>
                     )}
                     <p className="text-xs text-muted-foreground">
-                      This will be your personal recruiting site URL. 3-20 characters, letters, numbers, and underscores only.
+                      {t('form.usernameHelp')}
                     </p>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label htmlFor="email">{t('form.email')}</Label>
                     <Input
                       id="email"
                       name="email"
@@ -392,7 +393,7 @@ export default function ReplicatedSignupPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="phone">{t('form.phone')}</Label>
                     <Input
                       id="phone"
                       name="phone"
@@ -404,12 +405,12 @@ export default function ReplicatedSignupPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">{t('form.password')}</Label>
                     <Input
                       id="password"
                       name="password"
                       type="password"
-                      placeholder="At least 8 characters"
+                      placeholder={t('form.passwordPlaceholder')}
                       value={formData.password}
                       onChange={handleChange}
                       required
@@ -417,12 +418,12 @@ export default function ReplicatedSignupPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <Label htmlFor="confirmPassword">{t('form.confirmPassword')}</Label>
                     <Input
                       id="confirmPassword"
                       name="confirmPassword"
                       type="password"
-                      placeholder="Confirm your password"
+                      placeholder={t('form.confirmPasswordPlaceholder')}
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       required
@@ -436,29 +437,29 @@ export default function ReplicatedSignupPage() {
                       onCheckedChange={(checked) => setAgreed(checked === true)}
                     />
                     <Label htmlFor="terms" className="text-sm text-muted-foreground leading-tight">
-                      I agree to the{' '}
-                      <Link href={`/team/${username}/terms`} className="text-primary hover:underline" target="_blank">Terms of Service</Link>
-                      {' '}and{' '}
-                      <Link href={`/team/${username}/privacy`} className="text-primary hover:underline" target="_blank">Privacy Policy</Link>.
-                      I understand that I will need to obtain proper licensing to sell insurance.
+                      {t('form.agreeTermsPart1')}{' '}
+                      <Link href={`/team/${username}/terms`} className="text-primary hover:underline" target="_blank">{t('form.termsOfService')}</Link>
+                      {' '}{t('form.agreeTermsPart2')}{' '}
+                      <Link href={`/team/${username}/privacy`} className="text-primary hover:underline" target="_blank">{t('form.privacyPolicy')}</Link>.
+                      {' '}{t('form.agreeTermsPart3')}
                     </Label>
                   </div>
 
                   <Button type="submit" className="w-full" disabled={submitting}>
                     {submitting ? (
-                      'Creating Account...'
+                      t('form.creatingAccount')
                     ) : (
                       <>
-                        Create Account
+                        {t('form.createAccount')}
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </>
                     )}
                   </Button>
 
                   <p className="text-center text-sm text-muted-foreground">
-                    Already have an account?{' '}
+                    {t('form.alreadyHaveAccount')}{' '}
                     <Link href="/login" className="text-primary hover:underline font-medium">
-                      Sign In
+                      {t('form.signIn')}
                     </Link>
                   </p>
                 </form>

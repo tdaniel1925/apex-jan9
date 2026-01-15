@@ -2,6 +2,7 @@ import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -29,6 +30,7 @@ interface PageProps {
 export default async function ProductsPage({ params }: PageProps) {
   const { username } = await params;
   const supabase = await createServerSupabaseClient();
+  const t = await getTranslations('replicated.products');
 
   const { data: agentData, error } = await supabase
     .from('agents')
@@ -41,54 +43,59 @@ export default async function ProductsPage({ params }: PageProps) {
   }
 
   const agent = agentData as Pick<Agent, 'first_name' | 'last_name'>;
+  const agentName = `${agent.first_name} ${agent.last_name}`;
 
   const products = [
     {
       icon: Shield,
-      name: 'Indexed Universal Life (IUL)',
-      description: 'Permanent life insurance with cash value growth tied to market indexes.',
+      key: 'iul',
+      name: t('productList.iul.name'),
+      description: t('productList.iul.description'),
       benefits: [
-        'Tax-free death benefit',
-        'Cash value accumulation',
-        'Market-linked growth with downside protection',
-        'Flexible premium payments',
-        'Policy loans available',
+        t('productList.iul.benefits.taxFree'),
+        t('productList.iul.benefits.cashValue'),
+        t('productList.iul.benefits.marketLinked'),
+        t('productList.iul.benefits.flexiblePremium'),
+        t('productList.iul.benefits.policyLoans'),
       ],
     },
     {
       icon: Clock,
-      name: 'Term Life Insurance',
-      description: 'Affordable protection for a specific period of time.',
+      key: 'term',
+      name: t('productList.term.name'),
+      description: t('productList.term.description'),
       benefits: [
-        'Lower initial premiums',
-        'Coverage for 10, 20, or 30 years',
-        'Convertible to permanent coverage',
-        'Simple application process',
-        'High coverage amounts available',
+        t('productList.term.benefits.lowerPremiums'),
+        t('productList.term.benefits.coverage'),
+        t('productList.term.benefits.convertible'),
+        t('productList.term.benefits.simple'),
+        t('productList.term.benefits.highCoverage'),
       ],
     },
     {
       icon: TrendingUp,
-      name: 'Fixed Index Annuities',
-      description: 'Retirement income products with principal protection and growth potential.',
+      key: 'annuities',
+      name: t('productList.annuities.name'),
+      description: t('productList.annuities.description'),
       benefits: [
-        'Principal protection',
-        'Tax-deferred growth',
-        'Guaranteed lifetime income options',
-        'No market loss',
-        'Flexible payout options',
+        t('productList.annuities.benefits.principalProtection'),
+        t('productList.annuities.benefits.taxDeferred'),
+        t('productList.annuities.benefits.guaranteedIncome'),
+        t('productList.annuities.benefits.noMarketLoss'),
+        t('productList.annuities.benefits.flexiblePayout'),
       ],
     },
     {
       icon: Heart,
-      name: 'Final Expense Insurance',
-      description: 'Whole life coverage designed to cover end-of-life costs.',
+      key: 'finalExpense',
+      name: t('productList.finalExpense.name'),
+      description: t('productList.finalExpense.description'),
       benefits: [
-        'Guaranteed acceptance options',
-        'Small face amounts ($5k-$50k)',
-        'Fixed premiums',
-        'No medical exam required',
-        'Quick approval process',
+        t('productList.finalExpense.benefits.guaranteed'),
+        t('productList.finalExpense.benefits.smallFace'),
+        t('productList.finalExpense.benefits.fixedPremiums'),
+        t('productList.finalExpense.benefits.noExam'),
+        t('productList.finalExpense.benefits.quickApproval'),
       ],
     },
   ];
@@ -108,10 +115,9 @@ export default async function ProductsPage({ params }: PageProps) {
           <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/85 to-background" />
         </div>
         <div className="container mx-auto px-4 text-center relative z-10">
-          <h1 className="text-4xl font-bold mb-4">Our Products</h1>
+          <h1 className="text-4xl font-bold mb-4">{t('hero.title')}</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            We offer a comprehensive suite of life insurance and annuity products
-            from top-rated carriers to meet your clients&apos; diverse needs.
+            {t('hero.subtitle')}
           </p>
         </div>
       </section>
@@ -121,7 +127,7 @@ export default async function ProductsPage({ params }: PageProps) {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-8">
             {products.map((product) => (
-              <Card key={product.name} className="h-full">
+              <Card key={product.key} className="h-full">
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
                     <div className="p-2 bg-primary/10 rounded-lg">
@@ -151,10 +157,9 @@ export default async function ProductsPage({ params }: PageProps) {
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Our Partner Carriers</h2>
+            <h2 className="text-3xl font-bold mb-4">{t('carriers.title')}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              We work with A-rated insurance carriers to provide the best products
-              and competitive commission rates for our agents.
+              {t('carriers.subtitle')}
             </p>
           </div>
 
@@ -166,7 +171,7 @@ export default async function ProductsPage({ params }: PageProps) {
                     <Building className="h-8 w-8 mx-auto text-muted-foreground" />
                   </div>
                   <h3 className="font-semibold">{carrier.name}</h3>
-                  <Badge variant="outline" className="mt-2">A-Rated</Badge>
+                  <Badge variant="outline" className="mt-2">{t('carriers.aRated')}</Badge>
                 </CardContent>
               </Card>
             ))}
@@ -187,17 +192,16 @@ export default async function ProductsPage({ params }: PageProps) {
               />
             </div>
             <div className="order-1 lg:order-2">
-              <h2 className="text-3xl font-bold mb-6">Why Sell Our Products?</h2>
+              <h2 className="text-3xl font-bold mb-6">{t('whySell.title')}</h2>
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
                   <div className="p-2 bg-primary/10 rounded-lg shrink-0">
                     <TrendingUp className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">Competitive Commissions</h3>
+                    <h3 className="font-semibold mb-1">{t('whySell.commissions.title')}</h3>
                     <p className="text-sm text-muted-foreground">
-                      Earn up to 90% commission rates on life insurance and competitive
-                      rates on annuity products.
+                      {t('whySell.commissions.description')}
                     </p>
                   </div>
                 </div>
@@ -206,10 +210,9 @@ export default async function ProductsPage({ params }: PageProps) {
                     <Shield className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">Trusted Carriers</h3>
+                    <h3 className="font-semibold mb-1">{t('whySell.carriers.title')}</h3>
                     <p className="text-sm text-muted-foreground">
-                      All our carriers are A-rated or better, giving you confidence
-                      when presenting to clients.
+                      {t('whySell.carriers.description')}
                     </p>
                   </div>
                 </div>
@@ -218,28 +221,27 @@ export default async function ProductsPage({ params }: PageProps) {
                     <CheckCircle className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">Easy Application Process</h3>
+                    <h3 className="font-semibold mb-1">{t('whySell.process.title')}</h3>
                     <p className="text-sm text-muted-foreground">
-                      Streamlined e-applications and quick underwriting for faster
-                      policy placement.
+                      {t('whySell.process.description')}
                     </p>
                   </div>
                 </div>
               </div>
               <div className="bg-muted/50 rounded-lg p-6 mt-6">
-                <h3 className="text-lg font-semibold mb-3">Ready to Learn More?</h3>
+                <h3 className="text-lg font-semibold mb-3">{t('cta.title')}</h3>
                 <p className="text-muted-foreground text-sm mb-4">
-                  Contact {agent.first_name} to learn more about our product portfolio.
+                  {t('cta.subtitle', { agentName })}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button asChild>
                     <Link href={`/team/${username}/signup`}>
-                      Join the Team
+                      {t('cta.joinTeam')}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
                   <Button variant="outline" asChild>
-                    <Link href={`/team/${username}/contact`}>Contact</Link>
+                    <Link href={`/team/${username}/contact`}>{t('cta.contact')}</Link>
                   </Button>
                 </div>
               </div>

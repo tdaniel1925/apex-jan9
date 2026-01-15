@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { ContactsList } from '@/components/crm/contacts-list';
 import { AddContactDialog } from '@/components/crm/add-contact-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +11,7 @@ import { useAuth } from '@/lib/auth/auth-context';
 import { createClient } from '@/lib/db/supabase-client';
 
 export default function CRMPage() {
+  const t = useTranslations('crm');
   const { user } = useAuth();
   const [contacts, setContacts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,9 +67,9 @@ export default function CRMPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">CRM</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Manage your leads, customers, and recruits.
+            {t('description')}
           </p>
         </div>
         <AddContactDialog />
@@ -77,7 +79,7 @@ export default function CRMPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Contacts</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalContacts')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -87,7 +89,7 @@ export default function CRMPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Leads</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('activeLeads')}</CardTitle>
             <UserPlus className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -97,7 +99,7 @@ export default function CRMPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Due Follow-ups</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dueFollowUps')}</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -107,7 +109,7 @@ export default function CRMPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Closed Won</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('closedWon')}</CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -125,9 +127,9 @@ export default function CRMPage() {
                 <FileSpreadsheet className="h-6 w-6 text-purple-600" />
               </div>
               <div>
-                <h3 className="font-semibold">Import / Export</h3>
+                <h3 className="font-semibold">{t('importExport')}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Bulk import contacts from CSV or export your contact list
+                  {t('importExportDescription')}
                 </p>
               </div>
             </div>

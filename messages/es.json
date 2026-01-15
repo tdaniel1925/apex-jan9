@@ -103,10 +103,44 @@
     "rankProgress": "Progreso de Rango",
     "requirements": "Requisitos",
     "achieved": "Logrado",
-    "remaining": "Restante"
+    "remaining": "Restante",
+    "businessOverview": "Aquí tienes un resumen del rendimiento de tu negocio.",
+    "currentRankLabel": "Actual: {rank}",
+    "nextRankLabel": "Siguiente: {rank}",
+    "availableBalance": "Saldo Disponible",
+    "pending": "Pendiente: {amount}",
+    "teamSize": "Tamaño del Equipo",
+    "directRecruits": "Reclutas directos",
+    "ninetyDayPremium": "Prima de 90 Días",
+    "rollingTotal": "Total acumulado de 90 días",
+    "highestRank": "¡Has alcanzado el rango más alto!",
+    "earningsBreakdown": "Desglose de Este Mes",
+    "earningsByCategory": "Tus ganancias por categoría",
+    "earningsSummary": "Comisiones + Sobrescrituras + Bonos",
+    "quickActions": "Acciones Rápidas",
+    "addContact": "Agregar Contacto",
+    "trackNewLead": "Registrar un nuevo prospecto",
+    "viewTeam": "Ver Equipo",
+    "seeDownline": "Ver tu línea descendente",
+    "withdraw": "Retirar",
+    "requestPayout": "Solicitar pago",
+    "continueLearning": "Continuar aprendiendo",
+    "fastStart": {
+      "bonusActive": "Bono de Inicio Rápido Activo",
+      "daysRemaining": "{days} días restantes. Bono actual: {bonus}",
+      "premiumToNextTier": "¡{amount} más en primas para el siguiente nivel!",
+      "tier": "Nivel {tier}",
+      "noTierYet": "Sin nivel aún"
+    },
+    "aiCopilot": {
+      "upgradeTitle": "Actualiza a AI Copilot",
+      "upgradeDescription": "Obtén asistencia impulsada por IA para tus ventas y reclutamiento."
+    },
+    "viewWebsite": "Ver Sitio Web"
   },
   "commissions": {
     "title": "Comisiones",
+    "description": "Consulta tu historial de comisiones y ganancias.",
     "myCommissions": "Mis Comisiones",
     "pending": "Pendiente",
     "paid": "Pagado",
@@ -124,35 +158,84 @@
     "manual": "Manual",
     "overrides": "Sobrecomisiones",
     "overrideLevel": "Nivel de Sobrecomisión",
-    "fromAgent": "Del Agente"
+    "fromAgent": "Del Agente",
+    "ninetyDayTotal": "Total de 90 Días",
+    "lifetime": "Total Histórico",
+    "commissionHistory": "Historial de Comisiones",
+    "recentRecords": "Tus registros de comisiones recientes",
+    "noCommissionsYet": "Aún no hay comisiones"
   },
   "bonuses": {
     "title": "Bonos",
+    "description": "Rastrea tus ganancias de bonos y logros.",
     "myBonuses": "Mis Bonos",
     "fastStart": "Bono de Inicio Rápido",
     "rankAdvancement": "Bono de Avance de Rango",
     "matching": "Bono de Igualación",
     "contest": "Bono de Concurso",
+    "teamBuilder": "Constructor de Equipo",
     "approved": "Aprobado",
     "pending": "Pendiente",
+    "paid": "Pagado",
     "denied": "Denegado",
     "bonusType": "Tipo de Bono",
     "qualificationDate": "Fecha de Calificación",
-    "payoutDate": "Fecha de Pago"
+    "payoutDate": "Fecha de Pago",
+    "awaitingPayment": "Esperando pago",
+    "received": "Recibido",
+    "totalEarned": "Total Ganado",
+    "allTime": "Todo el tiempo",
+    "availableBonuses": "Bonos Disponibles",
+    "waysToEarn": "Formas de ganar bonos en Apex",
+    "fastStartDesc": "Gana hasta $5,000 en tus primeros 90 días según la prima escrita.",
+    "rankAdvancementDesc": "Bono por cada promoción de rango que logres.",
+    "teamBuilderDesc": "Gana bonos cuando tus reclutas alcancen hitos de producción.",
+    "bonusHistory": "Historial de Bonos",
+    "yourEarnedBonuses": "Tus bonos ganados",
+    "type": "Tipo",
+    "amount": "Monto",
+    "noBonusesYet": "Aún no hay bonos ganados",
+    "keepWorking": "¡Sigue trabajando hacia tus metas!"
   },
   "wallet": {
     "title": "Cartera",
+    "pageDescription": "Administra tus ganancias y retiros.",
     "currentBalance": "Saldo Actual",
+    "availableBalance": "Saldo Disponible",
     "pendingBalance": "Saldo Pendiente",
     "lifetimeEarnings": "Ganancias de por Vida",
+    "readyToWithdraw": "Listo para retirar",
+    "pending": "Pendiente",
+    "processing": "Procesando",
+    "totalEarned": "Total ganado",
     "transactions": "Transacciones",
     "credit": "Crédito",
     "debit": "Débito",
     "description": "Descripción",
-    "reference": "Referencia"
+    "reference": "Referencia",
+    "withdrawalMethods": "Métodos de Retiro",
+    "choosePreferredMethod": "Elige tu método de pago preferido",
+    "achTransfer": "Transferencia ACH",
+    "wireTransfer": "Transferencia Bancaria",
+    "check": "Cheque",
+    "fee": "Tarifa",
+    "min": "Mín",
+    "achDays": "2-3 días hábiles",
+    "wireDays": "1-2 días hábiles",
+    "checkDays": "5-7 días hábiles",
+    "pendingPayouts": "Pagos Pendientes",
+    "amount": "Monto",
+    "method": "Método",
+    "net": "Neto",
+    "transactionHistory": "Historial de Transacciones",
+    "recentActivity": "Tu actividad reciente de cartera",
+    "type": "Tipo",
+    "balance": "Saldo",
+    "noTransactionsYet": "Aún no hay transacciones"
   },
   "team": {
-    "title": "Mi Equipo",
+    "title": "Equipo",
+    "pageDescription": "Ve y administra tus reclutas directos.",
     "teamMembers": "Miembros del Equipo",
     "directRecruits": "Reclutas Directos",
     "totalDownline": "Línea Descendente Total",
@@ -162,31 +245,75 @@
     "memberSince": "Miembro Desde",
     "sponsor": "Patrocinador",
     "viewProfile": "Ver Perfil",
-    "contactInfo": "Información de Contacto"
+    "contactInfo": "Información de Contacto",
+    "teamPremium": "Prima del Equipo",
+    "ninetyDayTotal": "Total de 90 días",
+    "mgas": "MGAs",
+    "inYourFrontline": "En tu primera línea",
+    "avgPerformance": "Rendimiento Promedio",
+    "perAgent": "Por agente",
+    "teamMetrics": "Métricas del Equipo",
+    "viewMetricsDesc": "Ver métricas detalladas de producción, tendencias de crecimiento y mejores ejecutores",
+    "agentsYouRecruited": "Agentes que has reclutado personalmente",
+    "agent": "Agente",
+    "rank": "Rango",
+    "ninetyDayPremium": "Prima de 90 Días",
+    "joined": "Ingresó",
+    "noRecruitsYet": "Aún no hay reclutas directos",
+    "shareReferralLink": "Comparte tu enlace de referencia para comenzar a construir tu equipo.",
+    "activeCount": "{count} activos"
   },
   "genealogy": {
     "title": "Genealogía",
+    "pageDescription": "Ve tu organización descendente y estructura de equipo.",
     "treeView": "Vista de Árbol",
     "listView": "Vista de Lista",
     "level": "Nivel",
     "depth": "Profundidad",
     "expand": "Expandir",
-    "collapse": "Contraer"
+    "collapse": "Contraer",
+    "totalDownline": "Línea Descendente Total",
+    "inYourOrganization": "en tu organización",
+    "activeAgents": "Agentes Activos",
+    "producingAgents": "agentes productivos",
+    "directRecruits": "Reclutas Directos",
+    "personallySponsored": "patrocinados personalmente",
+    "generationsDeep": "Generaciones de Profundidad",
+    "levelsInMatrix": "niveles en matriz",
+    "organizationTree": "Árbol de Organización",
+    "organizationTreeDesc": "Vista interactiva de tu línea descendente. Acerca, desplaza y explora la estructura de tu equipo.",
+    "youRoot": "Tú (Raíz)",
+    "teamMember": "Miembro del Equipo",
+    "active": "Activo",
+    "inactivePending": "Inactivo/Pendiente"
   },
   "leaderboard": {
     "title": "Tabla de Líderes",
+    "pageDescription": "Ve quién lidera en producción y reclutamiento",
     "topPerformers": "Mejores Desempeños",
     "rank": "Rango",
     "agent": "Agente",
     "production": "Producción",
+    "commissions": "Comisiones",
+    "premium": "Prima",
+    "recruits": "Reclutas",
     "thisWeek": "Esta Semana",
     "thisMonth": "Este Mes",
     "thisQuarter": "Este Trimestre",
-    "allTime": "Todo el Tiempo"
+    "thisYear": "Este Año",
+    "allTime": "Todo el Tiempo",
+    "yourPosition": "Tu Posición",
+    "of": "de",
+    "rankings": "Clasificaciones",
+    "topPerformersBy": "Mejores ejecutores por {metric} - {period}",
+    "noDataYet": "Sin datos para este período aún"
   },
   "qualification": {
     "title": "Calificación de Rango",
+    "description": "Sigue el estado de tu calificación y ve qué necesitas para tu próximo rango.",
     "currentRank": "Rango Actual",
+    "titleRank": "Rango de Título",
+    "paidAsRank": "Rango de Pago",
     "nextRank": "Siguiente Rango",
     "requirements": "Requisitos",
     "premiumVolume": "Volumen de Primas (90 días)",
@@ -197,18 +324,54 @@
     "placementRate": "Tasa de Colocación",
     "met": "Cumplido",
     "notMet": "No Cumplido",
-    "progress": "Progreso"
+    "progress": "Progreso",
+    "gracePeriods": "Períodos de Gracia",
+    "usedThisYear": "{used} usados este año",
+    "gracePeriod": "Período de Gracia",
+    "grace": "Gracia",
+    "demotionRiskDetected": "Riesgo de Descenso Detectado",
+    "currentRankRequirements": "Requisitos del Rango Actual",
+    "progressTowardMaintaining": "Tu progreso hacia mantener {rank}",
+    "overallProgress": "Progreso General",
+    "nextRankTitle": "Siguiente Rango: {rank}",
+    "whatYouNeedToAdvance": "Lo que necesitas para avanzar al siguiente nivel",
+    "progressToNextRank": "Progreso al Siguiente Rango",
+    "qualificationTrend": "Tendencia de Calificación",
+    "trendDirection": "Dirección de Tendencia",
+    "improving": "Mejorando",
+    "declining": "Disminuyendo",
+    "stable": "Estable",
+    "consecutiveQualifiedMonths": "Meses Consecutivos Calificado",
+    "averageRequirementsMet": "Promedio de Requisitos Cumplidos",
+    "demotionRisk": "Riesgo de Descenso",
+    "highRisk": "Riesgo Alto",
+    "mediumRisk": "Riesgo Medio",
+    "lowRisk": "Riesgo Bajo",
+    "recommendations": "Recomendaciones",
+    "youreOnTrack": "¡Vas por buen camino! Sigue con el excelente trabajo.",
+    "recentQualificationHistory": "Historial de Calificación Reciente",
+    "qualificationStatusOverMonths": "Tu estado de calificación en los últimos meses",
+    "keyPerformanceMetrics": "Métricas Clave de Rendimiento",
+    "ninetyDayPremium": "Prima de 90 Días",
+    "statusQualified": "calificado",
+    "statusDemoted": "descendido",
+    "ofRequired": "de {required}"
   },
   "training": {
     "title": "Centro de Capacitación",
+    "portalTitle": "Portal de Capacitación",
+    "portalDescription": "Desarrolla tus habilidades y crece tu negocio con nuestros cursos de capacitación.",
     "courses": "Cursos",
     "myCourses": "Mis Cursos",
+    "myCertificates": "Mis Certificados",
     "allCourses": "Todos los Cursos",
     "inProgress": "En Progreso",
     "completed": "Completado",
     "notStarted": "No Iniciado",
     "startCourse": "Iniciar Curso",
     "continueCourse": "Continuar Curso",
+    "continueLearning": "Continuar Aprendiendo",
+    "pickUpWhereYouLeftOff": "Retoma donde lo dejaste",
     "lessons": "Lecciones",
     "quizzes": "Exámenes",
     "quiz": "Examen",
@@ -226,6 +389,15 @@
     "downloadCertificate": "Descargar Certificado",
     "resources": "Recursos",
     "downloadResource": "Descargar Recurso",
+    "requiredTraining": "Capacitación Requerida",
+    "completeToStayCompliant": "Completa estos cursos para mantenerte en cumplimiento",
+    "learningPaths": "Rutas de Aprendizaje",
+    "featuredCourses": "Cursos Destacados",
+    "recommendedForSuccess": "Capacitación recomendada para tu éxito",
+    "coursesAvailable": "{count} cursos disponibles",
+    "viewAll": "Ver Todo",
+    "noCoursesYet": "No hay cursos disponibles aún. ¡Vuelve pronto!",
+    "noPathsYet": "No hay rutas de aprendizaje disponibles aún. ¡Vuelve pronto!",
     "categories": {
       "onboarding": "Incorporación",
       "products": "Productos",
@@ -241,23 +413,45 @@
   },
   "shop": {
     "title": "Tienda",
+    "description": "Explora productos digitales y materiales de capacitación",
     "products": "Productos",
     "addToCart": "Agregar al Carrito",
     "removeFromCart": "Quitar del Carrito",
     "cart": "Carrito",
+    "inCart": "En el Carrito",
     "checkout": "Pagar",
     "orderTotal": "Total del Pedido",
     "orderHistory": "Historial de Pedidos",
     "myOrders": "Mis Pedidos",
     "orderNumber": "Número de Pedido",
     "orderDate": "Fecha del Pedido",
-    "orderStatus": "Estado del Pedido"
+    "orderStatus": "Estado del Pedido",
+    "items": "{count} artículos",
+    "searchProducts": "Buscar productos...",
+    "noProductsFound": "No se encontraron productos",
+    "cartSummary": "Resumen del Carrito",
+    "addedToCart": "Agregado al carrito",
+    "categories": {
+      "all": "Todos los Productos",
+      "training": "Capacitación y Educación",
+      "tools": "Herramientas de Marketing",
+      "leads": "Listas de Prospectos",
+      "software": "Software y Aplicaciones",
+      "templates": "Plantillas y Recursos"
+    }
   },
   "crm": {
     "title": "CRM",
+    "description": "Administra tus prospectos, clientes y reclutas.",
     "contacts": "Contactos",
     "leads": "Prospectos",
     "customers": "Clientes",
+    "totalContacts": "Total de Contactos",
+    "activeLeads": "Prospectos Activos",
+    "dueFollowUps": "Seguimientos Pendientes",
+    "closedWon": "Cerrados Ganados",
+    "importExport": "Importar / Exportar",
+    "importExportDescription": "Importa contactos masivamente desde CSV o exporta tu lista de contactos",
     "addContact": "Agregar Contacto",
     "editContact": "Editar Contacto",
     "firstName": "Nombre",
@@ -277,7 +471,52 @@
       "negotiation": "Negociación",
       "closedWon": "Cerrado Ganado",
       "closedLost": "Cerrado Perdido"
-    }
+    },
+    "contactNotFound": "Contacto no encontrado",
+    "backToCRM": "Volver al CRM",
+    "since": "{type} desde {date}",
+    "leadScore": "Puntuación del Prospecto",
+    "hotLead": "Prospecto caliente",
+    "warmLead": "Prospecto tibio",
+    "coldLead": "Prospecto frío",
+    "emailOpens": "Aperturas de Email",
+    "linkClicks": "Clics en Enlaces",
+    "totalActivities": "Actividades Totales",
+    "contactInfo": "Información del Contacto",
+    "source": "Fuente",
+    "activityTimeline": "Línea de Tiempo de Actividad",
+    "emailSequence": "Secuencia de Email",
+    "recentActivity": "Actividad Reciente",
+    "trackEngagement": "Seguimiento de interacción con este prospecto",
+    "automatedNurturing": "Progreso de campaña de nutrición automatizada",
+    "importExportTitle": "Importar / Exportar Contactos",
+    "exportContacts": "Exportar Contactos",
+    "downloadContacts": "Descarga todos tus contactos como archivo CSV",
+    "exportDescription": "La exportación incluye todos los campos: nombre, email, teléfono, tipo, etapa, fuente, empresa, dirección, notas y etiquetas.",
+    "exporting": "Exportando...",
+    "exportAllContacts": "Exportar Todos los Contactos",
+    "importContacts": "Importar Contactos",
+    "uploadCsv": "Sube un archivo CSV para importar contactos masivamente",
+    "csvFile": "Archivo CSV",
+    "skipDuplicates": "Omitir emails duplicados",
+    "downloadTemplate": "Descargar Plantilla",
+    "preview": "Vista previa: {fileName}",
+    "contactsFound": "{count} contactos encontrados",
+    "imported": "{count} importados",
+    "duplicatesSkipped": "{count} duplicados omitidos",
+    "errorsCount": "{count} errores",
+    "errors": "Errores:",
+    "rowError": "Fila {row}: {errors}",
+    "andMore": "...y {count} más",
+    "andMoreContacts": "...y {count} contactos más",
+    "importing": "Importando...",
+    "csvFormatGuide": "Guía de Formato CSV",
+    "requiredColumns": "Columnas Requeridas",
+    "optionalColumns": "Columnas Opcionales",
+    "name": "Nombre",
+    "type": "Tipo",
+    "stage": "Etapa",
+    "tags": "Etiquetas"
   },
   "reports": {
     "title": "Reportes",
@@ -291,19 +530,258 @@
   },
   "settings": {
     "title": "Configuración",
+    "description": "Administra la configuración de tu cuenta y preferencias.",
     "profile": "Perfil",
+    "profileInfo": "Información del Perfil",
+    "updatePersonalInfo": "Actualiza tu información personal",
     "account": "Cuenta",
     "notifications": "Notificaciones",
     "security": "Seguridad",
     "preferences": "Preferencias",
     "personalInfo": "Información Personal",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "email": "Correo Electrónico",
+    "phone": "Teléfono",
+    "saveChanges": "Guardar Cambios",
     "changePassword": "Cambiar Contraseña",
     "emailNotifications": "Notificaciones por Correo",
     "language": "Idioma",
     "timezone": "Zona Horaria",
     "avatar": "Foto de Perfil",
     "uploadAvatar": "Subir Foto",
-    "removeAvatar": "Quitar Foto"
+    "removeAvatar": "Quitar Foto",
+    "aiCopilot": "Copiloto IA",
+    "manageAiSubscription": "Administra tu suscripción de asistente IA",
+    "currentPlan": "Plan Actual",
+    "notSubscribed": "No Suscrito",
+    "basicPlan": "Básico - $49/mes",
+    "proPlan": "Pro - $99/mes",
+    "agencyPlan": "Agencia - $199/mes",
+    "getAiAssistance": "Obtén asistencia con IA para ventas y reclutamiento",
+    "aiAssistantActive": "Tu asistente IA está activo y listo para ayudarte",
+    "subscribe": "Suscribirse",
+    "managePlan": "Administrar Plan",
+    "manageAccountSecurity": "Administra la seguridad de tu cuenta",
+    "password": "Contraseña",
+    "changeAccountPassword": "Cambia la contraseña de tu cuenta",
+    "change": "Cambiar",
+    "twoFactorAuth": "Autenticación de Dos Factores",
+    "addExtraSecurity": "Agrega seguridad adicional a tu cuenta",
+    "enable": "Activar",
+    "manageNotifications": "Administra cómo recibes las notificaciones",
+    "emailNotifDesc": "Recibe actualizaciones por correo electrónico",
+    "configure": "Configurar",
+    "pushNotifications": "Notificaciones Push",
+    "pushNotifDesc": "Recibe notificaciones en el navegador",
+    "yourReferralLink": "Tu Enlace de Referido",
+    "shareToRecruit": "Comparte este enlace para reclutar nuevos agentes",
+    "profileUpdated": "Perfil actualizado exitosamente",
+    "failedSaveProfile": "Error al guardar el perfil",
+    "linkCopied": "Enlace de referido copiado al portapapeles",
+    "failedCopyLink": "Error al copiar el enlace",
+    "passwordChangeEmail": "Se enviará el cambio de contraseña a tu correo",
+    "twoFactorComingSoon": "La autenticación de dos factores estará disponible pronto",
+    "emailNotifComingSoon": "La configuración de notificaciones por correo estará disponible pronto",
+    "pushNotifComingSoon": "La configuración de notificaciones push estará disponible pronto"
+  },
+  "reports": {
+    "title": "Reportes",
+    "description": "Analiza el rendimiento de tu negocio.",
+    "export": "Exportar",
+    "exportSuccess": "Reporte exportado exitosamente",
+    "periods": {
+      "week": "Últimos 7 Días",
+      "month": "Este Mes",
+      "quarter": "Este Trimestre",
+      "year": "Este Año"
+    },
+    "totalPremium": "Prima Total",
+    "totalEarnings": "Ganancias Totales",
+    "newRecruits": "Nuevos Reclutas",
+    "overrideEarnings": "Ganancias por Overrides",
+    "taxDocuments": "Documentos Fiscales",
+    "taxDocumentsDesc": "Descarga estados de ingresos y resúmenes 1099 para fines fiscales",
+    "earningsBreakdown": "Desglose de Ganancias",
+    "earningsDistribution": "Cómo se distribuyen tus ganancias",
+    "directCommissions": "Comisiones Directas",
+    "overrideCommissions": "Comisiones por Override",
+    "bonuses": "Bonos",
+    "total": "Total",
+    "productionTrend": "Tendencia de Producción",
+    "productionOverTime": "Tu producción de primas a lo largo del tiempo",
+    "chartComingSoon": "Visualización de gráficos próximamente",
+    "csvHeaders": {
+      "metric": "Métrica",
+      "value": "Valor",
+      "period": "Período"
+    },
+    "taxDocumentsPage": {
+      "title": "Documentos Fiscales",
+      "description": "Descarga tus estados de ingresos y resúmenes 1099",
+      "form1099Required": "Se Requiere Formulario 1099-NEC",
+      "below1099Threshold": "Por Debajo del Umbral 1099",
+      "form1099Message": "Tus ganancias de {amount} exceden el umbral de $600. Recibirás un formulario oficial 1099-NEC antes del 31 de enero del año siguiente.",
+      "belowThresholdMessage": "Tus ganancias de {amount} están por debajo del umbral de $600 para el reporte 1099. Sin embargo, aún debes reportar todos los ingresos en tu declaración de impuestos.",
+      "downloadDocuments": "Descargar Documentos",
+      "downloadDocumentsDesc": "Descarga tus documentos fiscales para {year}",
+      "incomeStatement": "Estado de Ingresos",
+      "incomeStatementDesc": "Desglose detallado de todas las ganancias",
+      "form1099Summary": "Resumen 1099",
+      "form1099SummaryDesc": "Resumen para fines de declaración de impuestos",
+      "downloadCsv": "Descargar CSV",
+      "monthlyBreakdown": "Desglose Mensual",
+      "monthlyBreakdownDesc": "Ganancias por mes para {year}",
+      "month": "Mes",
+      "commissions": "Comisiones",
+      "overrides": "Overrides",
+      "bonusBreakdown": "Desglose de Bonos",
+      "bonusBreakdownDesc": "Bonos por tipo para {year}",
+      "disclaimer": "Aviso Legal",
+      "tryAgain": "Intentar de Nuevo"
+    }
+  },
+  "disputes": {
+    "title": "Mis Disputas",
+    "description": "Envía y rastrea disputas por comisiones, devoluciones y otros problemas",
+    "newDispute": "Nueva Disputa",
+    "submitDispute": "Enviar Disputa",
+    "submitFirstDispute": "Envía Tu Primera Disputa",
+    "submitting": "Enviando...",
+    "stats": {
+      "total": "Total",
+      "pending": "Pendientes",
+      "underReview": "En Revisión",
+      "resolved": "Resueltas"
+    },
+    "status": {
+      "pending": "Revisión Pendiente",
+      "underReview": "En Revisión",
+      "infoRequested": "Info Solicitada",
+      "approved": "Aprobada",
+      "denied": "Rechazada",
+      "withdrawn": "Retirada"
+    },
+    "types": {
+      "commission": "Problema de Comisión",
+      "clawback": "Disputa de Devolución",
+      "bonus": "Cálculo de Bono",
+      "override": "Pago de Override",
+      "rank": "Cálculo de Rango",
+      "policy": "Crédito de Póliza",
+      "other": "Otro Problema"
+    },
+    "priority": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "critical": "Crítica"
+    },
+    "noDisputes": "No se encontraron disputas",
+    "noDisputesYet": "Aún no has enviado ninguna disputa.",
+    "noDisputesWithStatus": "No hay disputas con estado \"{status}\".",
+    "disputed": "en disputa",
+    "modal": {
+      "title": "Enviar una Disputa",
+      "description": "Describe tu problema y lo revisaremos lo antes posible."
+    },
+    "form": {
+      "disputeType": "Tipo de Disputa",
+      "subject": "Asunto",
+      "amountDisputed": "Monto en Disputa (opcional)",
+      "descriptionLabel": "Descripción",
+      "selectType": "Selecciona tipo...",
+      "subjectPlaceholder": "Breve resumen del problema",
+      "descriptionPlaceholder": "Por favor proporciona todos los detalles relevantes incluyendo fechas, números de póliza y cualquier otra información que nos ayude a resolver esto rápidamente...",
+      "characters": "caracteres"
+    },
+    "cancel": "Cancelar",
+    "detail": {
+      "submitted": "Enviada",
+      "withdrawDispute": "Retirar Disputa",
+      "withdrawTitle": "¿Retirar Disputa?",
+      "withdrawDescription": "¿Estás seguro de que quieres retirar esta disputa? Esta acción no se puede deshacer.",
+      "yesWithdraw": "Sí, Retirar",
+      "descriptionTitle": "Descripción",
+      "resolution": "Resolución",
+      "amountAdjusted": "Monto Ajustado",
+      "comments": "Comentarios",
+      "commentsDescription": "Historial de comunicación para esta disputa",
+      "noComments": "Sin comentarios aún",
+      "staff": "Personal",
+      "addComment": "Agregar un comentario...",
+      "sendComment": "Enviar Comentario",
+      "details": "Detalles",
+      "type": "Tipo",
+      "priorityLabel": "Prioridad",
+      "amountDisputedLabel": "Monto en Disputa",
+      "created": "Creada",
+      "lastUpdated": "Última Actualización",
+      "infoRequested": "Información Solicitada",
+      "infoRequestedMessage": "Nuestro equipo necesita información adicional para procesar tu disputa. Por favor revisa los comentarios y responde con los detalles solicitados.",
+      "disputeNotFound": "Disputa no encontrada",
+      "backToDisputes": "Volver a Disputas"
+    }
+  },
+  "replicatedSite": {
+    "title": "Sitio Replicado",
+    "description": "Personaliza tu sitio web personal de agente",
+    "preview": "Vista Previa",
+    "saving": "Guardando...",
+    "saveChanges": "Guardar Cambios",
+    "yourPersonalSite": "Tu Sitio Personal",
+    "copied": "Copiado",
+    "copyLink": "Copiar Enlace",
+    "tabs": {
+      "profile": "Perfil",
+      "appearance": "Apariencia",
+      "socialLinks": "Redes Sociales"
+    },
+    "profile": {
+      "title": "Información del Perfil",
+      "description": "Esta información se muestra en tu sitio replicado",
+      "updatePhoto": "Actualizar foto de perfil en Configuración",
+      "bio": "Biografía Personal",
+      "bioPlaceholder": "Cuéntales a los visitantes sobre ti y por qué deberían unirse a tu equipo...",
+      "characters": "caracteres",
+      "headline": "Titular Personalizado",
+      "headlinePlaceholder": "Tu titular personalizado para la sección principal...",
+      "headlineHint": "Déjalo vacío para usar el titular predeterminado",
+      "ctaText": "Texto del Botón de Acción",
+      "contactVisibility": "Visibilidad de Información de Contacto",
+      "showPhone": "Mostrar Número de Teléfono",
+      "showPhoneDesc": "Muestra tu número de teléfono en el sitio",
+      "showEmail": "Mostrar Correo Electrónico",
+      "showEmailDesc": "Muestra tu correo electrónico en el sitio"
+    },
+    "siteStatus": {
+      "title": "Estado del Sitio",
+      "description": "Habilitar o deshabilitar tu sitio replicado",
+      "enabled": "Sitio Habilitado",
+      "disabledMessage": "Cuando está deshabilitado, los visitantes verán una página de \"Próximamente\""
+    },
+    "appearance": {
+      "title": "Colores de Marca",
+      "description": "Personaliza el color principal de tu sitio",
+      "primaryColor": "Color Principal",
+      "presetColors": "Colores Predefinidos",
+      "preview": "Vista Previa",
+      "sampleButton": "Botón de Ejemplo",
+      "linksPreview": "Así se verán los enlaces"
+    },
+    "social": {
+      "title": "Enlaces de Redes Sociales",
+      "description": "Agrega tus perfiles de redes sociales para mostrar en tu sitio"
+    },
+    "toast": {
+      "linkCopied": "Enlace copiado al portapapeles",
+      "saved": "Configuración guardada exitosamente",
+      "loadError": "Error al cargar la configuración",
+      "saveError": "Error al guardar la configuración"
+    },
+    "error": {
+      "unableToLoad": "No se pudo cargar la configuración"
+    }
   },
   "admin": {
     "title": "Panel de Administrador",
@@ -386,6 +864,877 @@
     "forAgents": "Para Agentes",
     "agentLogin": "Inicio de Sesión de Agentes",
     "brandTagline": "Construyendo futuros financieros a través de soluciones de seguros confiables y oportunidades empresariales desde 2018."
+  },
+  "replicated": {
+    "yourAgent": "Tu Agente",
+    "joinOurTeam": "Únete a Nuestro Equipo",
+    "nav": {
+      "home": "Inicio",
+      "aboutMe": "Sobre Mí",
+      "carriers": "Aseguradoras",
+      "compare": "Comparar",
+      "opportunity": "Oportunidad",
+      "faq": "Preguntas Frecuentes",
+      "contact": "Contacto"
+    },
+    "home": {
+      "badge": "Únete a Apex Affinity Group",
+      "headline": "Construye Tu Futuro Financiero en Seguros",
+      "description": "Asóciate con {agentName} y únete a un sistema probado que te ayuda a construir una carrera exitosa en la industria de seguros con potencial de ingresos ilimitado.",
+      "getStarted": "Comienza Hoy",
+      "learnAbout": "Conoce la Oportunidad",
+      "activeAgents": "Agentes Activos",
+      "commissionsPaid": "Comisiones Pagadas",
+      "topCarriers": "Mejores Aseguradoras",
+      "agentCard": {
+        "readyToHelp": "Listo para ayudarte a comenzar tu viaje con Apex Affinity Group. Construyamos tu futuro juntos.",
+        "joinMyTeam": "Únete a Mi Equipo",
+        "contactMe": "Contáctame"
+      },
+      "whyJoin": {
+        "title": "¿Por Qué Unirte a Apex?",
+        "subtitle": "Te proporcionamos todo lo que necesitas para tener éxito en la industria de seguros.",
+        "highCommissions": "Altas Comisiones",
+        "highCommissionsDesc": "Gana hasta el 90% en comisiones con nuestros contratos de primer nivel.",
+        "overrideIncome": "Ingresos por Sobrescritura",
+        "overrideIncomeDesc": "Construye un equipo y gana 6 generaciones de sobrescrituras sobre su producción.",
+        "completeTraining": "Capacitación Completa",
+        "completeTrainingDesc": "Accede a programas de capacitación integrales para acelerar tu éxito.",
+        "topCarriers": "Mejores Aseguradoras",
+        "topCarriersDesc": "Trabaja con 7 aseguradoras calificación A que ofrecen seguros de vida y anualidades.",
+        "teamSupport": "Apoyo del Equipo",
+        "teamSupportDesc": "Únete a una comunidad de apoyo con mentoría en cada nivel.",
+        "bonuses": "Bonos e Incentivos",
+        "bonusesDesc": "Bonos de inicio rápido, bonos de avance de rango y bonos de auto."
+      },
+      "howItWorks": {
+        "title": "Cómo Funciona",
+        "subtitle": "Comenzar es simple. Aquí está tu camino al éxito.",
+        "step1": "Únete al Equipo",
+        "step1Desc": "Completa tu solicitud y obtén tu licencia con nuestro apoyo.",
+        "step2": "Capacítate",
+        "step2Desc": "Completa nuestro programa de incorporación y aprende los productos.",
+        "step3": "Comienza a Vender",
+        "step3Desc": "Ayuda a familias con sus necesidades de seguros y gana comisiones.",
+        "step4": "Construye Tu Equipo",
+        "step4Desc": "Recluta y capacita a otros para multiplicar tus ingresos."
+      },
+      "whatYouGet": {
+        "title": "Lo Que Obtienes Al Unirte",
+        "items": {
+          "carriers": "Acceso a 7 aseguradoras con calificación A",
+          "training": "Capacitación integral y soporte de certificación",
+          "dashboard": "Panel de control personal",
+          "crm": "CRM potenciado por IA para gestionar tus clientes",
+          "marketing": "Materiales de marketing y herramientas de ventas",
+          "calls": "Llamadas semanales de equipo y mentoría",
+          "fastStart": "Programa de bono de inicio rápido",
+          "advancement": "Oportunidades de avance profesional"
+        },
+        "readyToStart": "¿Listo para comenzar tu viaje?",
+        "joinTeamToday": "Únete al Equipo de {agentName} Hoy",
+        "applyNow": "Aplica Ahora"
+      },
+      "cta": {
+        "title": "Da el Primer Paso",
+        "description": "Únete a miles de agentes exitosos que han transformado sus vidas con Apex Affinity Group. Tu viaje comienza aquí.",
+        "joinNow": "Únete Ahora",
+        "askQuestions": "Haz Preguntas Primero"
+      }
+    },
+    "aboutMe": {
+      "title": "Sobre {agentName}",
+      "atApex": "{rankName} en Apex Affinity Group",
+      "yearsWithApex": "{years}+ años con Apex",
+      "newAgent": "Agente Nuevo",
+      "joinMyTeam": "Únete a Mi Equipo",
+      "contactMe": "Contáctame",
+      "aboutMeTitle": "Sobre Mí",
+      "getInTouch": "Ponte en Contacto",
+      "email": "Correo Electrónico",
+      "phone": "Teléfono",
+      "sendMessage": "Enviar un Mensaje",
+      "whyWorkWithMe": {
+        "title": "¿Por Qué Trabajar Conmigo?",
+        "mentorship": "Mentoría Personal",
+        "mentorshipDesc": "Te guiaré personalmente en cada paso de la construcción de tu negocio de seguros.",
+        "success": "Éxito Comprobado",
+        "successDesc": "Aprende de alguien que ha recorrido el camino y logrado resultados reales.",
+        "teamSupport": "Apoyo del Equipo",
+        "teamSupportDesc": "Únete a un ambiente de equipo donde todos se ayudan mutuamente a tener éxito."
+      },
+      "whatYouGet": {
+        "title": "Lo Que Obtienes Al Unirte a Mi Equipo",
+        "items": {
+          "carriers": "Acceso a 7 aseguradoras con calificación A",
+          "training": "Capacitación integral y educación continua",
+          "tools": "Herramientas potenciadas por IA para hacer crecer tu negocio",
+          "mentorship": "Mentoría y apoyo personal",
+          "commissions": "Comisiones competitivas hasta 145%",
+          "ownership": "Propiedad total de tu cartera de clientes desde el primer día",
+          "teamBuilding": "Oportunidad de construir tu propio equipo",
+          "noCosts": "Sin costos de inicio ni cuotas mensuales"
+        }
+      },
+      "cta": {
+        "title": "¿Listo Para Comenzar Tu Viaje?",
+        "description": "Hablemos de cómo puedo ayudarte a construir una carrera exitosa en seguros.",
+        "joinMyTeam": "Únete a Mi Equipo",
+        "askQuestions": "Haz Preguntas Primero"
+      }
+    },
+    "contact": {
+      "title": "Contacta a {agentName}",
+      "subtitle": "¿Tienes preguntas sobre la oportunidad? ¿Listo para comenzar? Comunícate y conectemos.",
+      "email": "Correo Electrónico",
+      "phone": "Teléfono",
+      "agentMessage": "Estoy aquí para responder tus preguntas y ayudarte a comenzar tu viaje con Apex Affinity Group. No dudes en comunicarte - ¡me encantaría saber de ti!",
+      "form": {
+        "title": "Enviar un Mensaje",
+        "subtitle": "Completa el formulario a continuación y me comunicaré contigo lo antes posible.",
+        "yourName": "Tu Nombre",
+        "emailAddress": "Correo Electrónico",
+        "phoneOptional": "Número de Teléfono (Opcional)",
+        "message": "Mensaje",
+        "messagePlaceholder": "Cuéntame qué te gustaría saber...",
+        "sendMessage": "Enviar Mensaje",
+        "sending": "Enviando..."
+      },
+      "success": {
+        "title": "¡Mensaje Enviado!",
+        "description": "Gracias por comunicarte. {agentName} te responderá pronto."
+      },
+      "faq": {
+        "title": "Preguntas Comunes",
+        "subtitle": "Podrías encontrar tu respuesta en una de estas páginas:",
+        "aboutOpportunity": "Sobre la Oportunidad",
+        "ourProducts": "Nuestros Productos",
+        "aboutYourAgent": "Sobre Tu Agente"
+      },
+      "loading": "Cargando...",
+      "agentNotFound": "Agente no encontrado"
+    },
+    "opportunity": {
+      "hero": {
+        "title": "La Oportunidad",
+        "subtitle": "Construye una carrera gratificante en seguros con potencial de ingresos ilimitado, capacitación integral y un camino probado hacia el éxito."
+      },
+      "incomeStreams": {
+        "title": "Múltiples Fuentes de Ingresos",
+        "subtitle": "Nuestro plan de compensación te recompensa por la producción personal y la construcción de equipos.",
+        "personalCommissions": {
+          "title": "Comisiones Personales",
+          "subtitle": "Gana hasta el 90% en tus ventas personales",
+          "description": "Recibe pago directo cuando ayudas a una familia con sus necesidades de seguros. Rangos más altos significan tasas de comisión más altas."
+        },
+        "overrideIncome": {
+          "title": "Ingresos por Sobrescritura",
+          "subtitle": "Gana en 6 generaciones de tu equipo",
+          "description": "Construye un equipo y gana comisiones de sobrescritura sobre su producción: 15%, 5%, 3%, 2%, 1% y 0.5% en las generaciones 1-6."
+        },
+        "fastStartBonus": {
+          "title": "Bono de Inicio Rápido",
+          "subtitle": "Bono extra en producción temprana",
+          "description": "Gana bonos adicionales en tus primeros 90 días de producción. Alcanza objetivos y sé recompensado por tu inicio rápido."
+        },
+        "rankAdvancementBonus": {
+          "title": "Bono de Avance de Rango",
+          "subtitle": "Recibe pago cuando asciendes",
+          "description": "Cada vez que avanzas de rango, recibes un bono único. Rangos más altos significan bonos de avance más grandes."
+        },
+        "matchingBonus": {
+          "title": "Bono de Igualación",
+          "subtitle": "Iguala los bonos de tu equipo",
+          "description": "Gana un porcentaje de igualación sobre los bonos ganados por agentes en tu organización. El liderazgo tiene sus recompensas."
+        },
+        "carBonus": {
+          "title": "Bono de Auto",
+          "subtitle": "Asignación mensual para auto",
+          "description": "Califica para nuestro programa de bono de auto y recibe una asignación mensual para tu vehículo. Conduce con estilo mientras construyes tu negocio."
+        }
+      },
+      "careerPath": {
+        "title": "Tu Trayectoria Profesional",
+        "subtitle": "Claras oportunidades de avance con beneficios crecientes en cada nivel.",
+        "premium90Days": "Prima de 90 Días",
+        "personalRecruits": "Reclutas Personales",
+        "additionalRanks": "Más 4 rangos adicionales de liderazgo: MGA Regional, MGA Nacional, MGA Ejecutivo, MGA Premier"
+      },
+      "training": {
+        "title": "Capacitación y Apoyo",
+        "subtitle": "No solo te damos un contrato y te deseamos suerte. Nuestro sistema integral de capacitación y apoyo asegura que tengas todo lo necesario para tener éxito.",
+        "items": {
+          "onboarding": "Programa de incorporación para nuevos agentes",
+          "productTraining": "Capacitación de productos para todas las aseguradoras",
+          "salesSkills": "Habilidades de ventas y presentación",
+          "weeklyCalls": "Llamadas semanales de capacitación del equipo",
+          "mentorship": "Mentoría uno a uno",
+          "marketing": "Materiales de marketing y herramientas",
+          "aiCrm": "Sistema CRM potenciado por IA",
+          "dashboard": "Panel de control"
+        }
+      },
+      "rightForYou": {
+        "title": "¿Es Esto Adecuado Para Ti?",
+        "subtitle": "Esta oportunidad es perfecta para personas que son:",
+        "items": {
+          "motivated": "Auto-motivadas y con empuje",
+          "unlimitedIncome": "Buscando potencial de ingresos ilimitado",
+          "willingToLearn": "Dispuestas a aprender y crecer",
+          "helpingOthers": "Interesadas en ayudar a otros",
+          "buildBusiness": "Listas para construir un negocio"
+        },
+        "applyNow": "Aplica Ahora"
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "questions": {
+          "licensed": {
+            "q": "¿Necesito tener licencia?",
+            "a": "Sí, necesitas una licencia de seguros de vida para vender. Te ayudaremos a obtener la licencia si aún no la tienes."
+          },
+          "cost": {
+            "q": "¿Hay algún costo para unirse?",
+            "a": "No hay costo para unirse a Apex. Podrías tener costos asociados con obtener la licencia en tu estado."
+          },
+          "pyramid": {
+            "q": "¿Es esto un esquema piramidal?",
+            "a": "No. Este es un negocio de seguros legítimo. Ganas comisiones por vender productos de seguros, no por reclutar. La construcción de equipos es opcional y proporciona ingresos de sobrescritura."
+          },
+          "earnings": {
+            "q": "¿Cuánto puedo ganar?",
+            "a": "Tus ingresos dependen de tu esfuerzo. Algunos agentes ganan ingresos de tiempo parcial, otros construyen negocios de seis cifras. No hay límite en las ganancias."
+          },
+          "leads": {
+            "q": "¿Me dan prospectos?",
+            "a": "Proporcionamos capacitación sobre generación de prospectos. Muchos agentes trabajan con su mercado natural inicialmente y luego aprenden a generar prospectos a través de varios métodos."
+          }
+        }
+      },
+      "cta": {
+        "title": "¿Listo Para Comenzar?",
+        "subtitle": "Únete al equipo de {agentName} hoy y comienza a construir tu futuro en la industria de seguros.",
+        "applyNow": "Aplica Ahora",
+        "askQuestions": "Haz Preguntas"
+      }
+    },
+    "signup": {
+      "title": "Únete al Equipo de {agentName}",
+      "subtitle": "Comienza tu viaje con Apex Affinity Group y construye una carrera gratificante en la industria de seguros.",
+      "yourSponsor": "Tu Patrocinador",
+      "whatYouGet": "Lo Que Obtienes:",
+      "benefits": {
+        "carriers": "Acceso a 7 aseguradoras con calificación A",
+        "training": "Programa de capacitación integral",
+        "tools": "CRM y panel de control potenciados por IA",
+        "commissions": "Tasas de comisión hasta 90%",
+        "overrides": "6 generaciones de ingresos por sobrescritura",
+        "bonuses": "Programas de bonos e incentivos",
+        "mentorship": "Mentoría personal de tu patrocinador"
+      },
+      "form": {
+        "title": "Crea Tu Cuenta",
+        "subtitle": "Completa el formulario a continuación para comenzar con Apex Affinity Group.",
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "chooseTeamUrl": "Elige Tu URL de Equipo",
+        "usernameHelp": "Esta será la URL de tu sitio personal de reclutamiento. 3-20 caracteres, solo letras, números y guiones bajos.",
+        "usernameAvailable": "¡Nombre de usuario disponible!",
+        "email": "Correo Electrónico",
+        "phone": "Número de Teléfono",
+        "password": "Contraseña",
+        "passwordPlaceholder": "Al menos 8 caracteres",
+        "confirmPassword": "Confirmar Contraseña",
+        "confirmPasswordPlaceholder": "Confirma tu contraseña",
+        "agreeTermsPart1": "Acepto los",
+        "agreeTermsPart2": "y la",
+        "agreeTermsPart3": "Entiendo que necesitaré obtener la licencia adecuada para vender seguros.",
+        "termsOfService": "Términos de Servicio",
+        "privacyPolicy": "Política de Privacidad",
+        "createAccount": "Crear Cuenta",
+        "creatingAccount": "Creando Cuenta...",
+        "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+        "signIn": "Iniciar Sesión"
+      },
+      "errors": {
+        "agreeTerms": "Debes aceptar los términos para continuar.",
+        "usernameRequired": "Por favor elige un nombre de usuario disponible para tu página de equipo.",
+        "passwordsNoMatch": "Las contraseñas no coinciden",
+        "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
+        "emailExists": "Ya existe una cuenta con este correo electrónico. Por favor inicia sesión.",
+        "createFailed": "Error al crear la cuenta",
+        "profileFailed": "Error al crear el perfil de agente. Por favor contacta a soporte."
+      },
+      "loading": "Cargando...",
+      "agentNotFound": "Agente no encontrado"
+    },
+    "products": {
+      "hero": {
+        "title": "Nuestros Productos",
+        "subtitle": "Ofrecemos una gama completa de productos de seguro de vida y anualidades de aseguradoras de primera categoría para satisfacer las diversas necesidades de sus clientes."
+      },
+      "productList": {
+        "iul": {
+          "name": "Vida Universal Indexada (IUL)",
+          "description": "Seguro de vida permanente con crecimiento del valor en efectivo vinculado a índices de mercado.",
+          "benefits": {
+            "taxFree": "Beneficio por fallecimiento libre de impuestos",
+            "cashValue": "Acumulación de valor en efectivo",
+            "marketLinked": "Crecimiento vinculado al mercado con protección a la baja",
+            "flexiblePremium": "Pagos de primas flexibles",
+            "policyLoans": "Préstamos sobre la póliza disponibles"
+          }
+        },
+        "term": {
+          "name": "Seguro de Vida a Término",
+          "description": "Protección asequible por un período específico de tiempo.",
+          "benefits": {
+            "lowerPremiums": "Primas iniciales más bajas",
+            "coverage": "Cobertura por 10, 20 o 30 años",
+            "convertible": "Convertible a cobertura permanente",
+            "simple": "Proceso de solicitud simple",
+            "highCoverage": "Montos de cobertura altos disponibles"
+          }
+        },
+        "annuities": {
+          "name": "Anualidades de Índice Fijo",
+          "description": "Productos de ingresos para la jubilación con protección del capital y potencial de crecimiento.",
+          "benefits": {
+            "principalProtection": "Protección del capital",
+            "taxDeferred": "Crecimiento con impuestos diferidos",
+            "guaranteedIncome": "Opciones de ingresos garantizados de por vida",
+            "noMarketLoss": "Sin pérdidas de mercado",
+            "flexiblePayout": "Opciones de pago flexibles"
+          }
+        },
+        "finalExpense": {
+          "name": "Seguro de Gastos Finales",
+          "description": "Cobertura de vida entera diseñada para cubrir los costos de fin de vida.",
+          "benefits": {
+            "guaranteed": "Opciones de aceptación garantizada",
+            "smallFace": "Montos pequeños ($5k-$50k)",
+            "fixedPremiums": "Primas fijas",
+            "noExam": "Sin examen médico requerido",
+            "quickApproval": "Proceso de aprobación rápido"
+          }
+        }
+      },
+      "carriers": {
+        "title": "Nuestras Aseguradoras Asociadas",
+        "subtitle": "Trabajamos con aseguradoras con calificación A para proporcionar los mejores productos y tasas de comisión competitivas para nuestros agentes.",
+        "aRated": "Calificación A"
+      },
+      "whySell": {
+        "title": "¿Por Qué Vender Nuestros Productos?",
+        "commissions": {
+          "title": "Comisiones Competitivas",
+          "description": "Gana hasta 90% de comisión en seguros de vida y tasas competitivas en productos de anualidades."
+        },
+        "carriers": {
+          "title": "Aseguradoras Confiables",
+          "description": "Todas nuestras aseguradoras tienen calificación A o superior, dándote confianza al presentar a los clientes."
+        },
+        "process": {
+          "title": "Proceso de Solicitud Fácil",
+          "description": "Aplicaciones electrónicas simplificadas y suscripción rápida para una colocación de pólizas más rápida."
+        }
+      },
+      "cta": {
+        "title": "¿Listo para Aprender Más?",
+        "subtitle": "Contacta a {agentName} para aprender más sobre nuestro portafolio de productos.",
+        "joinTeam": "Únete al Equipo",
+        "contact": "Contacto"
+      }
+    },
+    "testimonials": {
+      "hero": {
+        "title": "Historias de Éxito",
+        "subtitle": "Escucha a los agentes que han transformado sus vidas con Apex Affinity Group."
+      },
+      "featured": {
+        "quote": "Cuando me uní a Apex, no tenía idea de que cambiaría completamente mi vida. Tres años después, he construido un equipo de más de 50 agentes y logrado la libertad financiera. Los sistemas, la capacitación y el apoyo marcaron toda la diferencia.",
+        "name": "James Davis",
+        "role": "MGA Ejecutivo | {years} Años con Apex"
+      },
+      "grid": {
+        "title": "Más Historias de Éxito",
+        "yearsWithApex": "{years} año con Apex",
+        "yearsWithApexPlural": "{years} años con Apex"
+      },
+      "stories": {
+        "michael": {
+          "name": "Michael Johnson",
+          "role": "MGA Regional",
+          "quote": "Unirme a Apex fue la mejor decisión que tomé. En solo 2 años, pasé de luchar en un trabajo corporativo a dirigir mi propio negocio de seguros exitoso. La capacitación y el apoyo son incomparables."
+        },
+        "sarah": {
+          "name": "Sarah Williams",
+          "role": "MGA Senior",
+          "quote": "Era ama de casa buscando una forma de contribuir a los ingresos de mi familia. Apex me dio la flexibilidad de trabajar en mi propio horario mientras construía una carrera real. Ahora gano más de lo que jamás gané en mi carrera anterior."
+        },
+        "david": {
+          "name": "David Chen",
+          "role": "MGA",
+          "quote": "El plan de compensación es increíble. Estoy ganando más de mis sobrescrituras que de mi producción personal. Construir un equipo ha sido la clave de mi éxito."
+        },
+        "amanda": {
+          "name": "Amanda Rodriguez",
+          "role": "MGA Asociado",
+          "quote": "Lo que más me gusta de Apex es la cultura. Todos están dispuestos a ayudarte a tener éxito. Mi línea ascendente ha sido como un mentor para mí, siempre disponible para responder preguntas y brindar orientación."
+        },
+        "robert": {
+          "name": "Robert Thompson",
+          "role": "MGA Nacional",
+          "quote": "He estado en la industria de seguros por 20 años, y nunca he visto una mejor oportunidad que Apex. Los contratos con aseguradoras, el plan de compensación, la tecnología - todo es de clase mundial."
+        },
+        "jennifer": {
+          "name": "Jennifer Martinez",
+          "role": "Agente Senior",
+          "quote": "Al principio era escéptica, pero después de ver mi primer cheque de comisión, me enganché. Los productos se venden solos cuando crees en lo que ofreces."
+        }
+      },
+      "stats": {
+        "title": "Resultados Reales",
+        "subtitle": "Nuestros agentes están logrando resultados increíbles. Así es el éxito en Apex.",
+        "avgIncome": "Ingreso promedio de agentes top",
+        "satisfaction": "Tasa de satisfacción de agentes",
+        "newMGAs": "Nuevos MGAs este año",
+        "bonuses": "Bonos pagados el último trimestre"
+      },
+      "videos": {
+        "title": "Testimonios en Video",
+        "subtitle": "Mira a nuestros agentes compartir sus historias con sus propias palabras.",
+        "comingSoon": "Próximamente"
+      },
+      "cta": {
+        "title": "Escribe Tu Historia de Éxito",
+        "subtitle": "Únete a {agentName} y a los cientos de agentes que están construyendo sus sueños con Apex Affinity Group.",
+        "startJourney": "Comienza Tu Viaje"
+      }
+    },
+    "terms": {
+      "title": "Términos de Servicio",
+      "lastUpdated": "Última Actualización: Enero 2026",
+      "importantNotice": {
+        "title": "Acuerdo Legal Importante",
+        "description": "Por favor lea estos términos cuidadosamente antes de usar nuestros servicios o solicitar convertirse en agente independiente. Al usar nuestro sitio web o servicios, usted acepta estar sujeto a estos términos."
+      },
+      "agreement": {
+        "title": "Aceptación de Términos",
+        "content1": "Estos Términos de Servicio (\"Términos\") constituyen un acuerdo legalmente vinculante entre usted y Apex Affinity Group (\"Compañía,\" \"nosotros,\" \"nos,\" o \"nuestro\") que rigen el uso de nuestro sitio web, servicios y oportunidad de agente.",
+        "content2": "Al acceder a nuestro sitio web, enviar una solicitud o participar en nuestro programa de agentes, usted reconoce que ha leído, entendido y acepta estar sujeto a estos Términos."
+      },
+      "contractor": {
+        "title": "Estatus de Contratista Independiente",
+        "intro": "Usted es un contratista independiente, NO un empleado. Esto significa:",
+        "items": {
+          "control": "Usted controla sus propios horarios, métodos y prácticas comerciales",
+          "taxes": "Usted es responsable de sus propios impuestos, incluyendo impuesto de autoempleo",
+          "benefits": "No tiene derecho a beneficios de empleado (seguro médico, 401k, etc.)",
+          "licenses": "Debe obtener y mantener las licencias de seguros requeridas por su cuenta",
+          "represent": "Puede representar a otras compañías, sujeto a las reglas de nombramiento del asegurador",
+          "noGuarantee": "No garantizamos ningún ingreso mínimo ni éxito"
+        },
+        "agreement": "Usted acepta firmar un Acuerdo de Contratista Independiente como parte de su incorporación, que proporciona detalles adicionales sobre esta relación."
+      },
+      "eligibility": {
+        "title": "Requisitos de Elegibilidad",
+        "intro": "Para convertirse en agente de Apex Affinity Group, debe:",
+        "items": {
+          "age": "Tener al menos 18 años de edad",
+          "authorized": "Estar legalmente autorizado para trabajar en los Estados Unidos",
+          "background": "Pasar una verificación de antecedentes (requerida por las aseguradoras)",
+          "license": "Obtener las licencias de seguros estatales requeridas",
+          "training": "Completar nuestro programa de capacitación de incorporación",
+          "truthful": "Proporcionar información precisa y veraz en su solicitud",
+          "noFelony": "No tener condenas por delitos graves relacionados con crímenes financieros"
+        },
+        "reserve": "Nos reservamos el derecho de rechazar cualquier solicitud o terminar cualquier relación de agente a nuestra discreción."
+      },
+      "compensation": {
+        "title": "Compensación y Comisiones",
+        "intro": "Su compensación se basa únicamente en comisiones de productos de seguros que vende y sobrescrituras de la producción de su equipo. Los términos clave incluyen:",
+        "structure": {
+          "title": "Estructura de Comisiones",
+          "description": "Las tasas de comisión varían según el producto y su nivel de rango actual. Consulte nuestro documento de Plan de Compensación para las tasas actuales."
+        },
+        "chargebacks": {
+          "title": "Devoluciones",
+          "description": "Si una póliza caduca o se cancela dentro del período de devolución (típicamente 6-12 meses dependiendo de la aseguradora), las comisiones pueden ser recuperadas de ganancias futuras o del saldo de su cuenta."
+        },
+        "schedule": {
+          "title": "Calendario de Pagos",
+          "description": "Las comisiones se pagan según nuestro calendario de pagos publicado, típicamente semanal o quincenalmente, sujeto a la recepción del pago de la aseguradora."
+        },
+        "minimum": {
+          "title": "Pago Mínimo",
+          "description": "Puede requerirse un saldo mínimo antes del pago. Los montos por debajo del mínimo se trasladarán al siguiente período de pago."
+        }
+      },
+      "conduct": {
+        "title": "Código de Conducta",
+        "intro": "Como agente de Apex, usted acepta:",
+        "items": {
+          "honesty": "Actuar con honestidad e integridad en todos los negocios",
+          "comply": "Cumplir con todas las leyes, regulaciones y directrices de las aseguradoras aplicables",
+          "noClaims": "Nunca hacer afirmaciones de ingresos engañosas o garantías a prospectos",
+          "accurate": "Representar con precisión los productos y sus beneficios",
+          "protect": "Proteger la información confidencial del cliente",
+          "noRebating": "No participar en devoluciones, torcimiento u otras prácticas prohibidas",
+          "noRecruit": "No reclutar agentes de otros equipos de Apex sin permiso",
+          "professional": "Mantener conducta profesional en redes sociales"
+        },
+        "violations": "Las violaciones pueden resultar en terminación, pérdida de comisiones y acción legal."
+      },
+      "termination": {
+        "title": "Terminación",
+        "voluntary": {
+          "title": "Terminación Voluntaria",
+          "description": "Puede terminar su relación de agente en cualquier momento proporcionando aviso por escrito. Las comisiones pendientes se pagarán según el calendario normal, sujeto a devoluciones."
+        },
+        "cause": {
+          "title": "Terminación por Causa",
+          "intro": "Podemos terminar su relación inmediatamente por:",
+          "items": {
+            "violation": "Violación de estos Términos o Código de Conducta",
+            "fraud": "Actividad fraudulenta o tergiversación",
+            "license": "Pérdida de licencias requeridas",
+            "production": "Incumplimiento de requisitos mínimos de producción",
+            "reputation": "Acciones que dañen la reputación de la compañía"
+          }
+        },
+        "effect": {
+          "title": "Efecto de la Terminación",
+          "description": "Al terminar, su acceso a nuestros sistemas será revocado, su sitio web replicado será desactivado, y ya no podrá representarse como agente de Apex."
+        }
+      },
+      "ip": {
+        "title": "Propiedad Intelectual",
+        "content1": "Todas las marcas comerciales, logotipos, contenido y materiales en nuestro sitio web son propiedad de Apex Affinity Group o nuestros licenciantes. Se le otorga una licencia limitada y no exclusiva para usar materiales de marketing aprobados durante su estatus de agente activo.",
+        "content2": "No puede modificar, reproducir o distribuir nuestros materiales sin permiso por escrito. Su licencia de sitio web replicado no es transferible y termina cuando finaliza su estatus de agente."
+      },
+      "liability": {
+        "title": "Limitación de Responsabilidad",
+        "intro": "HASTA EL MÁXIMO PERMITIDO POR LA LEY:",
+        "items": {
+          "asIs": "Proporcionamos servicios \"tal cual\" sin garantías de ningún tipo",
+          "noIndirect": "No somos responsables de daños indirectos, incidentales o consecuentes",
+          "limited": "Nuestra responsabilidad total se limita a las comisiones realmente pagadas a usted en los 12 meses anteriores",
+          "thirdParty": "No somos responsables de las acciones de las aseguradoras o terceros"
+        }
+      },
+      "disputes": {
+        "title": "Resolución de Disputas",
+        "content": "Cualquier disputa que surja de estos Términos o su relación de agente se resolverá mediante arbitraje vinculante de acuerdo con las reglas de la Asociación Americana de Arbitraje. El arbitraje tendrá lugar en el estado donde la Compañía tiene su sede.",
+        "classAction": "Renuncia a Demanda Colectiva: Usted acepta resolver disputas individualmente y renuncia a cualquier derecho a participar en demandas colectivas."
+      },
+      "modifications": {
+        "title": "Modificaciones a los Términos",
+        "content": "Nos reservamos el derecho de modificar estos Términos en cualquier momento. Los cambios materiales se comunicarán por correo electrónico o a través de nuestro portal de agentes. El uso continuado de nuestros servicios después de los cambios constituye la aceptación de los Términos modificados."
+      },
+      "governing": {
+        "title": "Ley Aplicable",
+        "content": "Estos Términos se regirán e interpretarán de acuerdo con las leyes del Estado de Texas, sin tener en cuenta los principios de conflicto de leyes."
+      },
+      "contact": {
+        "title": "Información de Contacto",
+        "intro": "¿Preguntas sobre estos Términos? Contáctenos:",
+        "email": "Correo: legal@theapexway.net",
+        "mail": "Correo postal: Apex Affinity Group, Attn: Departamento Legal"
+      },
+      "footer": {
+        "acknowledgment": "Al usar nuestros servicios, usted reconoce que ha leído y entendido estos Términos de Servicio y acepta estar sujeto a ellos.",
+        "incomeLink": "Para divulgaciones relacionadas con ingresos, por favor revise nuestra"
+      }
+    },
+    "privacy": {
+      "title": "Política de Privacidad",
+      "lastUpdated": "Última Actualización: Enero 2026",
+      "introduction": {
+        "title": "Introducción",
+        "content1": "Apex Affinity Group (\"nosotros,\" \"nuestro,\" o \"nos\") está comprometido a proteger su privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos su información cuando visita nuestro sitio web, usa nuestros servicios o interactúa con nuestros agentes independientes.",
+        "content2": "Por favor lea esta política de privacidad cuidadosamente. Al usar nuestros servicios, usted consiente las prácticas de datos descritas en esta política."
+      },
+      "collect": {
+        "title": "Información que Recopilamos",
+        "personal": {
+          "title": "Información Personal que Proporciona",
+          "intro": "Cuando se registra, solicita o nos contacta, podemos recopilar:",
+          "items": {
+            "contact": "Nombre, dirección de correo electrónico, número de teléfono",
+            "address": "Dirección postal y fecha de nacimiento",
+            "ssn": "Número de Seguro Social (para propósitos de licencia e impuestos)",
+            "banking": "Información bancaria (para pagos de comisiones)",
+            "license": "Información de licencia de seguros",
+            "employment": "Historial de empleo y antecedentes profesionales"
+          }
+        },
+        "automatic": {
+          "title": "Información Recopilada Automáticamente",
+          "intro": "Cuando visita nuestro sitio web, recopilamos automáticamente:",
+          "items": {
+            "ip": "Dirección IP y tipo de navegador",
+            "device": "Información del dispositivo y sistema operativo",
+            "pages": "Páginas visitadas y tiempo en las páginas",
+            "referrer": "Direcciones de sitios web de referencia",
+            "cookies": "Cookies y tecnologías de seguimiento similares"
+          }
+        }
+      },
+      "use": {
+        "title": "Cómo Usamos Su Información",
+        "intro": "Usamos la información que recopilamos para:",
+        "items": {
+          "application": "Procesar su solicitud de agente e incorporación",
+          "licensing": "Facilitar licencias y nombramientos de seguros",
+          "commissions": "Calcular y pagar comisiones y bonos",
+          "access": "Proporcionar acceso a nuestros sistemas de back-office",
+          "notices": "Enviar avisos importantes sobre su cuenta",
+          "training": "Proporcionar capacitación y recursos educativos",
+          "marketing": "Comunicar ofertas de marketing y promocionales (con consentimiento)",
+          "legal": "Cumplir con requisitos legales y regulatorios",
+          "fraud": "Prevenir fraude y garantizar seguridad",
+          "improve": "Mejorar nuestros servicios y experiencia del usuario"
+        }
+      },
+      "sharing": {
+        "title": "Compartir Información",
+        "intro": "Podemos compartir su información con:",
+        "carriers": {
+          "title": "Aseguradoras",
+          "description": "Para facilitar licencias, nombramientos y procesamiento de comisiones."
+        },
+        "sponsor": {
+          "title": "Su Patrocinador y Línea Ascendente",
+          "description": "Información limitada como nombre, información de contacto y datos de producción para apoyar la mentoría y gestión del equipo."
+        },
+        "providers": {
+          "title": "Proveedores de Servicios",
+          "description": "Proveedores terceros que asisten con procesamiento de pagos, servicios de correo electrónico, análisis de datos e infraestructura tecnológica."
+        },
+        "legal": {
+          "title": "Requisitos Legales",
+          "description": "Cuando lo requiera la ley, orden judicial o autoridad regulatoria."
+        },
+        "noSell": "NO vendemos su información personal a terceros."
+      },
+      "security": {
+        "title": "Seguridad de Datos",
+        "intro": "Implementamos medidas de seguridad técnicas y organizativas apropiadas para proteger su información personal, incluyendo:",
+        "items": {
+          "encryption": "Encriptación de datos sensibles en tránsito y en reposo",
+          "access": "Controles de acceso seguros y autenticación",
+          "assessments": "Evaluaciones de seguridad regulares y monitoreo",
+          "training": "Capacitación de empleados en protección de datos",
+          "incident": "Procedimientos de respuesta a incidentes"
+        },
+        "disclaimer": "Aunque nos esforzamos por proteger su información, ningún método de transmisión por Internet es 100% seguro. No podemos garantizar seguridad absoluta."
+      },
+      "rights": {
+        "title": "Sus Derechos",
+        "intro": "Dependiendo de su ubicación, puede tener los siguientes derechos:",
+        "access": {
+          "title": "Acceso y Portabilidad",
+          "description": "Solicitar una copia de la información personal que tenemos sobre usted."
+        },
+        "correction": {
+          "title": "Corrección",
+          "description": "Solicitar corrección de información inexacta o incompleta."
+        },
+        "deletion": {
+          "title": "Eliminación",
+          "description": "Solicitar eliminación de su información personal, sujeto a requisitos legales de retención."
+        },
+        "optOut": {
+          "title": "Exclusión",
+          "description": "Excluirse de comunicaciones de marketing en cualquier momento."
+        },
+        "ccpa": {
+          "title": "Residentes de California (CCPA)",
+          "description": "Los residentes de California tienen derechos adicionales bajo la Ley de Privacidad del Consumidor de California, incluyendo el derecho a saber qué información se recopila y el derecho a no discriminación por ejercer derechos de privacidad."
+        },
+        "contact": "Para ejercer cualquiera de estos derechos, contáctenos en privacy@theapexway.net."
+      },
+      "cookies": {
+        "title": "Cookies y Seguimiento",
+        "intro": "Usamos cookies y tecnologías similares para:",
+        "items": {
+          "preferences": "Recordar sus preferencias y configuraciones",
+          "auth": "Autenticar sus sesiones de inicio",
+          "analytics": "Analizar tráfico del sitio web y patrones de uso",
+          "tracking": "Rastrear referencias y atribuciones de agentes"
+        },
+        "control": "Puede controlar las cookies a través de la configuración de su navegador. Deshabilitar las cookies puede afectar algunas funcionalidades del sitio web."
+      },
+      "children": {
+        "title": "Privacidad de Menores",
+        "content": "Nuestros servicios no están dirigidos a personas menores de 18 años. No recopilamos intencionalmente información personal de menores. Si cree que hemos recopilado información de un menor, contáctenos inmediatamente."
+      },
+      "changes": {
+        "title": "Cambios a Esta Política",
+        "content": "Podemos actualizar esta Política de Privacidad de vez en cuando. Le notificaremos de cualquier cambio material publicando la nueva política en esta página y actualizando la fecha de \"Última Actualización\". Le animamos a revisar esta política periódicamente."
+      },
+      "contact": {
+        "title": "Contáctenos",
+        "intro": "Si tiene preguntas sobre esta Política de Privacidad o nuestras prácticas de datos:",
+        "email": "Correo: privacy@theapexway.net",
+        "mail": "Correo postal: Apex Affinity Group, Attn: Oficial de Privacidad"
+      },
+      "footer": "Esta política de privacidad aplica a todos los visitantes y usuarios de los sitios web y servicios de Apex Affinity Group."
+    },
+    "incomeDisclaimer": {
+      "title": "Declaración de Divulgación de Ingresos",
+      "lastUpdated": "Última Actualización: Enero 2026",
+      "importantNotice": {
+        "title": "Aviso Importante",
+        "description": "Esta declaración de divulgación de ingresos es requerida por la Comisión Federal de Comercio (FTC) y está diseñada para proporcionarle información precisa sobre las ganancias de los agentes independientes de Apex Affinity Group."
+      },
+      "overview": {
+        "title": "Resumen de Ganancias",
+        "intro": "Las ganancias de los agentes independientes de Apex Affinity Group varían significativamente. La cantidad de dinero que gana un agente depende de muchos factores, incluyendo pero no limitado a:",
+        "items": {
+          "effort": "Esfuerzo individual y tiempo dedicado al negocio",
+          "skills": "Habilidades de ventas y experiencia",
+          "market": "Condiciones del mercado en su área geográfica",
+          "licensing": "Estado de licencia y conocimiento del producto",
+          "relationships": "Calidad de las relaciones con los clientes",
+          "leadership": "Habilidades de liderazgo y construcción de equipos"
+        }
+      },
+      "statistics": {
+        "title": "Estadísticas de Ingresos",
+        "intro": "La siguiente tabla muestra el porcentaje de agentes en cada rango y sus ganancias anuales promedio para el año fiscal más reciente:",
+        "headers": {
+          "rank": "Rango",
+          "percentage": "% de Agentes",
+          "avgIncome": "Ingreso Anual Prom.",
+          "range": "Rango"
+        },
+        "footnote": "* Estas cifras representan comisiones brutas antes de impuestos y gastos comerciales. Los resultados individuales variarán."
+      },
+      "disclosures": {
+        "title": "Divulgaciones Clave",
+        "noGuarantee": {
+          "title": "Sin Ingresos Garantizados",
+          "description": "Apex Affinity Group no garantiza ningún nivel específico de ingresos o éxito. Sus ingresos dependen enteramente de sus propios esfuerzos, habilidades y dedicación a construir su negocio."
+        },
+        "majority": {
+          "title": "La Mayoría Gana Poco o Nada",
+          "description": "Una mayoría significativa de las personas que se unen a la oportunidad ganan poco o ningún ingreso. Aproximadamente el 70% de los agentes ganan menos de $10,000 por año, y muchos no ganan nada."
+        },
+        "work": {
+          "title": "Los Ingresos Requieren Trabajo",
+          "description": "Los ingresos de Apex Affinity Group requieren tiempo, esfuerzo y dedicación significativos. El éxito no es automático y requiere participación activa en ventas, construcción de equipos y capacitación continua."
+        },
+        "expenses": {
+          "title": "Gastos Comerciales",
+          "description": "Todos los agentes son responsables de sus propios gastos comerciales, incluyendo tarifas de licencia, educación continua, costos de marketing y gastos de tecnología. Estos costos reducen su ingreso neto."
+        },
+        "licensing": {
+          "title": "Requisitos de Licencia",
+          "description": "Para vender productos de seguros, debe obtener y mantener las licencias estatales apropiadas. Los requisitos, costos y tiempo de licenciamiento varían según el estado. No puede ganar comisiones hasta que esté debidamente licenciado."
+        },
+        "commission": {
+          "title": "Estructura de Comisiones",
+          "description": "Las comisiones se pagan basadas en ventas reales de productos de seguros. Las comisiones de sobrescritura se pagan sobre la producción de agentes en su línea descendente. Las tasas de comisión varían según el producto y nivel de rango."
+        }
+      },
+      "legal": {
+        "title": "Declaración Legal",
+        "content1": "Esta declaración de divulgación de ingresos se proporciona en cumplimiento con las directrices de la FTC para divulgaciones de oportunidades de negocio. Las cifras de ingresos presentadas representan resultados reales del año fiscal completo más reciente.",
+        "content2": "Apex Affinity Group no es un esquema de \"hacerse rico rápido\". Construir una agencia de seguros exitosa requiere tiempo sustancial, esfuerzo, desarrollo de habilidades y persistencia. Muchas personas que se unen no ganan dinero, y algunas pueden perder dinero debido a gastos comerciales.",
+        "content3": "Antes de tomar cualquier decisión de unirse, debe revisar cuidadosamente esta divulgación de ingresos, hablar con su asesor financiero y considerar si esta oportunidad es apropiada para su situación personal y financiera."
+      },
+      "contact": {
+        "intro": "¿Preguntas sobre esta divulgación de ingresos?",
+        "email": "Contacto: compliance@theapexway.net"
+      }
+    },
+    "signupSuccess": {
+      "loading": "Cargando...",
+      "title": "¡Bienvenido a la Familia Apex!",
+      "congratulations": "¡Felicidades, {firstName}! Tu cuenta ha sido creada exitosamente.",
+      "sponsor": {
+        "title": "Tu Patrocinador",
+        "mentorMessage": "{firstName} será tu mentor y guía mientras comienzas tu viaje. ¡Se pondrá en contacto pronto para ayudarte a comenzar!"
+      },
+      "replicatedSite": {
+        "title": "¡Tu Sitio Personal de Reclutamiento está Activo!",
+        "description": "Comparte este enlace con prospectos para comenzar a construir tu equipo",
+        "copied": "¡Copiado!",
+        "copy": "Copiar",
+        "preview": "Vista Previa de Tu Sitio"
+      },
+      "nextSteps": {
+        "title": "Tus Próximos Pasos",
+        "description": "Completa estos pasos para comenzar con el pie derecho",
+        "profile": {
+          "title": "Completa Tu Perfil",
+          "description": "Agrega tu foto y biografía para personalizar tu sitio de reclutamiento"
+        },
+        "training": {
+          "title": "Inicia la Capacitación de Incorporación",
+          "description": "Aprende lo esencial con nuestro programa de capacitación integral"
+        },
+        "license": {
+          "title": "Obtén Tu Licencia",
+          "description": "Tu patrocinador te guiará a través del proceso de licenciamiento"
+        },
+        "directDeposit": {
+          "title": "Configura el Depósito Directo",
+          "description": "Agrega tu información bancaria para recibir pagos de comisiones"
+        },
+        "go": "Ir",
+        "start": "Iniciar",
+        "setUp": "Configurar"
+      },
+      "dashboard": "Ir a Tu Panel de Control",
+      "checkEmail": "Revisa tu correo electrónico para un mensaje de bienvenida con más detalles"
+    },
+    "verifyEmail": {
+      "loading": "Cargando...",
+      "title": "Verifica Tu Correo Electrónico",
+      "sentTo": "Hemos enviado un enlace de verificación a",
+      "instructions": {
+        "click": "Haz clic en el enlace de verificación en tu correo para activar tu cuenta",
+        "spam": "Revisa tu carpeta de spam si no lo ves en unos minutos",
+        "expires": "El enlace expira en 24 horas"
+      },
+      "resend": {
+        "prompt": "¿No recibiste el correo?",
+        "button": "Reenviar Correo",
+        "sending": "Enviando...",
+        "sent": "¡Correo Enviado!"
+      },
+      "joining": "Te estás uniendo a",
+      "team": "Equipo de {firstName} {lastName}",
+      "backToSignup": "Volver al registro"
+    },
+    "footer": {
+      "brandTagline": "Construyendo futuros financieros a través de soluciones de seguros confiables y oportunidades empresariales desde 2018.",
+      "company": "Compañía",
+      "aboutYourAgent": "Sobre Tu Agente",
+      "ourCarriers": "Nuestras Aseguradoras",
+      "compare": "Comparar",
+      "faq": "Preguntas Frecuentes",
+      "contactUs": "Contáctanos",
+      "getStarted": "Comenzar",
+      "licensedAgents": "Agentes Licenciados",
+      "newToInsurance": "Nuevo en Seguros",
+      "careerOpportunity": "Oportunidad de Carrera",
+      "joinOurTeam": "Únete a Nuestro Equipo",
+      "products": "Productos",
+      "lifeInsurance": "Seguro de Vida",
+      "annuities": "Anualidades",
+      "iulPolicies": "Pólizas IUL",
+      "termLife": "Seguro de Vida a Término",
+      "finalExpense": "Gastos Finales",
+      "yourAgent": "Tu Agente",
+      "copyright": "© {year} Apex Affinity Group. Todos los derechos reservados.",
+      "privacyPolicy": "Política de Privacidad",
+      "termsOfService": "Términos de Servicio",
+      "incomeDisclosure": "Divulgación de Ingresos"
+    }
   },
   "marketing": {
     "nav": {

@@ -5,6 +5,7 @@
 
 import { Metadata } from 'next';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
+import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, Eye, Database, Mail, Lock, Globe, UserCheck } from 'lucide-react';
 
@@ -43,13 +44,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PrivacyPolicyPage({ params }: PageProps) {
   const { username } = await params;
+  const t = await getTranslations('replicated.privacy');
 
   return (
     <div className="py-12">
       <div className="container mx-auto px-4 max-w-4xl">
-        <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
+        <h1 className="text-3xl font-bold mb-6">{t('title')}</h1>
         <p className="text-muted-foreground mb-8">
-          Last Updated: January 2026
+          {t('lastUpdated')}
         </p>
 
         {/* Introduction */}
@@ -57,19 +59,15 @@ export default async function PrivacyPolicyPage({ params }: PageProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5" />
-              Introduction
+              {t('introduction.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p>
-              Apex Affinity Group (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your
-              privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard
-              your information when you visit our website, use our services, or interact with
-              our independent agents.
+              {t('introduction.content1')}
             </p>
             <p>
-              Please read this privacy policy carefully. By using our services, you consent
-              to the data practices described in this policy.
+              {t('introduction.content2')}
             </p>
           </CardContent>
         </Card>
@@ -79,36 +77,36 @@ export default async function PrivacyPolicyPage({ params }: PageProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Database className="h-5 w-5" />
-              Information We Collect
+              {t('collect.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
-              <h3 className="font-semibold mb-2">Personal Information You Provide</h3>
+              <h3 className="font-semibold mb-2">{t('collect.personal.title')}</h3>
               <p className="text-muted-foreground mb-3">
-                When you register, apply, or contact us, we may collect:
+                {t('collect.personal.intro')}
               </p>
               <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
-                <li>Name, email address, phone number</li>
-                <li>Mailing address and date of birth</li>
-                <li>Social Security Number (for licensing and tax purposes)</li>
-                <li>Banking information (for commission payments)</li>
-                <li>Insurance licensing information</li>
-                <li>Employment history and professional background</li>
+                <li>{t('collect.personal.items.contact')}</li>
+                <li>{t('collect.personal.items.address')}</li>
+                <li>{t('collect.personal.items.ssn')}</li>
+                <li>{t('collect.personal.items.banking')}</li>
+                <li>{t('collect.personal.items.license')}</li>
+                <li>{t('collect.personal.items.employment')}</li>
               </ul>
             </div>
 
             <div>
-              <h3 className="font-semibold mb-2">Information Automatically Collected</h3>
+              <h3 className="font-semibold mb-2">{t('collect.automatic.title')}</h3>
               <p className="text-muted-foreground mb-3">
-                When you visit our website, we automatically collect:
+                {t('collect.automatic.intro')}
               </p>
               <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
-                <li>IP address and browser type</li>
-                <li>Device information and operating system</li>
-                <li>Pages visited and time spent on pages</li>
-                <li>Referring website addresses</li>
-                <li>Cookies and similar tracking technologies</li>
+                <li>{t('collect.automatic.items.ip')}</li>
+                <li>{t('collect.automatic.items.device')}</li>
+                <li>{t('collect.automatic.items.pages')}</li>
+                <li>{t('collect.automatic.items.referrer')}</li>
+                <li>{t('collect.automatic.items.cookies')}</li>
               </ul>
             </div>
           </CardContent>
@@ -119,24 +117,24 @@ export default async function PrivacyPolicyPage({ params }: PageProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Eye className="h-5 w-5" />
-              How We Use Your Information
+              {t('use.title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              We use the information we collect to:
+              {t('use.intro')}
             </p>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-              <li>Process your agent application and onboarding</li>
-              <li>Facilitate insurance licensing and appointments</li>
-              <li>Calculate and pay commissions and bonuses</li>
-              <li>Provide access to our back-office systems</li>
-              <li>Send important notices about your account</li>
-              <li>Provide training and educational resources</li>
-              <li>Communicate marketing and promotional offers (with consent)</li>
-              <li>Comply with legal and regulatory requirements</li>
-              <li>Prevent fraud and ensure security</li>
-              <li>Improve our services and user experience</li>
+              <li>{t('use.items.application')}</li>
+              <li>{t('use.items.licensing')}</li>
+              <li>{t('use.items.commissions')}</li>
+              <li>{t('use.items.access')}</li>
+              <li>{t('use.items.notices')}</li>
+              <li>{t('use.items.training')}</li>
+              <li>{t('use.items.marketing')}</li>
+              <li>{t('use.items.legal')}</li>
+              <li>{t('use.items.fraud')}</li>
+              <li>{t('use.items.improve')}</li>
             </ul>
           </CardContent>
         </Card>
@@ -146,47 +144,45 @@ export default async function PrivacyPolicyPage({ params }: PageProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Globe className="h-5 w-5" />
-              Information Sharing
+              {t('sharing.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              We may share your information with:
+              {t('sharing.intro')}
             </p>
             <div className="space-y-4">
               <div>
-                <h3 className="font-semibold mb-2">Insurance Carriers</h3>
+                <h3 className="font-semibold mb-2">{t('sharing.carriers.title')}</h3>
                 <p className="text-muted-foreground">
-                  To facilitate licensing, appointments, and commission processing.
+                  {t('sharing.carriers.description')}
                 </p>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">Your Sponsor and Upline</h3>
+                <h3 className="font-semibold mb-2">{t('sharing.sponsor.title')}</h3>
                 <p className="text-muted-foreground">
-                  Limited information such as name, contact information, and production data
-                  to support mentorship and team management.
+                  {t('sharing.sponsor.description')}
                 </p>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">Service Providers</h3>
+                <h3 className="font-semibold mb-2">{t('sharing.providers.title')}</h3>
                 <p className="text-muted-foreground">
-                  Third-party vendors who assist with payment processing, email services,
-                  data analytics, and technology infrastructure.
+                  {t('sharing.providers.description')}
                 </p>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">Legal Requirements</h3>
+                <h3 className="font-semibold mb-2">{t('sharing.legal.title')}</h3>
                 <p className="text-muted-foreground">
-                  When required by law, court order, or regulatory authority.
+                  {t('sharing.legal.description')}
                 </p>
               </div>
             </div>
 
             <p className="text-muted-foreground font-medium mt-4">
-              We do NOT sell your personal information to third parties.
+              {t('sharing.noSell')}
             </p>
           </CardContent>
         </Card>
@@ -196,24 +192,22 @@ export default async function PrivacyPolicyPage({ params }: PageProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Lock className="h-5 w-5" />
-              Data Security
+              {t('security.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              We implement appropriate technical and organizational security measures to
-              protect your personal information, including:
+              {t('security.intro')}
             </p>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-              <li>Encryption of sensitive data in transit and at rest</li>
-              <li>Secure access controls and authentication</li>
-              <li>Regular security assessments and monitoring</li>
-              <li>Employee training on data protection</li>
-              <li>Incident response procedures</li>
+              <li>{t('security.items.encryption')}</li>
+              <li>{t('security.items.access')}</li>
+              <li>{t('security.items.assessments')}</li>
+              <li>{t('security.items.training')}</li>
+              <li>{t('security.items.incident')}</li>
             </ul>
             <p className="text-muted-foreground">
-              While we strive to protect your information, no method of transmission over
-              the Internet is 100% secure. We cannot guarantee absolute security.
+              {t('security.disclaimer')}
             </p>
           </CardContent>
         </Card>
@@ -223,56 +217,53 @@ export default async function PrivacyPolicyPage({ params }: PageProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <UserCheck className="h-5 w-5" />
-              Your Rights
+              {t('rights.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              Depending on your location, you may have the following rights:
+              {t('rights.intro')}
             </p>
 
             <div className="space-y-4">
               <div>
-                <h3 className="font-semibold mb-2">Access and Portability</h3>
+                <h3 className="font-semibold mb-2">{t('rights.access.title')}</h3>
                 <p className="text-muted-foreground">
-                  Request a copy of the personal information we hold about you.
+                  {t('rights.access.description')}
                 </p>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">Correction</h3>
+                <h3 className="font-semibold mb-2">{t('rights.correction.title')}</h3>
                 <p className="text-muted-foreground">
-                  Request correction of inaccurate or incomplete information.
+                  {t('rights.correction.description')}
                 </p>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">Deletion</h3>
+                <h3 className="font-semibold mb-2">{t('rights.deletion.title')}</h3>
                 <p className="text-muted-foreground">
-                  Request deletion of your personal information, subject to legal
-                  retention requirements.
+                  {t('rights.deletion.description')}
                 </p>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">Opt-Out</h3>
+                <h3 className="font-semibold mb-2">{t('rights.optOut.title')}</h3>
                 <p className="text-muted-foreground">
-                  Opt out of marketing communications at any time.
+                  {t('rights.optOut.description')}
                 </p>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">California Residents (CCPA)</h3>
+                <h3 className="font-semibold mb-2">{t('rights.ccpa.title')}</h3>
                 <p className="text-muted-foreground">
-                  California residents have additional rights under the California Consumer
-                  Privacy Act, including the right to know what information is collected and
-                  the right to non-discrimination for exercising privacy rights.
+                  {t('rights.ccpa.description')}
                 </p>
               </div>
             </div>
 
             <p className="text-muted-foreground mt-4">
-              To exercise any of these rights, contact us at privacy@theapexway.net.
+              {t('rights.contact')}
             </p>
           </CardContent>
         </Card>
@@ -280,21 +271,20 @@ export default async function PrivacyPolicyPage({ params }: PageProps) {
         {/* Cookies */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Cookies and Tracking</CardTitle>
+            <CardTitle>{t('cookies.title')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              We use cookies and similar technologies to:
+              {t('cookies.intro')}
             </p>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-              <li>Remember your preferences and settings</li>
-              <li>Authenticate your login sessions</li>
-              <li>Analyze website traffic and usage patterns</li>
-              <li>Track referrals and agent attributions</li>
+              <li>{t('cookies.items.preferences')}</li>
+              <li>{t('cookies.items.auth')}</li>
+              <li>{t('cookies.items.analytics')}</li>
+              <li>{t('cookies.items.tracking')}</li>
             </ul>
             <p className="text-muted-foreground">
-              You can control cookies through your browser settings. Disabling cookies
-              may affect some website functionality.
+              {t('cookies.control')}
             </p>
           </CardContent>
         </Card>
@@ -302,13 +292,11 @@ export default async function PrivacyPolicyPage({ params }: PageProps) {
         {/* Children's Privacy */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Children&apos;s Privacy</CardTitle>
+            <CardTitle>{t('children.title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              Our services are not directed to individuals under 18 years of age. We do not
-              knowingly collect personal information from children. If you believe we have
-              collected information from a child, please contact us immediately.
+              {t('children.content')}
             </p>
           </CardContent>
         </Card>
@@ -316,13 +304,11 @@ export default async function PrivacyPolicyPage({ params }: PageProps) {
         {/* Changes to Policy */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Changes to This Policy</CardTitle>
+            <CardTitle>{t('changes.title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              We may update this Privacy Policy from time to time. We will notify you of
-              any material changes by posting the new policy on this page and updating the
-              &quot;Last Updated&quot; date. We encourage you to review this policy periodically.
+              {t('changes.content')}
             </p>
           </CardContent>
         </Card>
@@ -332,16 +318,16 @@ export default async function PrivacyPolicyPage({ params }: PageProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Mail className="h-5 w-5" />
-              Contact Us
+              {t('contact.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-muted-foreground">
-              If you have questions about this Privacy Policy or our data practices:
+              {t('contact.intro')}
             </p>
             <div className="text-muted-foreground">
-              <p><strong>Email:</strong> privacy@theapexway.net</p>
-              <p><strong>Mail:</strong> Apex Affinity Group, Attn: Privacy Officer</p>
+              <p>{t('contact.email')}</p>
+              <p>{t('contact.mail')}</p>
             </div>
           </CardContent>
         </Card>
@@ -349,8 +335,7 @@ export default async function PrivacyPolicyPage({ params }: PageProps) {
         {/* Footer */}
         <div className="text-center text-sm text-muted-foreground mt-8">
           <p>
-            This privacy policy applies to all visitors and users of Apex Affinity Group
-            websites and services.
+            {t('footer')}
           </p>
         </div>
       </div>

@@ -33,6 +33,7 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
+import { useTranslations } from 'next-intl';
 
 interface Dispute {
   id: string;
@@ -90,6 +91,7 @@ const PRIORITY_BADGES: Record<string, { label: string; className: string }> = {
 };
 
 export default function DisputeDetailPage() {
+  const t = useTranslations('disputes');
   const params = useParams();
   const router = useRouter();
   const disputeId = params.id as string;
@@ -181,9 +183,9 @@ export default function DisputeDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground">Dispute not found</p>
+        <p className="text-muted-foreground">{t('detail.disputeNotFound')}</p>
         <Link href="/dashboard/disputes">
-          <Button variant="link">Back to Disputes</Button>
+          <Button variant="link">{t('detail.backToDisputes')}</Button>
         </Link>
       </div>
     );
@@ -193,6 +195,12 @@ export default function DisputeDetailPage() {
   const StatusIcon = statusConfig.icon;
   const canWithdraw = ['pending', 'under_review', 'info_requested'].includes(dispute.status);
   const isResolved = ['approved', 'denied', 'withdrawn'].includes(dispute.status);
+
+  const getStatusLabel = (status: string) => {
+    const statusKey = status === 'under_review' ? 'underReview' :
+                     status === 'info_requested' ? 'infoRequested' : status;
+    return t(`status.${statusKey}`);
+  };
 
   return (
     <div className="space-y-6">
@@ -208,11 +216,11 @@ export default function DisputeDetailPage() {
             <h1 className="text-2xl font-bold tracking-tight">{dispute.subject}</h1>
             <Badge variant={statusConfig.variant}>
               <StatusIcon className="h-3 w-3 mr-1" />
-              {statusConfig.label}
+              {getStatusLabel(dispute.status)}
             </Badge>
           </div>
           <p className="text-muted-foreground">
-            Submitted {formatDistanceToNow(new Date(dispute.created_at), { addSuffix: true })}
+            {t('detail.submitted')} {formatDistanceToNow(new Date(dispute.created_at), { addSuffix: true })}
           </p>
         </div>
         {canWithdraw && (
@@ -222,20 +230,20 @@ export default function DisputeDetailPage() {
                 {withdrawing ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 ) : null}
-                Withdraw Dispute
+                {t('detail.withdrawDispute')}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Withdraw Dispute?</AlertDialogTitle>
+                <AlertDialogTitle>{t('detail.withdrawTitle')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to withdraw this dispute? This action cannot be undone.
+                  {t('detail.withdrawDescription')}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
                 <AlertDialogAction onClick={handleWithdraw}>
-                  Yes, Withdraw
+                  {t('detail.yesWithdraw')}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -251,7 +259,7 @@ export default function DisputeDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                Description
+                {t('detail.descriptionTitle')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -269,14 +277,14 @@ export default function DisputeDetailPage() {
                   ) : (
                     <XCircle className="h-5 w-5 text-red-600" />
                   )}
-                  Resolution
+                  {t('detail.resolution')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="whitespace-pre-wrap">{dispute.resolution}</p>
                 {dispute.amount_adjusted !== null && (
                   <div className="mt-4 p-3 bg-background rounded-md">
-                    <p className="text-sm text-muted-foreground">Amount Adjusted</p>
+                    <p className="text-sm text-muted-foreground">{t('detail.amountAdjusted')}</p>
                     <p className="text-xl font-bold text-green-600">
                       ${dispute.amount_adjusted.toFixed(2)}
                     </p>
@@ -291,16 +299,16 @@ export default function DisputeDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageSquare className="h-5 w-5" />
-                Comments
+                {t('detail.comments')}
               </CardTitle>
               <CardDescription>
-                Communication history for this dispute
+                {t('detail.commentsDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {comments.length === 0 ? (
                 <p className="text-center text-muted-foreground py-4">
-                  No comments yet
+                  {t('detail.noComments')}
                 </p>
               ) : (
                 <div className="space-y-4">
@@ -321,7 +329,7 @@ export default function DisputeDetailPage() {
                             </span>
                             {isAdmin && (
                               <Badge variant="outline" className="text-xs">
-                                Staff
+                                {t('detail.staff')}
                               </Badge>
                             )}
                             <span className="text-xs text-muted-foreground">
@@ -341,7 +349,7 @@ export default function DisputeDetailPage() {
                   <Separator />
                   <div className="space-y-3">
                     <Textarea
-                      placeholder="Add a comment..."
+                      placeholder={t('detail.addComment')}
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
                       rows={3}
@@ -356,7 +364,7 @@ export default function DisputeDetailPage() {
                       ) : (
                         <Send className="h-4 w-4 mr-2" />
                       )}
-                      Send Comment
+                      {t('detail.sendComment')}
                     </Button>
                   </div>
                 </>
@@ -370,24 +378,24 @@ export default function DisputeDetailPage() {
           {/* Details */}
           <Card>
             <CardHeader>
-              <CardTitle>Details</CardTitle>
+              <CardTitle>{t('detail.details')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-sm text-muted-foreground">Type</p>
-                <p className="font-medium">{DISPUTE_TYPE_LABELS[dispute.dispute_type] || dispute.dispute_type}</p>
+                <p className="text-sm text-muted-foreground">{t('detail.type')}</p>
+                <p className="font-medium">{t(`types.${dispute.dispute_type}`)}</p>
               </div>
 
               <div>
-                <p className="text-sm text-muted-foreground">Priority</p>
+                <p className="text-sm text-muted-foreground">{t('detail.priorityLabel')}</p>
                 <Badge className={PRIORITY_BADGES[dispute.priority]?.className || ''}>
-                  {PRIORITY_BADGES[dispute.priority]?.label || dispute.priority}
+                  {t(`priority.${dispute.priority}`)}
                 </Badge>
               </div>
 
               {dispute.amount_disputed !== null && (
                 <div>
-                  <p className="text-sm text-muted-foreground">Amount Disputed</p>
+                  <p className="text-sm text-muted-foreground">{t('detail.amountDisputedLabel')}</p>
                   <div className="flex items-center gap-1">
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium">{dispute.amount_disputed.toFixed(2)}</span>
@@ -398,12 +406,12 @@ export default function DisputeDetailPage() {
               <Separator />
 
               <div>
-                <p className="text-sm text-muted-foreground">Created</p>
+                <p className="text-sm text-muted-foreground">{t('detail.created')}</p>
                 <p className="font-medium">{format(new Date(dispute.created_at), 'PPp')}</p>
               </div>
 
               <div>
-                <p className="text-sm text-muted-foreground">Last Updated</p>
+                <p className="text-sm text-muted-foreground">{t('detail.lastUpdated')}</p>
                 <p className="font-medium">{format(new Date(dispute.updated_at), 'PPp')}</p>
               </div>
             </CardContent>
@@ -416,9 +424,9 @@ export default function DisputeDetailPage() {
                 <div className="flex gap-3">
                   <AlertTriangle className="h-5 w-5 text-yellow-600 shrink-0" />
                   <div>
-                    <p className="font-medium text-yellow-800">Information Requested</p>
+                    <p className="font-medium text-yellow-800">{t('detail.infoRequested')}</p>
                     <p className="text-sm text-yellow-700 mt-1">
-                      Our team needs additional information to process your dispute. Please check the comments and respond with the requested details.
+                      {t('detail.infoRequestedMessage')}
                     </p>
                   </div>
                 </div>

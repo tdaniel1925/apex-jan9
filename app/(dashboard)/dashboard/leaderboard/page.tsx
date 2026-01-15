@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -88,6 +89,7 @@ function getRankBackground(position: number) {
 }
 
 export default function LeaderboardPage() {
+  const t = useTranslations('leaderboard');
   const [metric, setMetric] = useState('commissions');
   const [period, setPeriod] = useState('month');
   const [data, setData] = useState<LeaderboardData | null>(null);
@@ -122,8 +124,11 @@ export default function LeaderboardPage() {
   };
 
   const getMetricLabel = () => {
-    const m = METRICS.find((m) => m.value === metric);
-    return m?.label || metric;
+    return t(`metrics.${metric}`);
+  };
+
+  const getPeriodLabel = (periodValue: string) => {
+    return t(`periods.${periodValue}`);
   };
 
   return (
@@ -133,10 +138,10 @@ export default function LeaderboardPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
             <Trophy className="h-6 w-6 text-yellow-500" />
-            Leaderboard
+            {t('title')}
           </h1>
           <p className="text-muted-foreground">
-            See who&apos;s leading in production and recruiting
+            {t('description')}
           </p>
         </div>
         <Select value={period} onValueChange={setPeriod}>
@@ -146,7 +151,7 @@ export default function LeaderboardPage() {
           <SelectContent>
             {PERIODS.map((p) => (
               <SelectItem key={p.value} value={p.value}>
-                {p.label}
+                {getPeriodLabel(p.value)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -163,11 +168,11 @@ export default function LeaderboardPage() {
                   <Star className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Your Position</p>
+                  <p className="text-sm text-muted-foreground">{t('yourPosition')}</p>
                   <p className="text-2xl font-bold">
                     #{data.currentUser.rank}{' '}
                     <span className="text-sm font-normal text-muted-foreground">
-                      of {data.currentUser.totalParticipants}
+                      {t('ofTotal', { total: data.currentUser.totalParticipants })}
                     </span>
                   </p>
                 </div>
@@ -191,7 +196,7 @@ export default function LeaderboardPage() {
           {METRICS.map((m) => (
             <TabsTrigger key={m.value} value={m.value} className="gap-2">
               <m.icon className="h-4 w-4" />
-              {m.label}
+              {t(`metrics.${m.value}`)}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -288,10 +293,9 @@ export default function LeaderboardPage() {
             {/* Full List */}
             <Card>
               <CardHeader>
-                <CardTitle>Rankings</CardTitle>
+                <CardTitle>{t('rankings')}</CardTitle>
                 <CardDescription>
-                  Top performers by {m.label.toLowerCase()} -{' '}
-                  {PERIODS.find((p) => p.value === period)?.label}
+                  {t('topPerformersBy', { metric: t(`metrics.${m.value}`).toLowerCase(), period: getPeriodLabel(period) })}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -303,7 +307,7 @@ export default function LeaderboardPage() {
                   <div className="text-center py-12">
                     <Trophy className="h-12 w-12 mx-auto text-muted-foreground/50" />
                     <p className="mt-4 text-muted-foreground">
-                      No data for this period yet
+                      {t('noDataYet')}
                     </p>
                   </div>
                 ) : (
@@ -340,7 +344,7 @@ export default function LeaderboardPage() {
                         <div className="text-right">
                           <p className="font-bold">{formatValue(performer.value)}</p>
                           <p className="text-xs text-muted-foreground">
-                            {m.label}
+                            {t(`metrics.${m.value}`)}
                           </p>
                         </div>
                       </div>

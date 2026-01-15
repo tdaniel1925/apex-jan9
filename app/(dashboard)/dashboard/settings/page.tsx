@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +15,7 @@ import { AvatarUpload } from '@/components/dashboard/avatar-upload';
 import { toast } from 'sonner';
 
 export default function SettingsPage() {
+  const t = useTranslations('settings');
   const { user } = useAuth();
   const [agent, setAgent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -68,10 +70,10 @@ export default function SettingsPage() {
 
       if (error) throw error;
       setAgent({ ...agent, ...formData });
-      toast.success('Profile updated successfully');
+      toast.success(t('profileUpdated'));
     } catch (error) {
       console.error('Error saving profile:', error);
-      toast.error('Failed to save profile');
+      toast.error(t('failedSaveProfile'));
     } finally {
       setSaving(false);
     }
@@ -82,10 +84,10 @@ export default function SettingsPage() {
     try {
       await navigator.clipboard.writeText(link);
       setCopied(true);
-      toast.success('Referral link copied to clipboard');
+      toast.success(t('linkCopied'));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error('Failed to copy link');
+      toast.error(t('failedCopyLink'));
     }
   };
 
@@ -100,9 +102,9 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
         <p className="text-muted-foreground">
-          Manage your account settings and preferences.
+          {t('description')}
         </p>
       </div>
 
@@ -111,9 +113,9 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
-            Profile Information
+            {t('profileInfo')}
           </CardTitle>
-          <CardDescription>Update your personal information</CardDescription>
+          <CardDescription>{t('updatePersonalInfo')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <AvatarUpload
@@ -124,7 +126,7 @@ export default function SettingsPage() {
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
+              <Label htmlFor="firstName">{t('firstName')}</Label>
               <Input
                 id="firstName"
                 value={formData.first_name}
@@ -132,7 +134,7 @@ export default function SettingsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
+              <Label htmlFor="lastName">{t('lastName')}</Label>
               <Input
                 id="lastName"
                 value={formData.last_name}
@@ -140,11 +142,11 @@ export default function SettingsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input id="email" type="email" defaultValue={agent?.email || ''} disabled />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{t('phone')}</Label>
               <Input
                 id="phone"
                 type="tel"
@@ -156,7 +158,7 @@ export default function SettingsPage() {
 
           <Button onClick={handleSaveProfile} disabled={saving}>
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save Changes
+            {t('saveChanges')}
           </Button>
         </CardContent>
       </Card>
@@ -166,31 +168,31 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5" />
-            AI Copilot
+            {t('aiCopilot')}
           </CardTitle>
-          <CardDescription>Manage your AI assistant subscription</CardDescription>
+          <CardDescription>{t('manageAiSubscription')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between p-4 rounded-lg border">
             <div>
               <div className="flex items-center gap-2">
-                <p className="font-semibold">Current Plan</p>
+                <p className="font-semibold">{t('currentPlan')}</p>
                 <Badge variant={agent?.ai_copilot_tier === 'none' ? 'secondary' : 'default'}>
-                  {agent?.ai_copilot_tier === 'none' ? 'Not Subscribed' :
-                   agent?.ai_copilot_tier === 'basic' ? 'Basic - $49/mo' :
-                   agent?.ai_copilot_tier === 'pro' ? 'Pro - $99/mo' :
-                   'Agency - $199/mo'}
+                  {agent?.ai_copilot_tier === 'none' ? t('notSubscribed') :
+                   agent?.ai_copilot_tier === 'basic' ? t('basicPlan') :
+                   agent?.ai_copilot_tier === 'pro' ? t('proPlan') :
+                   t('agencyPlan')}
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground mt-1">
                 {agent?.ai_copilot_tier === 'none'
-                  ? 'Get AI-powered assistance for sales and recruiting'
-                  : 'Your AI assistant is active and ready to help'}
+                  ? t('getAiAssistance')
+                  : t('aiAssistantActive')}
               </p>
             </div>
             <Link href="/copilot/subscribe">
               <Button variant={agent?.ai_copilot_tier === 'none' ? 'default' : 'outline'}>
-                {agent?.ai_copilot_tier === 'none' ? 'Subscribe' : 'Manage Plan'}
+                {agent?.ai_copilot_tier === 'none' ? t('subscribe') : t('managePlan')}
               </Button>
             </Link>
           </div>
@@ -202,39 +204,39 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
-            Security
+            {t('security')}
           </CardTitle>
-          <CardDescription>Manage your account security</CardDescription>
+          <CardDescription>{t('manageAccountSecurity')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-4 rounded-lg border">
             <div className="flex items-center gap-3">
               <Key className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="font-medium">Password</p>
-                <p className="text-sm text-muted-foreground">Change your account password</p>
+                <p className="font-medium">{t('password')}</p>
+                <p className="text-sm text-muted-foreground">{t('changeAccountPassword')}</p>
               </div>
             </div>
             <Button
               variant="outline"
-              onClick={() => toast.info('Password change will be sent to your email')}
+              onClick={() => toast.info(t('passwordChangeEmail'))}
             >
-              Change
+              {t('change')}
             </Button>
           </div>
           <div className="flex items-center justify-between p-4 rounded-lg border">
             <div className="flex items-center gap-3">
               <Shield className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="font-medium">Two-Factor Authentication</p>
-                <p className="text-sm text-muted-foreground">Add extra security to your account</p>
+                <p className="font-medium">{t('twoFactorAuth')}</p>
+                <p className="text-sm text-muted-foreground">{t('addExtraSecurity')}</p>
               </div>
             </div>
             <Button
               variant="outline"
-              onClick={() => toast.info('Two-factor authentication setup coming soon')}
+              onClick={() => toast.info(t('twoFactorComingSoon'))}
             >
-              Enable
+              {t('enable')}
             </Button>
           </div>
         </CardContent>
@@ -245,35 +247,35 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Bell className="h-5 w-5" />
-            Notifications
+            {t('notifications')}
           </CardTitle>
-          <CardDescription>Manage how you receive notifications</CardDescription>
+          <CardDescription>{t('manageNotifications')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-4 rounded-lg border">
             <div>
-              <p className="font-medium">Email Notifications</p>
-              <p className="text-sm text-muted-foreground">Receive updates via email</p>
+              <p className="font-medium">{t('emailNotifications')}</p>
+              <p className="text-sm text-muted-foreground">{t('emailNotifDesc')}</p>
             </div>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => toast.info('Email notification settings coming soon')}
+              onClick={() => toast.info(t('emailNotifComingSoon'))}
             >
-              Configure
+              {t('configure')}
             </Button>
           </div>
           <div className="flex items-center justify-between p-4 rounded-lg border">
             <div>
-              <p className="font-medium">Push Notifications</p>
-              <p className="text-sm text-muted-foreground">Receive browser notifications</p>
+              <p className="font-medium">{t('pushNotifications')}</p>
+              <p className="text-sm text-muted-foreground">{t('pushNotifDesc')}</p>
             </div>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => toast.info('Push notification settings coming soon')}
+              onClick={() => toast.info(t('pushNotifComingSoon'))}
             >
-              Configure
+              {t('configure')}
             </Button>
           </div>
         </CardContent>
@@ -282,8 +284,8 @@ export default function SettingsPage() {
       {/* Referral Link */}
       <Card>
         <CardHeader>
-          <CardTitle>Your Referral Link</CardTitle>
-          <CardDescription>Share this link to recruit new agents</CardDescription>
+          <CardTitle>{t('yourReferralLink')}</CardTitle>
+          <CardDescription>{t('shareToRecruit')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2">

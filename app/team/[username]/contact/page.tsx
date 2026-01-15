@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/db/supabase-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +17,7 @@ import { RANK_CONFIG } from '@/lib/config/ranks';
 export default function ContactPage() {
   const params = useParams();
   const username = params.username as string;
+  const t = useTranslations('replicated.contact');
   const [agent, setAgent] = useState<Agent | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -99,7 +101,7 @@ export default function ContactPage() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="animate-pulse text-muted-foreground">{t('loading')}</div>
       </div>
     );
   }
@@ -107,7 +109,7 @@ export default function ContactPage() {
   if (!agent) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <p className="text-muted-foreground">Agent not found</p>
+        <p className="text-muted-foreground">{t('agentNotFound')}</p>
       </div>
     );
   }
@@ -119,10 +121,9 @@ export default function ContactPage() {
       {/* Hero */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-4">Contact {agent.first_name}</h1>
+          <h1 className="text-4xl font-bold mb-4">{t('title', { agentName: agent.first_name })}</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Have questions about the opportunity? Ready to get started?
-            Reach out and let&apos;s connect.
+            {t('subtitle')}
           </p>
         </div>
       </section>
@@ -154,7 +155,7 @@ export default function ContactPage() {
                         <Mail className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">Email</p>
+                        <p className="text-sm text-muted-foreground">{t('email')}</p>
                         <a
                           href={`mailto:${agent.email}`}
                           className="font-medium hover:text-primary"
@@ -170,7 +171,7 @@ export default function ContactPage() {
                           <Phone className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Phone</p>
+                          <p className="text-sm text-muted-foreground">{t('phone')}</p>
                           <a
                             href={`tel:${agent.phone}`}
                             className="font-medium hover:text-primary"
@@ -184,9 +185,7 @@ export default function ContactPage() {
 
                   <div className="mt-6 p-4 border rounded-lg">
                     <p className="text-sm text-muted-foreground">
-                      I&apos;m here to answer your questions and help you get started
-                      on your journey with Apex Affinity Group. Don&apos;t hesitate to
-                      reach out - I&apos;d love to hear from you!
+                      {t('agentMessage')}
                     </p>
                   </div>
                 </CardContent>
@@ -201,10 +200,10 @@ export default function ContactPage() {
                     <div className="p-2 bg-primary/10 rounded-lg">
                       <MessageSquare className="h-5 w-5 text-primary" />
                     </div>
-                    <CardTitle>Send a Message</CardTitle>
+                    <CardTitle>{t('form.title')}</CardTitle>
                   </div>
                   <CardDescription>
-                    Fill out the form below and I&apos;ll get back to you as soon as possible.
+                    {t('form.subtitle')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -213,15 +212,15 @@ export default function ContactPage() {
                       <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                         <CheckCircle className="h-8 w-8 text-green-600" />
                       </div>
-                      <h3 className="text-xl font-semibold mb-2">Message Sent!</h3>
+                      <h3 className="text-xl font-semibold mb-2">{t('success.title')}</h3>
                       <p className="text-muted-foreground">
-                        Thanks for reaching out. {agent.first_name} will get back to you soon.
+                        {t('success.description', { agentName: agent.first_name })}
                       </p>
                     </div>
                   ) : (
                     <form onSubmit={handleSubmit} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="name">Your Name</Label>
+                        <Label htmlFor="name">{t('form.yourName')}</Label>
                         <Input
                           id="name"
                           name="name"
@@ -233,7 +232,7 @@ export default function ContactPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
+                        <Label htmlFor="email">{t('form.emailAddress')}</Label>
                         <Input
                           id="email"
                           name="email"
@@ -246,7 +245,7 @@ export default function ContactPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number (Optional)</Label>
+                        <Label htmlFor="phone">{t('form.phoneOptional')}</Label>
                         <Input
                           id="phone"
                           name="phone"
@@ -258,11 +257,11 @@ export default function ContactPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="message">Message</Label>
+                        <Label htmlFor="message">{t('form.message')}</Label>
                         <Textarea
                           id="message"
                           name="message"
-                          placeholder="Tell me what you'd like to know..."
+                          placeholder={t('form.messagePlaceholder')}
                           rows={4}
                           value={formData.message}
                           onChange={handleChange}
@@ -272,10 +271,10 @@ export default function ContactPage() {
 
                       <Button type="submit" className="w-full" disabled={submitting}>
                         {submitting ? (
-                          'Sending...'
+                          t('form.sending')
                         ) : (
                           <>
-                            Send Message
+                            {t('form.sendMessage')}
                             <Send className="ml-2 h-4 w-4" />
                           </>
                         )}
@@ -292,19 +291,19 @@ export default function ContactPage() {
       {/* FAQ Quick Links */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold mb-4">Common Questions</h2>
+          <h2 className="text-2xl font-bold mb-4">{t('faq.title')}</h2>
           <p className="text-muted-foreground mb-8">
-            You might find your answer on one of these pages:
+            {t('faq.subtitle')}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button variant="outline" asChild>
-              <a href={`/team/${username}/opportunity`}>About the Opportunity</a>
+              <a href={`/team/${username}/opportunity`}>{t('faq.aboutOpportunity')}</a>
             </Button>
             <Button variant="outline" asChild>
-              <a href={`/team/${username}/products`}>Our Products</a>
+              <a href={`/team/${username}/products`}>{t('faq.ourProducts')}</a>
             </Button>
             <Button variant="outline" asChild>
-              <a href={`/team/${username}/about-me`}>About Your Agent</a>
+              <a href={`/team/${username}/about-me`}>{t('faq.aboutYourAgent')}</a>
             </Button>
           </div>
         </div>

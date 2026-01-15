@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/db/supabase-client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,6 +24,7 @@ import {
 export default function SignupSuccessPage() {
   const params = useParams();
   const username = params.username as string;
+  const t = useTranslations('replicated.signupSuccess');
 
   const [currentUser, setCurrentUser] = useState<Agent | null>(null);
   const [sponsor, setSponsor] = useState<Agent | null>(null);
@@ -79,7 +81,7 @@ export default function SignupSuccessPage() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="animate-pulse text-muted-foreground">{t('loading')}</div>
       </div>
     );
   }
@@ -98,10 +100,10 @@ export default function SignupSuccessPage() {
             <PartyPopper className="h-10 w-10 text-green-600" />
           </div>
           <h1 className="text-4xl font-bold mb-4">
-            Welcome to the Apex Family!
+            {t('title')}
           </h1>
           <p className="text-xl text-muted-foreground">
-            Congratulations, {currentUser?.first_name}! Your account has been created successfully.
+            {t('congratulations', { firstName: currentUser?.first_name || '' })}
           </p>
         </div>
 
@@ -117,7 +119,7 @@ export default function SignupSuccessPage() {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-sm text-muted-foreground">Your Sponsor</p>
+                  <p className="text-sm text-muted-foreground">{t('sponsor.title')}</p>
                   <p className="text-lg font-semibold">
                     {sponsor.first_name} {sponsor.last_name}
                   </p>
@@ -127,8 +129,7 @@ export default function SignupSuccessPage() {
                 </div>
               </div>
               <p className="mt-4 text-sm text-muted-foreground">
-                {sponsor.first_name} will be your mentor and guide as you start your journey.
-                They&apos;ll reach out soon to help you get started!
+                {t('sponsor.mentorMessage', { firstName: sponsor.first_name })}
               </p>
             </CardContent>
           </Card>
@@ -140,10 +141,10 @@ export default function SignupSuccessPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-green-800">
                 <CheckCircle className="h-5 w-5" />
-                Your Personal Recruiting Site is Live!
+                {t('replicatedSite.title')}
               </CardTitle>
               <CardDescription className="text-green-700">
-                Share this link with prospects to start building your team
+                {t('replicatedSite.description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -163,12 +164,12 @@ export default function SignupSuccessPage() {
                   {copied ? (
                     <>
                       <Check className="h-4 w-4 mr-1" />
-                      Copied!
+                      {t('replicatedSite.copied')}
                     </>
                   ) : (
                     <>
                       <Copy className="h-4 w-4 mr-1" />
-                      Copy
+                      {t('replicatedSite.copy')}
                     </>
                   )}
                 </Button>
@@ -177,7 +178,7 @@ export default function SignupSuccessPage() {
                 <Button asChild variant="outline" size="sm">
                   <Link href={`/${userPathPrefix}/${userSiteId}`} target="_blank">
                     <ExternalLink className="h-4 w-4 mr-2" />
-                    Preview Your Site
+                    {t('replicatedSite.preview')}
                   </Link>
                 </Button>
               </div>
@@ -188,9 +189,9 @@ export default function SignupSuccessPage() {
         {/* Next Steps */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Your Next Steps</CardTitle>
+            <CardTitle>{t('nextSteps.title')}</CardTitle>
             <CardDescription>
-              Complete these steps to get started on the right foot
+              {t('nextSteps.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -200,14 +201,14 @@ export default function SignupSuccessPage() {
                   1
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-semibold">Complete Your Profile</h4>
+                  <h4 className="font-semibold">{t('nextSteps.profile.title')}</h4>
                   <p className="text-sm text-muted-foreground">
-                    Add your photo and bio to personalize your recruiting site
+                    {t('nextSteps.profile.description')}
                   </p>
                 </div>
                 <Button asChild variant="ghost" size="sm">
                   <Link href="/dashboard/settings">
-                    Go
+                    {t('nextSteps.go')}
                   </Link>
                 </Button>
               </div>
@@ -219,15 +220,15 @@ export default function SignupSuccessPage() {
                 <div className="flex-1">
                   <h4 className="font-semibold flex items-center gap-2">
                     <BookOpen className="h-4 w-4" />
-                    Start Onboarding Training
+                    {t('nextSteps.training.title')}
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    Learn the essentials with our comprehensive training program
+                    {t('nextSteps.training.description')}
                   </p>
                 </div>
                 <Button asChild variant="ghost" size="sm">
                   <Link href="/dashboard/training">
-                    Start
+                    {t('nextSteps.start')}
                   </Link>
                 </Button>
               </div>
@@ -239,10 +240,10 @@ export default function SignupSuccessPage() {
                 <div className="flex-1">
                   <h4 className="font-semibold flex items-center gap-2">
                     <Users className="h-4 w-4" />
-                    Get Licensed
+                    {t('nextSteps.license.title')}
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    Your sponsor will guide you through the licensing process
+                    {t('nextSteps.license.description')}
                   </p>
                 </div>
               </div>
@@ -254,15 +255,15 @@ export default function SignupSuccessPage() {
                 <div className="flex-1">
                   <h4 className="font-semibold flex items-center gap-2">
                     <Wallet className="h-4 w-4" />
-                    Set Up Direct Deposit
+                    {t('nextSteps.directDeposit.title')}
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    Add your banking info to receive commission payments
+                    {t('nextSteps.directDeposit.description')}
                   </p>
                 </div>
                 <Button asChild variant="ghost" size="sm">
                   <Link href="/dashboard/wallet">
-                    Set Up
+                    {t('nextSteps.setUp')}
                   </Link>
                 </Button>
               </div>
@@ -274,11 +275,11 @@ export default function SignupSuccessPage() {
         <div className="text-center">
           <Button asChild size="lg" className="px-8">
             <Link href="/dashboard">
-              Go to Your Dashboard
+              {t('dashboard')}
             </Link>
           </Button>
           <p className="mt-4 text-sm text-muted-foreground">
-            Check your email for a welcome message with more details
+            {t('checkEmail')}
           </p>
         </div>
       </div>

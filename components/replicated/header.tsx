@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Agent } from '@/lib/types/database';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -18,19 +19,21 @@ interface ReplicatedSiteHeaderProps {
 }
 
 // Navigation - internal links stay within replicated site, external go to main site
+// nameKey is used for translation lookup
 const navigation = [
-  { name: 'Home', href: '', internal: true },
-  { name: 'About Me', href: '/about-me', internal: true },
-  { name: 'Carriers', href: '/carriers', internal: false },
-  { name: 'Compare', href: '/compare', internal: false },
-  { name: 'Opportunity', href: '/opportunity', internal: true },
-  { name: 'FAQ', href: '/faq', internal: false },
-  { name: 'Contact', href: '/contact', internal: true },
+  { nameKey: 'home', href: '', internal: true },
+  { nameKey: 'aboutMe', href: '/about-me', internal: true },
+  { nameKey: 'carriers', href: '/carriers', internal: false },
+  { nameKey: 'compare', href: '/compare', internal: false },
+  { nameKey: 'opportunity', href: '/opportunity', internal: true },
+  { nameKey: 'faq', href: '/faq', internal: false },
+  { nameKey: 'contact', href: '/contact', internal: true },
 ];
 
 export function ReplicatedSiteHeader({ agent, agentCode, basePath: basePathProp = 'join' }: ReplicatedSiteHeaderProps) {
   const pathname = usePathname();
   const basePath = `/${basePathProp}/${agentCode}`;
+  const t = useTranslations('replicated');
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -47,7 +50,7 @@ export function ReplicatedSiteHeader({ agent, agentCode, basePath: basePathProp 
                   </AvatarFallback>
                 </Avatar>
                 <span className="font-medium">
-                  Your Agent: {agent.first_name} {agent.last_name}
+                  {t('yourAgent')}: {agent.first_name} {agent.last_name}
                 </span>
               </div>
             </div>
@@ -82,7 +85,7 @@ export function ReplicatedSiteHeader({ agent, agentCode, basePath: basePathProp 
               const isActive = item.internal && (pathname === href || (item.href === '' && pathname === basePath));
               return (
                 <Link
-                  key={item.name}
+                  key={item.nameKey}
                   href={href}
                   className={cn(
                     'px-4 py-2 text-sm font-medium rounded-md transition-colors',
@@ -91,7 +94,7 @@ export function ReplicatedSiteHeader({ agent, agentCode, basePath: basePathProp 
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                   )}
                 >
-                  {item.name}
+                  {t(`nav.${item.nameKey}`)}
                 </Link>
               );
             })}
@@ -101,7 +104,7 @@ export function ReplicatedSiteHeader({ agent, agentCode, basePath: basePathProp 
           <div className="hidden lg:flex items-center gap-3">
             <MarketingLanguageSwitcher />
             <Button asChild>
-              <Link href={`${basePath}/signup`}>Join Our Team</Link>
+              <Link href={`${basePath}/signup`}>{t('joinOurTeam')}</Link>
             </Button>
           </div>
 
@@ -122,7 +125,7 @@ export function ReplicatedSiteHeader({ agent, agentCode, basePath: basePathProp 
                   const isActive = item.internal && (pathname === href || (item.href === '' && pathname === basePath));
                   return (
                     <Link
-                      key={item.name}
+                      key={item.nameKey}
                       href={href}
                       className={cn(
                         'px-4 py-3 text-lg font-medium rounded-md transition-colors',
@@ -131,13 +134,13 @@ export function ReplicatedSiteHeader({ agent, agentCode, basePath: basePathProp 
                           : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                       )}
                     >
-                      {item.name}
+                      {t(`nav.${item.nameKey}`)}
                     </Link>
                   );
                 })}
                 <div className="pt-4 border-t">
                   <Button asChild className="w-full">
-                    <Link href={`${basePath}/signup`}>Join Our Team</Link>
+                    <Link href={`${basePath}/signup`}>{t('joinOurTeam')}</Link>
                   </Button>
                 </div>
                 <div className="pt-4 border-t space-y-2 text-sm text-muted-foreground">
