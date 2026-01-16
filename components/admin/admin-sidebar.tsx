@@ -30,6 +30,7 @@ import {
   MessageSquareWarning,
   Layers,
   Crown,
+  Sliders,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 
@@ -73,6 +74,7 @@ const navigation = [
   { name: 'AI Copilot', href: '/admin/copilot', icon: Bot, permission: 'copilot.view' },
   { name: 'Email Templates', href: '/admin/email-templates', icon: Mail, permission: 'settings.view' },
   { name: 'Webhooks', href: '/admin/webhooks', icon: Webhook, permission: 'settings.view' },
+  { name: 'Comp Plan Settings', href: '/admin/comp-plan', icon: Sliders, permission: 'settings.view' },
   { name: 'System Settings', href: '/admin/settings', icon: Settings, permission: 'settings.view' },
   { name: 'User Management', href: '/admin/users', icon: UserCog, permission: 'users.view' },
   { name: 'Audit Log', href: '/admin/audit', icon: ClipboardList, permission: 'audit.view' },

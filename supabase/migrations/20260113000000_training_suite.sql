@@ -14,45 +14,61 @@
 -- ============================================
 
 -- ============================================
--- NEW ENUMS
+-- NEW ENUMS (with IF NOT EXISTS logic)
 -- ============================================
 
-CREATE TYPE track_type AS ENUM (
-  'new_agent',
-  'licensing',
-  'product',
-  'sales',
-  'leadership',
-  'compliance'
-);
+DO $$ BEGIN
+  CREATE TYPE track_type AS ENUM (
+    'new_agent',
+    'licensing',
+    'product',
+    'sales',
+    'leadership',
+    'compliance'
+  );
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TYPE question_type AS ENUM (
-  'multiple_choice',
-  'true_false',
-  'multiple_select',
-  'short_answer'
-);
+DO $$ BEGIN
+  CREATE TYPE question_type AS ENUM (
+    'multiple_choice',
+    'true_false',
+    'multiple_select',
+    'short_answer'
+  );
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TYPE resource_type AS ENUM (
-  'pdf',
-  'document',
-  'spreadsheet',
-  'video',
-  'audio',
-  'link',
-  'image'
-);
+DO $$ BEGIN
+  CREATE TYPE resource_type AS ENUM (
+    'pdf',
+    'document',
+    'spreadsheet',
+    'video',
+    'audio',
+    'link',
+    'image'
+  );
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TYPE resource_category AS ENUM (
-  'forms',
-  'scripts',
-  'presentations',
-  'guides',
-  'carrier_materials',
-  'compliance',
-  'marketing',
-  'state_licensing'
-);
+DO $$ BEGIN
+  CREATE TYPE resource_category AS ENUM (
+    'forms',
+    'scripts',
+    'presentations',
+    'guides',
+    'carrier_materials',
+    'compliance',
+    'marketing',
+    'state_licensing'
+  );
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
 
 -- ============================================
 -- TRAINING TRACKS (Learning Paths)

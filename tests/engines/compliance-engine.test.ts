@@ -54,6 +54,11 @@ describe('Compliance Engine', () => {
     updated_at: '2024-01-01T00:00:00Z',
     fast_start_ends_at: '2024-04-01T00:00:00Z',
     is_licensed_agent: false,
+    // License compliance fields
+    license_status: 'licensed',
+    license_number: 'LIC-12345',
+    license_state: 'TX',
+    license_expiration_date: '2027-12-31',
     ...overrides,
   });
 

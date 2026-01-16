@@ -14,10 +14,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Upload, FileSpreadsheet, Download, CheckCircle, AlertCircle, Clock } from 'lucide-react';
-import { CommissionImportDialog } from '@/components/admin/commission-import-dialog';
+import { Download, CheckCircle, AlertCircle, Clock, RefreshCw, Info } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { RequirePermission, PermissionGate, PERMISSIONS } from '@/components/admin/permission-gate';
+import { RequirePermission, PERMISSIONS } from '@/components/admin/permission-gate';
+import { toast } from 'sonner';
 
 type CommissionWithAgent = {
   id: string;
@@ -39,8 +39,8 @@ export default function AdminCommissionsPage() {
     totalCommissions: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showImportDialog, setShowImportDialog] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -74,6 +74,36 @@ export default function AdminCommissionsPage() {
     fetchData();
   }, [fetchData]);
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+    toast.success('Commission data refreshed');
+  };
+
+  const handleExport = () => {
+    const headers = ['Agent', 'Carrier', 'Policy #', 'Premium', 'Commission', 'Status', 'Date'];
+    const rows = recentCommissions.map(c => [
+      `${c.agents?.first_name || ''} ${c.agents?.last_name || ''}`,
+      c.carrier,
+      c.policy_number,
+      c.premium_amount.toFixed(2),
+      c.commission_amount.toFixed(2),
+      c.status,
+      new Date(c.created_at).toLocaleDateString(),
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `commissions-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success('Commission report exported');
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -91,12 +121,31 @@ export default function AdminCommissionsPage() {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
+
+      {/* SmartOffice Sync Notice */}
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          Commission data is synced from SmartOffice. All commission processing and payments are handled in SmartOffice.
+        </AlertDescription>
+      </Alert>
+
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Import Commissions</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Commission History</h1>
           <p className="text-muted-foreground">
-            Upload carrier commission files and manage commission records.
+            View commission records synced from SmartOffice.
           </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="mr-2 h-4 w-4" />
+            Export
+          </Button>
         </div>
       </div>
 
@@ -131,39 +180,12 @@ export default function AdminCommissionsPage() {
         </Card>
       </div>
 
-      {/* Upload Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Upload Commission File</CardTitle>
-          <CardDescription>
-            Upload a CSV file to import commission records in bulk.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="border-2 border-dashed rounded-lg p-8 text-center">
-            <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-medium">Import Commissions from CSV</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Bulk import with column mapping, validation, and error reporting.
-            </p>
-            <PermissionGate permission={PERMISSIONS.COMMISSIONS_IMPORT}>
-            <div className="mt-4 flex justify-center gap-2">
-              <Button onClick={() => setShowImportDialog(true)}>
-                <FileSpreadsheet className="mr-2 h-4 w-4" />
-                Import Commissions
-              </Button>
-            </div>
-            </PermissionGate>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Recent Commissions */}
       <Card>
         <CardHeader>
           <CardTitle>Recent Commissions</CardTitle>
           <CardDescription>
-            Latest imported commission records
+            Commission records synced from SmartOffice
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -183,7 +205,7 @@ export default function AdminCommissionsPage() {
               {recentCommissions.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8">
-                    <p className="text-muted-foreground">No commissions imported yet</p>
+                    <p className="text-muted-foreground">No commissions synced yet</p>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -234,13 +256,6 @@ export default function AdminCommissionsPage() {
           </Table>
         </CardContent>
       </Card>
-
-      {/* Import Dialog */}
-      <CommissionImportDialog
-        open={showImportDialog}
-        onOpenChange={setShowImportDialog}
-        onSuccess={fetchData}
-      />
     </div>
     </RequirePermission>
   );

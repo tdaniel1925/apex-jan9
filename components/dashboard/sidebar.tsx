@@ -21,7 +21,6 @@ import {
   Package,
   MessageSquareWarning,
   Globe,
-  Trophy,
   LucideIcon,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
@@ -41,7 +40,6 @@ const navigation: NavItem[] = [
   { nameKey: 'dashboard', href: '/dashboard', icon: LayoutDashboard },
   { nameKey: 'team', href: '/dashboard/team', icon: Users },
   { nameKey: 'genealogy', href: '/dashboard/genealogy', icon: Network },
-  { nameKey: 'leaderboard', href: '/dashboard/leaderboard', icon: Trophy },
   { nameKey: 'commissions', href: '/dashboard/commissions', icon: DollarSign },
   { nameKey: 'bonuses', href: '/dashboard/bonuses', icon: Award },
   { nameKey: 'wallet', href: '/dashboard/wallet', icon: Wallet },

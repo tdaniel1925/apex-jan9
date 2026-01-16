@@ -46,6 +46,12 @@ describe('Clawback Engine', () => {
       override_amount: 15,
       status: 'paid',
       created_at: '2024-01-01T00:00:00Z',
+      is_rolled_up: false,
+      roll_up_reason: null,
+      original_agent_id: null,
+      rolled_up_from_generation: null,
+      compliance_log_id: null,
+      notes: null,
     },
     {
       id: 'over-2',
@@ -57,6 +63,12 @@ describe('Clawback Engine', () => {
       override_amount: 5,
       status: 'paid',
       created_at: '2024-01-01T00:00:00Z',
+      is_rolled_up: false,
+      roll_up_reason: null,
+      original_agent_id: null,
+      rolled_up_from_generation: null,
+      compliance_log_id: null,
+      notes: null,
     },
   ];
 
@@ -95,6 +107,11 @@ describe('Clawback Engine', () => {
     updated_at: '2024-01-01T00:00:00Z',
     fast_start_ends_at: '2024-04-01T00:00:00Z',
     is_licensed_agent: false,
+    // License compliance fields
+    license_status: 'licensed',
+    license_number: 'LIC-12345',
+    license_state: 'TX',
+    license_expiration_date: '2027-12-31',
   };
 
   describe('calculateClawbackAmounts', () => {

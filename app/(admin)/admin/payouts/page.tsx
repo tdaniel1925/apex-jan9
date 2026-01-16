@@ -13,7 +13,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Popover,
   PopoverContent,
@@ -27,10 +26,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Wallet, CheckCircle, Clock, XCircle, Filter, AlertTriangle, AlertCircle } from 'lucide-react';
-import { PayoutActions } from '@/components/admin/payout-actions';
-import { BulkPayoutDialog } from '@/components/admin/bulk-payout-dialog';
+import { Wallet, CheckCircle, Clock, XCircle, Filter, AlertCircle, Download, RefreshCw, Info } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from 'sonner';
 
 const PAYOUT_METHODS = [
   { value: 'all', label: 'All Methods' },
@@ -51,8 +49,7 @@ type PayoutWithAgent = {
 };
 
 export default function AdminPayoutsPage() {
-  const [pendingPayouts, setPendingPayouts] = useState<PayoutWithAgent[]>([]);
-  const [recentPayouts, setRecentPayouts] = useState<PayoutWithAgent[]>([]);
+  const [allPayouts, setAllPayouts] = useState<PayoutWithAgent[]>([]);
   const [stats, setStats] = useState({
     pendingTotal: 0,
     pendingCount: 0,
@@ -60,10 +57,10 @@ export default function AdminPayoutsPage() {
     processedCount: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [showBulkDialog, setShowBulkDialog] = useState(false);
   const [filterMethod, setFilterMethod] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const fetchData = useCallback(async () => {
@@ -71,30 +68,20 @@ export default function AdminPayoutsPage() {
       setLoading(true);
       setError(null);
 
-      // Get pending payouts from API
-      const pendingResponse = await fetch('/api/admin/payouts?status=pending&limit=100');
-      if (!pendingResponse.ok) {
-        throw new Error(`Failed to fetch pending payouts: ${pendingResponse.statusText}`);
+      // Get all payouts from API
+      const response = await fetch('/api/admin/payouts?limit=100');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch payouts: ${response.statusText}`);
       }
-      const pendingData = await pendingResponse.json();
-      setPendingPayouts(pendingData.payouts || []);
-
-      // Get recent payouts (non-pending) from API
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1);
-      const recentResponse = await fetch(`/api/admin/payouts?status=completed&from_date=${startOfMonth.toISOString()}&limit=50`);
-      if (!recentResponse.ok) {
-        throw new Error(`Failed to fetch recent payouts: ${recentResponse.statusText}`);
-      }
-      const recentData = await recentResponse.json();
-      setRecentPayouts(recentData.payouts || []);
+      const data = await response.json();
+      setAllPayouts(data.payouts || []);
 
       // Use API stats
       setStats({
-        pendingTotal: pendingData.stats?.pendingAmount || 0,
-        pendingCount: pendingData.stats?.pendingCount || 0,
-        processedTotal: recentData.stats?.totalAmount || 0,
-        processedCount: recentData.stats?.completedCount || 0,
+        pendingTotal: data.stats?.pendingAmount || 0,
+        pendingCount: data.stats?.pendingCount || 0,
+        processedTotal: data.stats?.totalAmount || 0,
+        processedCount: data.stats?.completedCount || 0,
       });
     } catch (err) {
       console.error('Error fetching payouts:', err);
@@ -108,32 +95,42 @@ export default function AdminPayoutsPage() {
     fetchData();
   }, [fetchData]);
 
-  const handleSelectAll = () => {
-    if (selectedIds.length === pendingPayouts.length) {
-      setSelectedIds([]);
-    } else {
-      setSelectedIds(pendingPayouts.map((p) => p.id));
-    }
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+    toast.success('Payout data refreshed');
   };
 
-  const handleToggle = (payoutId: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(payoutId)
-        ? prev.filter((id) => id !== payoutId)
-        : [...prev, payoutId]
-    );
+  const handleExport = () => {
+    const headers = ['Agent', 'Email', 'Amount', 'Method', 'Status', 'Requested', 'Processed'];
+    const rows = allPayouts.map(p => [
+      `${p.agents?.first_name || ''} ${p.agents?.last_name || ''}`,
+      p.agents?.email || '',
+      p.amount.toFixed(2),
+      p.method,
+      p.status,
+      new Date(p.created_at).toLocaleDateString(),
+      p.processed_at ? new Date(p.processed_at).toLocaleDateString() : '',
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `payouts-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success('Payout report exported');
   };
 
-  const handleBulkSuccess = () => {
-    setSelectedIds([]);
-    setShowBulkDialog(false);
-    fetchData();
-  };
-
-  // Filter pending payouts by method
-  const filteredPendingPayouts = filterMethod === 'all'
-    ? pendingPayouts
-    : pendingPayouts.filter(payout => payout.method === filterMethod);
+  // Filter payouts by method and status
+  const filteredPayouts = allPayouts.filter(payout => {
+    const methodMatch = filterMethod === 'all' || payout.method === filterMethod;
+    const statusMatch = filterStatus === 'all' || payout.status === filterStatus;
+    return methodMatch && statusMatch;
+  });
 
   if (loading) {
     return (
@@ -151,24 +148,43 @@ export default function AdminPayoutsPage() {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
+
+      {/* SmartOffice Sync Notice */}
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          Payout data is synced from SmartOffice. All payment processing is handled in SmartOffice.
+        </AlertDescription>
+      </Alert>
+
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Process Payouts</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Payout History</h1>
           <p className="text-muted-foreground">
-            Review and process agent withdrawal requests.
+            View agent payout records synced from SmartOffice.
           </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="mr-2 h-4 w-4" />
+            Export
+          </Button>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-amber-200 bg-amber-50">
+        <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-amber-800">Pending Payouts</CardTitle>
+            <CardTitle className="text-sm font-medium">Pending Payouts</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-amber-900">{stats.pendingCount}</div>
-            <p className="text-xs text-amber-700">
+            <div className="text-2xl font-bold">{stats.pendingCount}</div>
+            <p className="text-xs text-muted-foreground">
               {formatCurrency(stats.pendingTotal)} total
             </p>
           </CardContent>
@@ -184,53 +200,23 @@ export default function AdminPayoutsPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Processed</CardTitle>
+            <CardTitle className="text-sm font-medium">Monthly Transactions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.processedCount}</div>
-            <p className="text-xs text-muted-foreground">transactions</p>
+            <p className="text-xs text-muted-foreground">completed</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Warning if pending payouts */}
-      {stats.pendingCount > 0 && (
-        <Card className="border-amber-300 bg-amber-50">
-          <CardContent className="py-4">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="h-5 w-5 text-amber-600" />
-              <div>
-                <p className="font-medium text-amber-900">
-                  {stats.pendingCount} payout{stats.pendingCount > 1 ? 's' : ''} awaiting processing
-                </p>
-                <p className="text-sm text-amber-700">
-                  Total amount: {formatCurrency(stats.pendingTotal)}
-                </p>
-              </div>
-              <Button
-                className="ml-auto"
-                size="sm"
-                onClick={() => {
-                  setSelectedIds(pendingPayouts.map((p) => p.id));
-                  setShowBulkDialog(true);
-                }}
-                disabled={stats.pendingCount === 0}
-              >
-                Process All
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Pending Payouts */}
+      {/* All Payouts */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Pending Payouts</CardTitle>
+              <CardTitle>All Payouts</CardTitle>
               <CardDescription>
-                Withdrawal requests awaiting processing
+                Payout records synced from SmartOffice
               </CardDescription>
             </div>
             <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
@@ -238,8 +224,10 @@ export default function AdminPayoutsPage() {
                 <Button variant="outline" size="sm">
                   <Filter className="mr-2 h-4 w-4" />
                   Filter
-                  {filterMethod !== 'all' && (
-                    <Badge variant="secondary" className="ml-2">1</Badge>
+                  {(filterMethod !== 'all' || filterStatus !== 'all') && (
+                    <Badge variant="secondary" className="ml-2">
+                      {(filterMethod !== 'all' ? 1 : 0) + (filterStatus !== 'all' ? 1 : 0)}
+                    </Badge>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -247,10 +235,7 @@ export default function AdminPayoutsPage() {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label>Payment Method</Label>
-                    <Select value={filterMethod} onValueChange={(value) => {
-                      setFilterMethod(value);
-                      setIsFilterOpen(false);
-                    }}>
+                    <Select value={filterMethod} onValueChange={setFilterMethod}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select method" />
                       </SelectTrigger>
@@ -263,17 +248,33 @@ export default function AdminPayoutsPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  {filterMethod !== 'all' && (
+                  <div className="space-y-2">
+                    <Label>Status</Label>
+                    <Select value={filterStatus} onValueChange={setFilterStatus}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="processing">Processing</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                        <SelectItem value="failed">Failed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {(filterMethod !== 'all' || filterStatus !== 'all') && (
                     <Button
                       variant="outline"
                       size="sm"
                       className="w-full"
                       onClick={() => {
                         setFilterMethod('all');
+                        setFilterStatus('all');
                         setIsFilterOpen(false);
                       }}
                     >
-                      Clear Filter
+                      Clear Filters
                     </Button>
                   )}
                 </div>
@@ -285,38 +286,29 @@ export default function AdminPayoutsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[50px]">
-                  <Checkbox
-                    checked={selectedIds.length === pendingPayouts.length && pendingPayouts.length > 0}
-                    onCheckedChange={handleSelectAll}
-                  />
-                </TableHead>
                 <TableHead>Agent</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Method</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Requested</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Processed</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredPendingPayouts.length === 0 ? (
+              {filteredPayouts.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8">
                     <Wallet className="mx-auto h-12 w-12 text-muted-foreground/50" />
                     <p className="mt-2 text-muted-foreground">
-                      {filterMethod !== 'all' ? 'No payouts match this filter' : 'No pending payouts'}
+                      {filterMethod !== 'all' || filterStatus !== 'all'
+                        ? 'No payouts match this filter'
+                        : 'No payouts synced yet'}
                     </p>
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredPendingPayouts.map((payout) => (
+                filteredPayouts.map((payout) => (
                   <TableRow key={payout.id}>
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedIds.includes(payout.id)}
-                        onCheckedChange={() => handleToggle(payout.id)}
-                      />
-                    </TableCell>
                     <TableCell>
                       <div>
                         <p className="font-medium">
@@ -338,83 +330,26 @@ export default function AdminPayoutsPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {new Date(payout.created_at).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <PayoutActions
-                        payoutId={payout.id}
-                        agentName={`${payout.agents?.first_name} ${payout.agents?.last_name}`}
-                        amount={payout.amount}
-                        method={payout.method}
-                        status={payout.status}
-                        onSuccess={fetchData}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      {/* Recent Payouts */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Payouts</CardTitle>
-          <CardDescription>
-            Processed payout history
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Agent</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Method</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Processed</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentPayouts.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
-                    <p className="text-muted-foreground">No payout history</p>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                recentPayouts.map((payout) => (
-                  <TableRow key={payout.id}>
-                    <TableCell>
-                      {payout.agents?.first_name} {payout.agents?.last_name}
-                    </TableCell>
-                    <TableCell className="font-semibold">
-                      {formatCurrency(payout.amount)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">
-                        {payout.method === 'ach' && 'ACH Transfer'}
-                        {payout.method === 'check' && 'Check'}
-                        {payout.method === 'wire' && 'Wire Transfer'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
                       <Badge
                         variant={
                           payout.status === 'completed'
                             ? 'default'
                             : payout.status === 'processing'
                             ? 'secondary'
+                            : payout.status === 'pending'
+                            ? 'outline'
                             : 'destructive'
                         }
                       >
                         {payout.status === 'completed' && <CheckCircle className="mr-1 h-3 w-3" />}
                         {payout.status === 'processing' && <Clock className="mr-1 h-3 w-3" />}
+                        {payout.status === 'pending' && <Clock className="mr-1 h-3 w-3" />}
                         {payout.status === 'failed' && <XCircle className="mr-1 h-3 w-3" />}
                         {payout.status}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {new Date(payout.created_at).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
                       {payout.processed_at
@@ -428,14 +363,6 @@ export default function AdminPayoutsPage() {
           </Table>
         </CardContent>
       </Card>
-
-      <BulkPayoutDialog
-        payouts={pendingPayouts.filter((p) => selectedIds.includes(p.id))}
-        action="process"
-        open={showBulkDialog}
-        onOpenChange={setShowBulkDialog}
-        onSuccess={handleBulkSuccess}
-      />
     </div>
   );
 }

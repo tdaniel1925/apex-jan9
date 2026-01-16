@@ -86,6 +86,13 @@ export function createOverrideRecords(
       override_rate: overrideRate,
       override_amount: overrideAmount,
       status: 'pending',
+      // Roll-up tracking fields (defaults for normal overrides)
+      is_rolled_up: false,
+      roll_up_reason: null,
+      original_agent_id: null,
+      rolled_up_from_generation: null,
+      compliance_log_id: null,
+      notes: null,
     });
   }
 

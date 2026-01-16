@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -34,9 +34,12 @@ import {
   CheckCircle,
   XCircle,
   Globe,
+  RefreshCw,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import { useAdminAuth } from '@/components/admin/admin-auth-provider';
+import { LogoUpload } from '@/components/admin/logo-upload';
 
 interface EmailTemplate {
   id: string;
@@ -56,6 +59,15 @@ interface Stats {
   total: number;
   active: number;
   byCategory: Record<string, number>;
+}
+
+interface EmailBrandingSettings {
+  id: string;
+  header_logo_url: string;
+  header_logo_width: number;
+  footer_logo_url: string;
+  footer_logo_width: number;
+  updated_at: string;
 }
 
 const CATEGORIES = [
@@ -88,6 +100,8 @@ export default function AdminEmailTemplatesPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [brandingSettings, setBrandingSettings] = useState<EmailBrandingSettings | null>(null);
+  const [brandingLoading, setBrandingLoading] = useState(true);
 
   const fetchTemplates = async () => {
     try {
@@ -114,9 +128,41 @@ export default function AdminEmailTemplatesPage() {
     }
   };
 
+  const fetchBrandingSettings = useCallback(async () => {
+    try {
+      setBrandingLoading(true);
+      const res = await fetch('/api/admin/email-branding', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setBrandingSettings(data);
+      } else {
+        console.error('Failed to load branding settings');
+      }
+    } catch (error) {
+      console.error('Error fetching branding settings:', error);
+    } finally {
+      setBrandingLoading(false);
+    }
+  }, [token]);
+
+  const handleLogoUpload = useCallback((type: 'header_logo' | 'footer_logo', url: string, width: number) => {
+    setBrandingSettings(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        [`${type}_url`]: url,
+        [`${type}_width`]: width,
+      };
+    });
+  }, []);
+
   useEffect(() => {
     fetchTemplates();
-  }, [categoryFilter]);
+    fetchBrandingSettings();
+  }, [categoryFilter, fetchBrandingSettings]);
 
   const handleSearch = () => {
     setLoading(true);
@@ -427,36 +473,79 @@ export default function AdminEmailTemplatesPage() {
         </CardContent>
       </Card>
 
-      {/* Email Footer Info */}
+      {/* Email Branding Settings */}
       <Card>
         <CardHeader>
-          <CardTitle>Email Branding</CardTitle>
-          <CardDescription>
-            All emails include the company logo and footer automatically.
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Email Branding</CardTitle>
+              <CardDescription>
+                Upload and manage logos for email templates. Header logo appears on white background, footer logo on dark background.
+              </CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchBrandingSettings}
+              disabled={brandingLoading}
+            >
+              <RefreshCw className={cn('h-4 w-4 mr-2', brandingLoading && 'animate-spin')} />
+              Refresh
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-medium mb-2">Header Logo</h4>
-              <div className="bg-[#1e3a5f] p-4 rounded-lg text-center">
-                <img
-                  src="/images/logo.png"
-                  alt="Apex Affinity Group"
-                  className="max-w-[200px] mx-auto"
+          {brandingLoading && !brandingSettings ? (
+            <div className="grid md:grid-cols-2 gap-6">
+              <Skeleton className="h-[180px]" />
+              <Skeleton className="h-[180px]" />
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Header Logo Upload */}
+              <div>
+                <h4 className="font-medium mb-3">Header Logo</h4>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Displayed on white background in email headers. Max 300x100px.
+                </p>
+                <LogoUpload
+                  type="header_logo"
+                  currentUrl={brandingSettings?.header_logo_url}
+                  onUploadComplete={(url, width) => handleLogoUpload('header_logo', url, width)}
+                  label="Upload Header Logo"
+                  description="Recommended: PNG with transparency. Max 5MB."
+                  previewBgColor="#ffffff"
+                />
+              </div>
+
+              {/* Footer Logo Upload */}
+              <div>
+                <h4 className="font-medium mb-3">Footer Logo</h4>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Displayed on dark background (#1e3a5f) in email footers. Max 200x80px.
+                </p>
+                <LogoUpload
+                  type="footer_logo"
+                  currentUrl={brandingSettings?.footer_logo_url}
+                  onUploadComplete={(url, width) => handleLogoUpload('footer_logo', url, width)}
+                  label="Upload Footer Logo"
+                  description="Use white/light colored logo. Max 5MB."
+                  previewBgColor="#1e3a5f"
                 />
               </div>
             </div>
-            <div>
-              <h4 className="font-medium mb-2">Footer Address</h4>
-              <div className="bg-muted p-4 rounded-lg text-center text-sm">
-                <p className="font-medium">Apex Affinity Group</p>
-                <p>1600 Highway 6 Ste 400</p>
-                <p>Sugar Land, TX 77478</p>
-                <p className="mt-2 text-muted-foreground">
-                  © {new Date().getFullYear()} Apex Affinity Group. All rights reserved.
-                </p>
-              </div>
+          )}
+
+          {/* Footer Address Preview */}
+          <div className="mt-6 pt-6 border-t">
+            <h4 className="font-medium mb-3">Footer Address (All Emails)</h4>
+            <div className="bg-muted p-4 rounded-lg text-center text-sm">
+              <p className="font-medium">Apex Affinity Group</p>
+              <p>1600 Highway 6 Ste 400</p>
+              <p>Sugar Land, TX 77478</p>
+              <p className="mt-2 text-muted-foreground">
+                © {new Date().getFullYear()} Apex Affinity Group. All rights reserved.
+              </p>
             </div>
           </div>
         </CardContent>

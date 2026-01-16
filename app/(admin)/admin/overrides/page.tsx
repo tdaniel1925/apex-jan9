@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { formatCurrency } from '@/lib/engines/wallet-engine';
 import { RANK_CONFIG, Rank } from '@/lib/config/ranks';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,11 +15,18 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { DollarSign, Download, Filter, Search, TrendingUp, Users } from 'lucide-react';
-import { createClient, Tables } from '@/lib/db/supabase-client';
+import { DollarSign, Download, Search, AlertCircle, RefreshCw, Info } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 
-type OverrideWithDetails = Tables<'overrides'> & {
+type OverrideWithDetails = {
+  id: string;
+  agent_id: string;
+  commission_id: string;
+  generation: number;
+  override_rate: number;
+  override_amount: number;
+  created_at: string;
   agents: { first_name: string; last_name: string; rank: string } | null;
   commissions: {
     policy_number: string;
@@ -52,60 +59,38 @@ export default function AdminOverridesPage() {
     poolAmount: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const supabase = createClient();
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-      // Get recent overrides with details
-      const { data: overridesData } = await supabase
-        .from('overrides')
-        .select(`
-          *,
-          agents(first_name, last_name, rank),
-          commissions(policy_number, carrier, premium_amount, agents(first_name, last_name))
-        `)
-        .order('created_at', { ascending: false })
-        .limit(100);
+      const response = await fetch('/api/admin/overrides?limit=100');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch overrides: ${response.statusText}`);
+      }
 
-      setOverrides((overridesData || []) as OverrideWithDetails[]);
+      const data = await response.json();
+      setOverrides(data.overrides || []);
 
-      // Calculate stats
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1);
-      startOfMonth.setHours(0, 0, 0, 0);
+      // Use API stats if available, otherwise calculate
+      if (data.stats) {
+        setStats({
+          totalOverrides: data.stats.totalCount || 0,
+          monthlyTotal: data.stats.totalAmount || 0,
+          avgOverride: data.stats.averageAmount || 0,
+          poolAmount: data.stats.poolAmount || 0,
+        });
+      }
 
-      const { data: monthlyOverrides } = await supabase
-        .from('overrides')
-        .select('override_amount, generation')
-        .gte('created_at', startOfMonth.toISOString());
-
-      const overridesArr = (monthlyOverrides || []) as { override_amount: number; generation: number }[];
-      const monthlyTotal = overridesArr.reduce((sum, o) => sum + Number(o.override_amount), 0);
-      const avgOverride = overridesArr.length > 0 ? monthlyTotal / overridesArr.length : 0;
-
-      // Pool amount (generation 7 or pool contributions)
-      const poolContributions = overridesArr.filter(o => o.generation === 7);
-      const poolAmount = poolContributions.reduce((sum, o) => sum + Number(o.override_amount), 0);
-
-      setStats({
-        totalOverrides: overridesArr.length,
-        monthlyTotal,
-        avgOverride,
-        poolAmount,
-      });
-
-      // Calculate agent summaries
-      const { data: allOverrides } = await supabase
-        .from('overrides')
-        .select('agent_id, override_amount, generation, agents(first_name, last_name, rank)')
-        .gte('created_at', startOfMonth.toISOString());
-
-      if (allOverrides) {
+      // Calculate agent summaries from overrides
+      if (data.overrides && data.overrides.length > 0) {
         const agentMap = new Map<string, OverrideSummary>();
 
-        (allOverrides as { agent_id: string; override_amount: number; generation: number; agents: { first_name: string; last_name: string; rank: string } | null }[]).forEach((o) => {
+        data.overrides.forEach((o: OverrideWithDetails) => {
           if (!agentMap.has(o.agent_id)) {
             agentMap.set(o.agent_id, {
               agentId: o.agent_id,
@@ -137,12 +122,24 @@ export default function AdminOverridesPage() {
 
         setSummaries(sortedSummaries);
       }
-
+    } catch (err) {
+      console.error('Error fetching overrides:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load overrides');
+    } finally {
       setLoading(false);
-    };
-
-    fetchData();
+    }
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+    toast.success('Override data refreshed');
+  };
 
   const handleExportReport = () => {
     const headers = ['Recipient', 'Rank', 'Gen 1', 'Gen 2', 'Gen 3', 'Gen 4', 'Gen 5', 'Gen 6', 'Total'];
@@ -166,11 +163,7 @@ export default function AdminOverridesPage() {
     link.download = `override-report-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     URL.revokeObjectURL(url);
-    toast.success('Override report exported successfully');
-  };
-
-  const handleFilterClick = () => {
-    toast.info('Advanced filtering coming soon. Use the search box to filter by agent or policy.');
+    toast.success('Override report exported');
   };
 
   const filteredOverrides = overrides.filter(o => {
@@ -190,17 +183,38 @@ export default function AdminOverridesPage() {
 
   return (
     <div className="space-y-6">
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      {/* SmartOffice Sync Notice */}
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          Override data is synced from SmartOffice. All override calculations and payments are processed in SmartOffice.
+        </AlertDescription>
+      </Alert>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Override Report</h1>
           <p className="text-muted-foreground">
-            6-generation override tracking and analysis.
+            View 6-generation override data synced from SmartOffice.
           </p>
         </div>
-        <Button variant="outline" onClick={handleExportReport}>
-          <Download className="mr-2 h-4 w-4" />
-          Export Report
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button variant="outline" onClick={handleExportReport}>
+            <Download className="mr-2 h-4 w-4" />
+            Export
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -275,7 +289,7 @@ export default function AdminOverridesPage() {
       <Card>
         <CardHeader>
           <CardTitle>Override by Agent</CardTitle>
-          <CardDescription>Monthly override earnings by agent</CardDescription>
+          <CardDescription>Monthly override earnings by agent synced from SmartOffice</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -297,7 +311,7 @@ export default function AdminOverridesPage() {
                 <TableRow>
                   <TableCell colSpan={9} className="text-center py-8">
                     <DollarSign className="mx-auto h-12 w-12 text-muted-foreground/50" />
-                    <p className="mt-2 text-muted-foreground">No overrides this month</p>
+                    <p className="mt-2 text-muted-foreground">No overrides synced yet</p>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -330,21 +344,16 @@ export default function AdminOverridesPage() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Recent Overrides</CardTitle>
-              <CardDescription>Individual override transactions</CardDescription>
+              <CardDescription>Individual override transactions synced from SmartOffice</CardDescription>
             </div>
-            <div className="flex gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Search by agent or policy..."
-                  className="pl-9 w-64"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              <Button variant="outline" size="icon" onClick={handleFilterClick}>
-                <Filter className="h-4 w-4" />
-              </Button>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search by agent or policy..."
+                className="pl-9 w-64"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
           </div>
         </CardHeader>
@@ -365,7 +374,9 @@ export default function AdminOverridesPage() {
               {filteredOverrides.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8">
-                    <p className="text-muted-foreground">No overrides found</p>
+                    <p className="text-muted-foreground">
+                      {searchQuery ? 'No overrides match your search' : 'No overrides synced yet'}
+                    </p>
                   </TableCell>
                 </TableRow>
               ) : (

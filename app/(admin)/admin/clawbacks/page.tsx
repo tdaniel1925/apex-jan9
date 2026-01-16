@@ -21,6 +21,10 @@ import {
   XCircle,
   PlayCircle,
   Eye,
+  Download,
+  RefreshCw,
+  Info,
+  MoreHorizontal,
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
@@ -31,15 +35,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
 
 type Clawback = {
   id: string;
@@ -82,10 +85,11 @@ export default function AdminClawbacksPage() {
     totalAmount: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedClawback, setSelectedClawback] = useState<Clawback | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [processing, setProcessing] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -113,26 +117,58 @@ export default function AdminClawbacksPage() {
     fetchData();
   }, [fetchData]);
 
-  const handleAction = async (clawbackId: string, action: string, notes?: string) => {
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+    toast.success('Clawback data refreshed');
+  };
+
+  const handleExport = () => {
+    const headers = ['Agent', 'Agent Code', 'Policy', 'Type', 'Original', 'Clawback', 'Reason', 'Status', 'Date'];
+    const rows = clawbacks.map(c => [
+      `${c.commission?.agent?.first_name || ''} ${c.commission?.agent?.last_name || ''}`,
+      c.commission?.agent?.agent_code || '',
+      c.commission?.policy_number || '',
+      c.clawback_type.replace('_', ' '),
+      c.original_amount.toFixed(2),
+      c.clawback_amount.toFixed(2),
+      `"${c.reason.replace(/"/g, '""')}"`,
+      c.status,
+      new Date(c.created_at).toLocaleDateString(),
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `clawbacks-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success('Clawback report exported');
+  };
+
+  const handleUpdateStatus = async (clawbackId: string, newStatus: string) => {
+    setProcessing(clawbackId);
     try {
-      setActionLoading(clawbackId);
       const response = await fetch(`/api/admin/clawbacks/${clawbackId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, notes }),
+        body: JSON.stringify({ status: newStatus }),
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || `Failed to ${action} clawback`);
+        throw new Error(`Failed to update clawback status`);
       }
 
-      setShowDetailDialog(false);
-      fetchData();
+      toast.success(`Clawback ${newStatus}`);
+      await fetchData();
     } catch (err) {
-      setError(err instanceof Error ? err.message : `Failed to ${action} clawback`);
+      console.error('Error updating clawback:', err);
+      toast.error('Failed to update clawback');
     } finally {
-      setActionLoading(null);
+      setProcessing(null);
     }
   };
 
@@ -183,12 +219,30 @@ export default function AdminClawbacksPage() {
         </Alert>
       )}
 
+      {/* SmartOffice Integration Notice */}
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          Clawback data is synced from SmartOffice. Process and complete clawbacks here, then submit to SmartOffice for payment adjustments.
+        </AlertDescription>
+      </Alert>
+
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Clawbacks</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Clawback Management</h1>
           <p className="text-muted-foreground">
-            Manage commission reversals for refunds, chargebacks, and fraud.
+            View and manage commission reversals.
           </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="mr-2 h-4 w-4" />
+            Export
+          </Button>
         </div>
       </div>
 
@@ -235,8 +289,8 @@ export default function AdminClawbacksPage() {
       {/* Clawbacks Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Clawback Queue</CardTitle>
-          <CardDescription>All clawback requests and their status</CardDescription>
+          <CardTitle>Clawback Records</CardTitle>
+          <CardDescription>Commission reversals synced from SmartOffice</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -257,7 +311,7 @@ export default function AdminClawbacksPage() {
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-8">
                     <RotateCcw className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
-                    <p className="text-muted-foreground">No clawbacks recorded</p>
+                    <p className="text-muted-foreground">No clawbacks yet</p>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -282,47 +336,57 @@ export default function AdminClawbacksPage() {
                     <TableCell>{getStatusBadge(clawback.status)}</TableCell>
                     <TableCell>{new Date(clawback.created_at).toLocaleDateString()}</TableCell>
                     <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            setSelectedClawback(clawback);
-                            setShowDetailDialog(true);
-                          }}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        {clawback.status === 'pending' && (
-                          <>
-                            <Button
-                              size="sm"
-                              onClick={() => handleAction(clawback.id, 'process')}
-                              disabled={actionLoading === clawback.id}
-                            >
-                              <PlayCircle className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => handleAction(clawback.id, 'cancel')}
-                              disabled={actionLoading === clawback.id}
-                            >
-                              <XCircle className="h-4 w-4" />
-                            </Button>
-                          </>
-                        )}
-                        {clawback.status === 'processing' && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
                           <Button
                             size="sm"
-                            className="bg-green-600 hover:bg-green-700"
-                            onClick={() => handleAction(clawback.id, 'complete')}
-                            disabled={actionLoading === clawback.id}
+                            variant="outline"
+                            disabled={processing === clawback.id}
                           >
-                            <CheckCircle className="h-4 w-4" />
+                            {processing === clawback.id ? (
+                              <RefreshCw className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <MoreHorizontal className="h-4 w-4" />
+                            )}
                           </Button>
-                        )}
-                      </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedClawback(clawback);
+                              setShowDetailDialog(true);
+                            }}
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+                            View Details
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          {clawback.status === 'pending' && (
+                            <DropdownMenuItem
+                              onClick={() => handleUpdateStatus(clawback.id, 'processing')}
+                            >
+                              <PlayCircle className="mr-2 h-4 w-4 text-blue-600" />
+                              Start Processing
+                            </DropdownMenuItem>
+                          )}
+                          {clawback.status === 'processing' && (
+                            <DropdownMenuItem
+                              onClick={() => handleUpdateStatus(clawback.id, 'completed')}
+                            >
+                              <CheckCircle className="mr-2 h-4 w-4 text-green-600" />
+                              Mark Completed
+                            </DropdownMenuItem>
+                          )}
+                          {(clawback.status === 'pending' || clawback.status === 'processing') && (
+                            <DropdownMenuItem
+                              onClick={() => handleUpdateStatus(clawback.id, 'cancelled')}
+                            >
+                              <XCircle className="mr-2 h-4 w-4 text-red-600" />
+                              Cancel
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))
@@ -338,7 +402,7 @@ export default function AdminClawbacksPage() {
           <DialogHeader>
             <DialogTitle>Clawback Details</DialogTitle>
             <DialogDescription>
-              Review clawback information and take action.
+              View clawback information synced from SmartOffice.
             </DialogDescription>
           </DialogHeader>
           {selectedClawback && (

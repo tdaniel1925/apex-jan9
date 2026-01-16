@@ -20,26 +20,14 @@ import {
   PlayCircle,
   CheckCircle,
   AlertCircle,
-  Plus,
   DollarSign,
   Users,
+  Download,
+  RefreshCw,
+  Info,
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { toast } from 'sonner';
 
 type PayPeriod = {
   id: string;
@@ -80,10 +68,8 @@ export default function AdminPayPeriodsPage() {
     totalAgents: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [newPeriodType, setNewPeriodType] = useState<string>('monthly');
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -111,49 +97,34 @@ export default function AdminPayPeriodsPage() {
     fetchData();
   }, [fetchData]);
 
-  const handleCreatePeriod = async () => {
-    try {
-      setActionLoading('create');
-      const response = await fetch('/api/admin/pay-periods', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ period_type: newPeriodType }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to create pay period');
-      }
-
-      setShowCreateDialog(false);
-      fetchData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create pay period');
-    } finally {
-      setActionLoading(null);
-    }
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+    toast.success('Pay period data refreshed');
   };
 
-  const handleAction = async (periodId: string, action: string) => {
-    try {
-      setActionLoading(periodId);
-      const response = await fetch(`/api/admin/pay-periods/${periodId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action }),
-      });
+  const handleExport = () => {
+    const headers = ['Period', 'Type', 'Start Date', 'End Date', 'Agents', 'Total Payout', 'Status'];
+    const rows = payPeriods.map(p => [
+      `#${p.period_number}/${p.year}`,
+      p.period_type,
+      new Date(p.start_date).toLocaleDateString(),
+      new Date(p.end_date).toLocaleDateString(),
+      p.agent_count.toString(),
+      p.total_payout.toFixed(2),
+      p.status,
+    ]);
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || `Failed to ${action} pay period`);
-      }
-
-      fetchData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : `Failed to ${action} pay period`);
-    } finally {
-      setActionLoading(null);
-    }
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `pay-periods-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success('Pay period report exported');
   };
 
   const getStatusBadge = (status: string) => {
@@ -188,17 +159,31 @@ export default function AdminPayPeriodsPage() {
         </Alert>
       )}
 
+      {/* SmartOffice Sync Notice */}
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          Pay period data is synced from SmartOffice. Pay period management and processing is handled in SmartOffice.
+        </AlertDescription>
+      </Alert>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Pay Periods</h1>
           <p className="text-muted-foreground">
-            Manage commission batching and payout cycles.
+            View pay period status synced from SmartOffice.
           </p>
         </div>
-        <Button onClick={() => setShowCreateDialog(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          New Pay Period
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="mr-2 h-4 w-4" />
+            Export
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -245,7 +230,7 @@ export default function AdminPayPeriodsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Pay Period History</CardTitle>
-          <CardDescription>All pay periods and their status</CardDescription>
+          <CardDescription>Pay periods synced from SmartOffice</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -257,14 +242,14 @@ export default function AdminPayPeriodsPage() {
                 <TableHead>Agents</TableHead>
                 <TableHead>Total Payout</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {payPeriods.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
-                    <p className="text-muted-foreground">No pay periods created yet</p>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    <Calendar className="mx-auto h-12 w-12 text-muted-foreground/50" />
+                    <p className="mt-2 text-muted-foreground">No pay periods synced yet</p>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -297,50 +282,6 @@ export default function AdminPayPeriodsPage() {
                       </div>
                     </TableCell>
                     <TableCell>{getStatusBadge(period.status)}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        {period.status === 'open' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleAction(period.id, 'lock')}
-                            disabled={actionLoading === period.id}
-                          >
-                            <Lock className="h-4 w-4" />
-                          </Button>
-                        )}
-                        {period.status === 'locked' && (
-                          <>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleAction(period.id, 'unlock')}
-                              disabled={actionLoading === period.id}
-                            >
-                              <Unlock className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              onClick={() => handleAction(period.id, 'process')}
-                              disabled={actionLoading === period.id}
-                            >
-                              <PlayCircle className="h-4 w-4" />
-                            </Button>
-                          </>
-                        )}
-                        {period.status === 'processing' && (
-                          <Button
-                            size="sm"
-                            onClick={() => handleAction(period.id, 'pay')}
-                            disabled={actionLoading === period.id}
-                            className="bg-green-600 hover:bg-green-700"
-                          >
-                            <CheckCircle className="mr-1 h-4 w-4" />
-                            Pay
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
                   </TableRow>
                 ))
               )}
@@ -348,39 +289,6 @@ export default function AdminPayPeriodsPage() {
           </Table>
         </CardContent>
       </Card>
-
-      {/* Create Dialog */}
-      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create New Pay Period</DialogTitle>
-            <DialogDescription>
-              Create a new pay period to batch commissions for payout.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <label className="text-sm font-medium">Period Type</label>
-            <Select value={newPeriodType} onValueChange={setNewPeriodType}>
-              <SelectTrigger className="mt-2">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="weekly">Weekly</SelectItem>
-                <SelectItem value="biweekly">Bi-weekly</SelectItem>
-                <SelectItem value="monthly">Monthly</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleCreatePeriod} disabled={actionLoading === 'create'}>
-              {actionLoading === 'create' ? 'Creating...' : 'Create Period'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

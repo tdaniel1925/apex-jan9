@@ -28,10 +28,15 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Award, CheckCircle, Clock, XCircle, Filter, AlertCircle, Loader2 } from 'lucide-react';
-import { BonusActions } from '@/components/admin/bonus-actions';
+import { Award, CheckCircle, Clock, Filter, AlertCircle, Download, RefreshCw, Info, ThumbsUp, ThumbsDown, CheckSquare } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 type BonusWithAgent = {
   id: string;
@@ -55,8 +60,7 @@ const BONUS_TYPES = [
 ];
 
 export default function AdminBonusesPage() {
-  const [pendingBonuses, setPendingBonuses] = useState<BonusWithAgent[]>([]);
-  const [monthlyBonuses, setMonthlyBonuses] = useState<BonusWithAgent[]>([]);
+  const [allBonuses, setAllBonuses] = useState<BonusWithAgent[]>([]);
   const [stats, setStats] = useState({
     pendingTotal: 0,
     approvedTotal: 0,
@@ -64,33 +68,26 @@ export default function AdminBonusesPage() {
     phase: 1,
   });
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isApprovingAll, setIsApprovingAll] = useState(false);
+  const [approving, setApproving] = useState<string | null>(null);
+  const [approvingAll, setApprovingAll] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Get pending bonuses from API
-      const pendingResponse = await fetch('/api/admin/bonuses?status=pending');
-      if (!pendingResponse.ok) {
-        throw new Error(`Failed to fetch pending bonuses: ${pendingResponse.statusText}`);
+      // Get all bonuses from API
+      const response = await fetch('/api/admin/bonuses?limit=100');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch bonuses: ${response.statusText}`);
       }
-      const pendingData = await pendingResponse.json();
-      setPendingBonuses(pendingData.bonuses || []);
-
-      // Get all bonuses from API for monthly view
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1);
-      const monthlyResponse = await fetch(`/api/admin/bonuses?from_date=${startOfMonth.toISOString()}`);
-      if (!monthlyResponse.ok) {
-        throw new Error(`Failed to fetch monthly bonuses: ${monthlyResponse.statusText}`);
-      }
-      const monthlyData = await monthlyResponse.json();
-      setMonthlyBonuses(monthlyData.bonuses || []);
+      const data = await response.json();
+      setAllBonuses(data.bonuses || []);
 
       // Get active agents count from agents API
       const agentsResponse = await fetch('/api/admin/agents?status=active&limit=1');
@@ -104,8 +101,8 @@ export default function AdminBonusesPage() {
 
       // Use API stats
       setStats({
-        pendingTotal: pendingData.stats?.pendingAmount || 0,
-        approvedTotal: monthlyData.stats?.totalAmount || 0,
+        pendingTotal: data.stats?.pendingAmount || 0,
+        approvedTotal: data.stats?.totalAmount || 0,
         activeAgents,
         phase,
       });
@@ -121,57 +118,120 @@ export default function AdminBonusesPage() {
     fetchData();
   }, [fetchData]);
 
-  // Filter pending bonuses by type
-  const filteredPendingBonuses = filterType === 'all'
-    ? pendingBonuses
-    : pendingBonuses.filter(bonus => bonus.bonus_type === filterType);
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+    toast.success('Bonus data refreshed');
+  };
 
-  // Handle approve all pending bonuses
+  const handleApprove = async (bonusId: string) => {
+    setApproving(bonusId);
+    try {
+      const response = await fetch(`/api/admin/bonuses/${bonusId}/approve`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to approve bonus');
+      }
+
+      toast.success('Bonus approved');
+      await fetchData();
+    } catch (err) {
+      console.error('Error approving bonus:', err);
+      toast.error('Failed to approve bonus');
+    } finally {
+      setApproving(null);
+    }
+  };
+
+  const handleDeny = async (bonusId: string) => {
+    if (!confirm('Are you sure you want to deny this bonus?')) return;
+
+    setApproving(bonusId);
+    try {
+      const response = await fetch(`/api/admin/bonuses/${bonusId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'denied' }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to deny bonus');
+      }
+
+      toast.success('Bonus denied');
+      await fetchData();
+    } catch (err) {
+      console.error('Error denying bonus:', err);
+      toast.error('Failed to deny bonus');
+    } finally {
+      setApproving(null);
+    }
+  };
+
   const handleApproveAll = async () => {
-    if (filteredPendingBonuses.length === 0) {
+    const pendingBonuses = allBonuses.filter(b => b.status === 'pending');
+    if (pendingBonuses.length === 0) {
       toast.info('No pending bonuses to approve');
       return;
     }
 
-    setIsApprovingAll(true);
-    let successCount = 0;
-    let errorCount = 0;
+    if (!confirm(`Approve all ${pendingBonuses.length} pending bonuses?`)) return;
 
+    setApprovingAll(true);
     try {
-      for (const bonus of filteredPendingBonuses) {
-        try {
-          const response = await fetch(`/api/admin/bonuses/${bonus.id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: 'approved' }),
-          });
+      const response = await fetch('/api/admin/bonuses/bulk-approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bonusIds: pendingBonuses.map(b => b.id) }),
+      });
 
-          if (response.ok) {
-            successCount++;
-          } else {
-            errorCount++;
-          }
-        } catch {
-          errorCount++;
-        }
+      if (!response.ok) {
+        throw new Error('Failed to approve bonuses');
       }
 
-      if (successCount > 0) {
-        toast.success(`Approved ${successCount} bonus${successCount > 1 ? 'es' : ''}`);
-      }
-      if (errorCount > 0) {
-        toast.error(`Failed to approve ${errorCount} bonus${errorCount > 1 ? 'es' : ''}`);
-      }
-
-      // Refresh data
+      const result = await response.json();
+      toast.success(`${result.approved || pendingBonuses.length} bonuses approved`);
       await fetchData();
     } catch (err) {
       console.error('Error approving all bonuses:', err);
       toast.error('Failed to approve bonuses');
     } finally {
-      setIsApprovingAll(false);
+      setApprovingAll(false);
     }
   };
+
+  const handleExport = () => {
+    const headers = ['Agent', 'Rank', 'Type', 'Amount', 'Description', 'Status', 'Date'];
+    const rows = allBonuses.map(b => [
+      `${b.agents?.first_name || ''} ${b.agents?.last_name || ''}`,
+      b.agents?.rank || '',
+      b.bonus_type.replace('_', ' '),
+      b.amount.toFixed(2),
+      b.description,
+      b.status,
+      new Date(b.created_at).toLocaleDateString(),
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `bonuses-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success('Bonus report exported');
+  };
+
+  // Filter bonuses by type and status
+  const filteredBonuses = allBonuses.filter(bonus => {
+    const typeMatch = filterType === 'all' || bonus.bonus_type === filterType;
+    const statusMatch = filterStatus === 'all' || bonus.status === filterStatus;
+    return typeMatch && statusMatch;
+  });
 
   if (loading) {
     return (
@@ -189,29 +249,59 @@ export default function AdminBonusesPage() {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
+
+      {/* SmartOffice Integration Notice */}
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          Incentive bonuses are calculated in Apex and submitted to SmartOffice for payment processing.
+          Base commissions and overrides are synced from SmartOffice for performance tracking.
+        </AlertDescription>
+      </Alert>
+
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Review Bonuses</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Bonus Management</h1>
           <p className="text-muted-foreground">
-            Approve or deny pending bonus requests.
+            View, approve, and manage agent bonuses.
           </p>
         </div>
-        <Badge variant="outline" className="text-lg px-4 py-2">
-          Phase {stats.phase}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="text-lg px-4 py-2">
+            Phase {stats.phase}
+          </Badge>
+          <Button
+            variant="default"
+            onClick={handleApproveAll}
+            disabled={approvingAll || allBonuses.filter(b => b.status === 'pending').length === 0}
+          >
+            {approvingAll ? (
+              <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <CheckSquare className="mr-2 h-4 w-4" />
+            )}
+            Approve All Pending
+          </Button>
+          <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="mr-2 h-4 w-4" />
+            Export
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
+            <CardTitle className="text-sm font-medium">Pending Bonuses</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{pendingBonuses.length}</div>
-            <p className="text-xs text-muted-foreground">
-              {formatCurrency(stats.pendingTotal)} total
-            </p>
+            <div className="text-2xl font-bold">{formatCurrency(stats.pendingTotal)}</div>
+            <p className="text-xs text-muted-foreground">awaiting processing</p>
           </CardContent>
         </Card>
         <Card>
@@ -234,72 +324,77 @@ export default function AdminBonusesPage() {
         </Card>
       </div>
 
-      {/* Pending Bonuses */}
+      {/* All Bonuses */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Pending Bonuses</CardTitle>
+              <CardTitle>All Bonuses</CardTitle>
               <CardDescription>
-                Bonuses awaiting admin approval
+                Bonus records synced from SmartOffice
               </CardDescription>
             </div>
-            <div className="flex gap-2">
-              <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Filter className="mr-2 h-4 w-4" />
-                    Filter
-                    {filterType !== 'all' && (
-                      <Badge variant="secondary" className="ml-2">1</Badge>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-64" align="end">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>Bonus Type</Label>
-                      <Select value={filterType} onValueChange={(value) => {
-                        setFilterType(value);
-                        setIsFilterOpen(false);
-                      }}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {BONUS_TYPES.map((type) => (
-                            <SelectItem key={type.value} value={type.value}>
-                              {type.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    {filterType !== 'all' && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full"
-                        onClick={() => {
-                          setFilterType('all');
-                          setIsFilterOpen(false);
-                        }}
-                      >
-                        Clear Filter
-                      </Button>
-                    )}
+            <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Filter className="mr-2 h-4 w-4" />
+                  Filter
+                  {(filterType !== 'all' || filterStatus !== 'all') && (
+                    <Badge variant="secondary" className="ml-2">
+                      {(filterType !== 'all' ? 1 : 0) + (filterStatus !== 'all' ? 1 : 0)}
+                    </Badge>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64" align="end">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Bonus Type</Label>
+                    <Select value={filterType} onValueChange={setFilterType}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BONUS_TYPES.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                </PopoverContent>
-              </Popover>
-              <Button
-                size="sm"
-                onClick={handleApproveAll}
-                disabled={isApprovingAll || filteredPendingBonuses.length === 0}
-              >
-                {isApprovingAll && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Approve All ({filteredPendingBonuses.length})
-              </Button>
-            </div>
+                  <div className="space-y-2">
+                    <Label>Status</Label>
+                    <Select value={filterStatus} onValueChange={setFilterStatus}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="approved">Approved</SelectItem>
+                        <SelectItem value="paid">Paid</SelectItem>
+                        <SelectItem value="denied">Denied</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {(filterType !== 'all' || filterStatus !== 'all') && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => {
+                        setFilterType('all');
+                        setFilterStatus('all');
+                        setIsFilterOpen(false);
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </CardHeader>
         <CardContent>
@@ -310,22 +405,25 @@ export default function AdminBonusesPage() {
                 <TableHead>Type</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Description</TableHead>
-                <TableHead>Submitted</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredPendingBonuses.length === 0 ? (
+              {filteredBonuses.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={7} className="text-center py-8">
                     <Award className="mx-auto h-12 w-12 text-muted-foreground/50" />
                     <p className="mt-2 text-muted-foreground">
-                      {filterType !== 'all' ? 'No bonuses match this filter' : 'No pending bonuses to review'}
+                      {filterType !== 'all' || filterStatus !== 'all'
+                        ? 'No bonuses match this filter'
+                        : 'No bonuses yet'}
                     </p>
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredPendingBonuses.map((bonus) => (
+                filteredBonuses.map((bonus) => (
                   <TableRow key={bonus.id}>
                     <TableCell>
                       <div>
@@ -349,66 +447,6 @@ export default function AdminBonusesPage() {
                       {bonus.description}
                     </TableCell>
                     <TableCell>
-                      {new Date(bonus.created_at).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <BonusActions
-                        bonusId={bonus.id}
-                        agentName={`${bonus.agents?.first_name} ${bonus.agents?.last_name}`}
-                        amount={bonus.amount}
-                        bonusType={bonus.bonus_type}
-                        onSuccess={fetchData}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      {/* All Monthly Bonuses */}
-      <Card>
-        <CardHeader>
-          <CardTitle>All Bonuses This Month</CardTitle>
-          <CardDescription>
-            Complete history of bonus activity
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Agent</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {monthlyBonuses.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
-                    <p className="text-muted-foreground">No bonuses this month</p>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                monthlyBonuses.map((bonus) => (
-                  <TableRow key={bonus.id}>
-                    <TableCell>
-                      {bonus.agents?.first_name} {bonus.agents?.last_name}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">
-                        {bonus.bonus_type.replace('_', ' ')}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="font-semibold">
-                      {formatCurrency(bonus.amount)}
-                    </TableCell>
-                    <TableCell>
                       <Badge
                         variant={
                           bonus.status === 'paid'
@@ -427,6 +465,37 @@ export default function AdminBonusesPage() {
                     </TableCell>
                     <TableCell>
                       {new Date(bonus.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      {bonus.status === 'pending' ? (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={approving === bonus.id}
+                            >
+                              {approving === bonus.id ? (
+                                <RefreshCw className="h-4 w-4 animate-spin" />
+                              ) : (
+                                'Actions'
+                              )}
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleApprove(bonus.id)}>
+                              <ThumbsUp className="mr-2 h-4 w-4 text-green-600" />
+                              Approve
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDeny(bonus.id)}>
+                              <ThumbsDown className="mr-2 h-4 w-4 text-red-600" />
+                              Deny
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">-</span>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))

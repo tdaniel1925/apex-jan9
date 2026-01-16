@@ -7,6 +7,11 @@ import { Rank } from '../config/ranks';
 import { Carrier } from '../config/carriers';
 
 // ============================================
+// LICENSE STATUS (Commission Compliance)
+// ============================================
+export type LicenseStatus = 'licensed' | 'unlicensed' | 'pending' | 'expired' | 'suspended';
+
+// ============================================
 // AGENTS
 // ============================================
 export interface Agent {
@@ -29,6 +34,12 @@ export interface Agent {
   status: 'pending' | 'active' | 'inactive' | 'terminated';
   licensed_date: string | null;
   is_licensed_agent: boolean; // Whether they're a licensed insurance professional
+
+  // License Compliance (NEW - for commission roll-up)
+  license_status: LicenseStatus;
+  license_number: string | null;
+  license_state: string | null; // Two-letter state code
+  license_expiration_date: string | null;
 
   // Metrics (computed/cached)
   premium_90_days: number;
@@ -75,6 +86,12 @@ export interface AgentInsert {
   status?: 'pending' | 'active' | 'inactive' | 'terminated';
   licensed_date?: string | null;
   is_licensed_agent?: boolean;
+  // License Compliance (optional on insert)
+  license_status?: LicenseStatus;
+  license_number?: string | null;
+  license_state?: string | null;
+  license_expiration_date?: string | null;
+  // Metrics
   premium_90_days?: number;
   persistency_rate?: number;
   placement_rate?: number;
@@ -132,21 +149,31 @@ export interface Commission {
 export type CommissionInsert = Omit<Commission, 'id' | 'created_at' | 'updated_at'>;
 
 // ============================================
-// OVERRIDES (6-Generation)
+// OVERRIDES (6-Generation with Roll-Up Support)
 // ============================================
+export type RollUpReason = 'upline_unlicensed' | 'upline_license_expired' | 'upline_license_suspended' | 'company_policy';
+
 export interface Override {
   id: string;
   commission_id: string;
   agent_id: string; // Agent receiving override
   source_agent_id: string; // Agent who made sale
-  generation: number; // 1-6
+  generation: number; // 1-6 for direct, can traverse up to 7 for roll-up
   override_rate: number;
   override_amount: number;
   status: 'pending' | 'paid' | 'reversed';
+  // Roll-up tracking fields (NEW)
+  is_rolled_up: boolean;
+  roll_up_reason: RollUpReason | null;
+  original_agent_id: string | null; // The unlicensed agent whose override was rolled up
+  rolled_up_from_generation: number | null; // Original generation level before roll-up
+  compliance_log_id: string | null; // Reference to compliance_logs entry
+  notes: string | null;
   created_at: string;
 }
 
 export type OverrideInsert = Omit<Override, 'id' | 'created_at'>;
+export type OverrideUpdate = Partial<OverrideInsert>;
 
 // ============================================
 // BONUSES
@@ -929,6 +956,90 @@ export type SmartOfficeSyncLogInsert = Omit<SmartOfficeSyncLog, 'id' | 'created_
   error_count?: number;
 };
 export type SmartOfficeSyncLogUpdate = Partial<Omit<SmartOfficeSyncLog, 'id' | 'created_at'>>;
+
+// ============================================
+// LICENSE HISTORY (Audit Trail)
+// ============================================
+export interface LicenseHistory {
+  id: string;
+  agent_id: string;
+  previous_status: LicenseStatus | null;
+  new_status: LicenseStatus;
+  license_number: string | null;
+  license_state: string | null;
+  effective_date: string | null;
+  expiration_date: string | null;
+  change_reason: string | null;
+  changed_by: string | null;
+  source: 'manual' | 'smartoffice_sync' | 'expiration_check';
+  created_at: string;
+}
+
+export type LicenseHistoryInsert = Omit<LicenseHistory, 'id' | 'created_at'>;
+
+// ============================================
+// COMPLIANCE LOGS (Immutable Audit Trail)
+// ============================================
+export type ComplianceEventType =
+  | 'unlicensed_override_prevented'
+  | 'commission_rolled_up'
+  | 'commission_forfeited'
+  | 'license_status_change'
+  | 'compliance_review_required';
+
+export interface ComplianceLog {
+  id: string;
+  agent_id: string;
+  event_type: ComplianceEventType;
+  policy_id: string | null;
+  commission_id: string | null;
+  override_id: string | null;
+  description: string;
+  action_taken: string;
+  regulatory_reference: string; // Citation to applicable law (e.g., "NAIC Model Law §218")
+  original_amount: number | null;
+  rolled_up_to_agent_id: string | null;
+  triggered_by: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+export type ComplianceLogInsert = Omit<ComplianceLog, 'id' | 'created_at'>;
+// NOTE: No Update type - compliance logs are IMMUTABLE
+
+// ============================================
+// COMPENSATION PLAN CONFIGURATION
+// ============================================
+export type UnlicensedOverrideHandling = 'roll_up_to_next_licensed' | 'company_retains';
+export type PaymentFrequency = 'weekly' | 'biweekly' | 'monthly';
+
+export interface CompensationPlanConfig {
+  id: string;
+  name: string;
+  description: string | null;
+  effective_date: string;
+  expiration_date: string | null;
+  // CRITICAL: How to handle unlicensed upline overrides
+  unlicensed_override_handling: UnlicensedOverrideHandling;
+  // Override configuration
+  max_generation_levels: number; // Default 6 for direct overrides
+  max_rollup_generations: number; // Default 7 for roll-up search depth
+  // Chargeback policy
+  chargeback_period_months: number;
+  // Payment settings
+  minimum_payout_threshold: number;
+  payment_frequency: PaymentFrequency;
+  // Status
+  is_active: boolean;
+  // Audit
+  created_by: string | null;
+  updated_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type CompensationPlanConfigInsert = Omit<CompensationPlanConfig, 'id' | 'created_at' | 'updated_at'>;
+export type CompensationPlanConfigUpdate = Partial<CompensationPlanConfigInsert>;
 
 // ============================================
 // DATABASE SCHEMA TYPE (for Supabase client)

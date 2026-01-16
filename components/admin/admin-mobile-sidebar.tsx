@@ -18,6 +18,7 @@ import {
   ArrowLeft,
   Mail,
   Crown,
+  Sliders,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 
@@ -35,6 +36,7 @@ const navigation = [
   { name: 'Override Report', href: '/admin/overrides', icon: DollarSign },
   { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
   { name: 'Email Templates', href: '/admin/email-templates', icon: Mail },
+  { name: 'Comp Plan Settings', href: '/admin/comp-plan', icon: Sliders },
   { name: 'System Settings', href: '/admin/settings', icon: Settings },
 ];
 

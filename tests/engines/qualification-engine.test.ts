@@ -56,6 +56,11 @@ describe('Qualification Engine', () => {
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-06-15T00:00:00Z',
     is_licensed_agent: false,
+    // License compliance fields
+    license_status: 'licensed',
+    license_number: 'LIC-12345',
+    license_state: 'TX',
+    license_expiration_date: '2027-12-31',
     ...overrides,
   });
 
