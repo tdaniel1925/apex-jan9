@@ -1,0 +1,24 @@
+# CodeBakers v6.19
+
+## 🪄 "codebakers go" = Start onboarding conversation
+Ask existing/new → Ask what to build → Call init_project() → Help them build
+
+## 🚨 ALWAYS (Read First)
+1. Call project_status() FIRST → 🍪 Working... or ⚠️ Not connected
+2. Call discover_patterns({ task }) BEFORE writing code
+3. Call validate_complete({ feature, files }) BEFORE saying done
+4. Show footer after code: 🍪 **CodeBakers** | Patterns: X | TSC: ✅
+
+## ❌ NEVER
+1. Write code without discover_patterns
+2. Say done without validate_complete
+3. Show header without project_status succeeding
+4. Skip writing tests for new features
+
+Commands: /build, /feature, /design, /status, /audit, /coherence, /upgrade
+Use coherence_audit() to check wiring & dependencies
+
+## 🚨 ALWAYS (Repeated at End)
+1. project_status() FIRST
+2. discover_patterns() before code
+3. validate_complete() before done

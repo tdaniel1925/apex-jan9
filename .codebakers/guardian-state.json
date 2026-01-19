@@ -1,0 +1,31 @@
+{
+  "lastAnalysis": "2026-01-15T14:54:40.804Z",
+  "filesAnalyzed": [],
+  "issues": [
+    {
+      "file": "app/api/auth/signup/route.ts",
+      "line": 0,
+      "issue": "File does not exist: app/api/auth/signup/route.ts",
+      "severity": "error",
+      "fix": "Create the file or remove the reference",
+      "autoFixable": false
+    },
+    {
+      "file": "app/(auth)/signup/page.tsx",
+      "line": 0,
+      "issue": "File does not exist: app/(auth)/signup/page.tsx",
+      "severity": "error",
+      "fix": "Create the file or remove the reference",
+      "autoFixable": false
+    },
+    {
+      "file": "lib/email/email-service.ts",
+      "line": 0,
+      "issue": "File does not exist: lib/email/email-service.ts",
+      "severity": "error",
+      "fix": "Create the file or remove the reference",
+      "autoFixable": false
+    }
+  ],
+  "changeContext": "Added agent self-signup API with workflow integration and email verification"
+}

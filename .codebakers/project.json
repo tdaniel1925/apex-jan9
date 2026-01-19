@@ -1,0 +1,39 @@
+{
+  "id": "304f5e284a68482d",
+  "name": "apex-app",
+  "description": "Insurance agent portal with commission tracking, hierarchy management, and admin back office",
+  "projectHash": "6981a101bcc3fd59",
+  "scope": {
+    "targetAudience": "businesses",
+    "isFullBusiness": true,
+    "needsMarketing": true,
+    "needsAnalytics": true,
+    "needsTeamFeatures": false,
+    "needsAdminDashboard": true,
+    "platforms": [
+      "web"
+    ],
+    "hasRealtime": true,
+    "hasPayments": false,
+    "hasAuth": true,
+    "hasFileUploads": false,
+    "compliance": {
+      "hipaa": false,
+      "pci": false,
+      "gdpr": false,
+      "soc2": false,
+      "coppa": false
+    },
+    "expectedUsers": "medium",
+    "launchTimeline": "asap"
+  },
+  "stack": {
+    "framework": "nextjs",
+    "database": "supabase",
+    "orm": "drizzle",
+    "auth": "supabase",
+    "ui": "shadcn"
+  },
+  "createdAt": "2026-01-11T08:26:10.960Z",
+  "updatedAt": "2026-01-11T08:26:56.519Z"
+}

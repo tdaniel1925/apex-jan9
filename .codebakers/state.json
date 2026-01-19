@@ -1,0 +1,50 @@
+{
+  "sessionId": null,
+  "currentPhase": "requirements",
+  "currentAgent": "pm",
+  "isRunning": false,
+  "gates": {
+    "scoping": {
+      "status": "passed",
+      "passedAt": "2026-01-11T08:26:56.521Z",
+      "approvedBy": "auto",
+      "artifacts": [
+        "scope.json"
+      ]
+    },
+    "requirements": {
+      "status": "in_progress"
+    },
+    "architecture": {
+      "status": "pending"
+    },
+    "design_review": {
+      "status": "pending"
+    },
+    "implementation": {
+      "status": "pending"
+    },
+    "code_review": {
+      "status": "pending"
+    },
+    "testing": {
+      "status": "pending"
+    },
+    "security_review": {
+      "status": "pending"
+    },
+    "documentation": {
+      "status": "pending"
+    },
+    "staging": {
+      "status": "pending"
+    },
+    "launch": {
+      "status": "pending"
+    }
+  },
+  "overallProgress": 9,
+  "lastActivity": "2026-01-11T08:26:56.528Z",
+  "pendingApprovals": [],
+  "blockers": []
+}

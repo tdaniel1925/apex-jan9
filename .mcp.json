@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "codebakers": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@codebakers/cli",
+        "serve"
+      ]
+    }
+  }
+}
