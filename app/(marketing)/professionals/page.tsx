@@ -53,7 +53,7 @@ export default function ProfessionalsPage() {
               </Link>
               <Link href="/contact">
                 <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
-                  Schedule a Call
+                  Get Started
                 </Button>
               </Link>
             </div>
@@ -335,7 +335,7 @@ export default function ProfessionalsPage() {
             </Link>
             <Link href="/contact">
               <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
-                Schedule a Call
+                Get Started
               </Button>
             </Link>
           </div>

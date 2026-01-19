@@ -52,11 +52,6 @@ export default function NewToInsurancePage() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link href="#how-it-works">
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
-                  See How It Works
-                </Button>
-              </Link>
             </div>
           </div>
         </div>

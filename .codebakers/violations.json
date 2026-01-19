@@ -1,0 +1,66 @@
+{
+  "timestamp": "2026-01-17T04:20:31.500Z",
+  "count": 10,
+  "violations": [
+    {
+      "file": "lib/services/notification-service.ts",
+      "check": "Merge Conflict Markers",
+      "category": "security",
+      "message": "Merge conflict markers found - resolve conflicts first"
+    },
+    {
+      "file": "lib/services/notification-service.ts",
+      "check": "Large File",
+      "category": "quality",
+      "message": "File has 736 lines - consider splitting into smaller modules"
+    },
+    {
+      "file": "lib/services/notification-service.ts",
+      "check": "Any Type Usage",
+      "category": "typescript",
+      "message": "Using \"any\" type - provide proper TypeScript types"
+    },
+    {
+      "file": "lib/services/notification-service.ts",
+      "check": "Non-null Assertion",
+      "category": "typescript",
+      "message": "7 non-null assertions (!) - handle null cases properly"
+    },
+    {
+      "file": "lib/services/notification-service.ts",
+      "check": "Large Import",
+      "category": "performance",
+      "message": "Large library import - use specific imports for smaller bundle"
+    },
+    {
+      "file": "lib/services/notification-service.ts",
+      "check": "Unused Import",
+      "category": "imports",
+      "message": "Possibly unused import: type EmailResult"
+    },
+    {
+      "file": "tests/services/notification-service.test.ts",
+      "check": "Large File",
+      "category": "quality",
+      "message": "File has 829 lines - consider splitting into smaller modules"
+    },
+    {
+      "file": "tests/services/notification-service.test.ts",
+      "check": "Any Type Usage",
+      "category": "typescript",
+      "message": "Using \"any\" type - provide proper TypeScript types"
+    },
+    {
+      "file": "tests/services/notification-service.test.ts",
+      "check": "Large Import",
+      "category": "performance",
+      "message": "Large library import - use specific imports for smaller bundle"
+    },
+    {
+      "file": "tests/services/notification-service.test.ts",
+      "check": "Unused Import",
+      "category": "imports",
+      "message": "Possibly unused import: type NotificationPayload"
+    }
+  ]
+}
