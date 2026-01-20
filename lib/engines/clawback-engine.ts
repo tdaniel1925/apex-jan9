@@ -128,6 +128,7 @@ export function createClawbackRecord(
 
 /**
  * Create wallet debit transactions for clawbacks
+ * FIXED: Now properly tracks negative balances and creates debt records
  */
 export function createClawbackDebitTransactions(
   agentId: string,
@@ -148,8 +149,12 @@ export function createClawbackDebitTransactions(
     reference_id: string;
   };
   newBalance: number;
+  debtAmount: number; // NEW: Amount that needs to be tracked as debt
+  shouldCreateDebt: boolean; // NEW: Whether debt record should be created
 } {
   const newBalance = currentBalance - clawbackAmount;
+  const debtAmount = Math.max(0, -newBalance); // If balance goes negative, that's debt
+  const shouldCreateDebt = newBalance < 0;
 
   return {
     transaction: {
@@ -157,12 +162,16 @@ export function createClawbackDebitTransactions(
       type: 'debit',
       category,
       amount: clawbackAmount,
-      balance_after: Math.max(0, newBalance), // Don't go negative
-      description,
+      balance_after: newBalance, // FIXED: Allow negative balances
+      description: shouldCreateDebt
+        ? `${description} (Created debt of $${debtAmount.toFixed(2)})`
+        : description,
       reference_type: 'clawback',
       reference_id: referenceId,
     },
-    newBalance: Math.max(0, newBalance),
+    newBalance,
+    debtAmount,
+    shouldCreateDebt,
   };
 }
 

@@ -42,6 +42,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
+    // PHASE 2 FIX: Check idempotency - prevent replay attacks
+    const supabase = createAdminClient();
+    const { data: alreadyProcessed } = await supabase.rpc('check_webhook_processed', {
+      p_provider: 'stripe',
+      p_event_id: event.id,
+    } as never);
+
+    if (alreadyProcessed) {
+      console.log(`Stripe webhook ${event.id} already processed, returning success`);
+      return NextResponse.json({
+        received: true,
+        duplicate: true,
+        message: 'Event already processed',
+      });
+    }
+
+    // Record that we're processing this event
+    await supabase.rpc('record_webhook_event', {
+      p_provider: 'stripe',
+      p_event_id: event.id,
+      p_event_type: event.type,
+      p_payload: JSON.stringify(event),
+    } as never);
+
     // Handle different event types
     switch (event.type) {
       case 'checkout.session.completed':
@@ -144,7 +168,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     for (let i = 0; i < productCount; i++) {
       const productId = metadata[`product_${i}_id`];
       const quantity = parseInt(metadata[`product_${i}_quantity`] || '1', 10);
-      const bonusVolume = parseFloat(metadata[`product_${i}_bv`] || '0');
+      // PHASE 2 FIX - Issue #20: Don't trust client-provided bonus volume
+      // const bonusVolume = parseFloat(metadata[`product_${i}_bv`] || '0');
 
       if (!productId) continue;
 
@@ -159,6 +184,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         console.error(`Product not found: ${productId}`);
         continue;
       }
+
+      // PHASE 2 FIX: Calculate bonus volume from product table (server-side)
+      const bonusVolume = (product.bonus_volume || 0) * quantity;
 
       // Create order item
       const { error: itemError } = await supabase.from('order_items').insert({

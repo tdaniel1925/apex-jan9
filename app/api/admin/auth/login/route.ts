@@ -7,6 +7,7 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { loginAdminUser } from '@/lib/auth/admin-rbac';
 import { ApiErrors, apiSuccess, handleZodError } from '@/lib/api/response';
+import { applyRateLimit } from '@/lib/middleware/rate-limit';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -14,6 +15,12 @@ const loginSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  // Apply rate limiting (5 requests per 15 minutes)
+  const rateLimitResult = await applyRateLimit(request, 'admin_login');
+  if ('status' in rateLimitResult) {
+    return rateLimitResult; // Rate limit exceeded
+  }
+
   try {
     const body = await request.json();
     const parseResult = loginSchema.safeParse(body);

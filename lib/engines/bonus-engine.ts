@@ -137,6 +137,10 @@ export interface MatchingBonusResult {
   remainingCap: number;
 }
 
+/**
+ * Calculate matching bonus
+ * FIXED: Now validates firstGenEarnings is non-negative to prevent negative bonuses
+ */
 export function calculateMatchingBonus(
   agent: Agent,
   firstGenEarnings: number,
@@ -156,7 +160,10 @@ export function calculateMatchingBonus(
     };
   }
 
-  const potentialMatch = firstGenEarnings * config.matchPercentage;
+  // FIXED: Ensure firstGenEarnings is non-negative (could be negative after clawbacks)
+  const safeEarnings = Math.max(0, firstGenEarnings);
+
+  const potentialMatch = safeEarnings * config.matchPercentage;
   const remainingCap = Math.max(0, config.monthlyCap - alreadyPaidThisMonth);
   const amountThisMonth = Math.min(potentialMatch, remainingCap);
 

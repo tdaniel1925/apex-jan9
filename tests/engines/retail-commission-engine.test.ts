@@ -137,8 +137,9 @@ describe('Retail Commission Engine', () => {
 
       expect(payout.directCommission).toBe(15.00); // 15% of 100
       expect(payout.commissionRate).toBe(0.15);
-      // Estimated overrides: 50 BV * 0.275 = 13.75
-      expect(payout.totalPayout).toBe(28.75); // 15 + 13.75
+      // FIXED: Estimated overrides: 50 BV * 0.265 = 13.25
+      expect(payout.totalPayout).toBe(28.25); // 15 + 13.25
+      expect(payout.estimatedOverrideRate).toBe(0.265);
     });
 
     it('should calculate payout for higher rank', () => {
@@ -146,8 +147,9 @@ describe('Retail Commission Engine', () => {
 
       expect(payout.directCommission).toBe(35.00); // 35% of 100
       expect(payout.commissionRate).toBe(0.35);
-      // Estimated overrides: 50 BV * 0.275 = 13.75
-      expect(payout.totalPayout).toBe(48.75); // 35 + 13.75
+      // FIXED: Estimated overrides: 50 BV * 0.265 = 13.25
+      expect(payout.totalPayout).toBe(48.25); // 35 + 13.25
+      expect(payout.estimatedOverrideRate).toBe(0.265);
     });
   });
 

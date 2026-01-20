@@ -1,11 +1,14 @@
 /**
  * Commissions API
  * GET /api/commissions - Get commission data for the authenticated agent
+ *
+ * Phase 2 - Issue #24: Added pagination to prevent performance issues
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/db/supabase-server';
 import { getCopilotCommissionSummary } from '@/lib/copilot/commission-service';
+import { paginationSchema, createPaginatedResponse } from '@/lib/api/pagination';
 
 interface CommissionRow {
   id: string;
@@ -54,8 +57,21 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get query params
+    // PHASE 2 FIX - Issue #24: Parse pagination parameters
     const { searchParams } = new URL(request.url);
+    const paginationParams = paginationSchema.safeParse({
+      limit: searchParams.get('limit'),
+      offset: searchParams.get('offset'),
+    });
+
+    if (!paginationParams.success) {
+      return NextResponse.json(
+        { error: 'Invalid pagination parameters', details: paginationParams.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const { limit, offset } = paginationParams.data;
     const period = searchParams.get('period') || 'all'; // all, month, week
     const type = searchParams.get('type') || 'all'; // all, personal, override, ai_copilot
 
@@ -69,12 +85,13 @@ export async function GET(request: NextRequest) {
       dateFilter.setMonth(dateFilter.getMonth() - 1);
     }
 
-    // Build query
+    // PHASE 2 FIX - Issue #24: Build query with pagination
     let query = supabase
       .from('commissions')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('agent_id', agent.id)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     // Apply type filter
     if (type === 'personal') {
@@ -90,9 +107,10 @@ export async function GET(request: NextRequest) {
       query = query.gte('created_at', dateFilter.toISOString());
     }
 
-    const { data: commissions, error: commissionsError } = await query as unknown as {
+    const { data: commissions, error: commissionsError, count } = await query as unknown as {
       data: CommissionRow[] | null;
-      error: unknown
+      error: unknown;
+      count: number | null;
     };
 
     if (commissionsError) {
@@ -120,8 +138,16 @@ export async function GET(request: NextRequest) {
       .filter((c) => c.status === 'paid')
       .reduce((sum, c) => sum + c.commission_amount, 0);
 
+    // PHASE 2 FIX - Issue #24: Return paginated response
+    const paginatedResponse = createPaginatedResponse(
+      commissions || [],
+      count || 0,
+      limit,
+      offset
+    );
+
     return NextResponse.json({
-      commissions: commissions || [],
+      ...paginatedResponse,
       summary: {
         ...summary,
         periodTotal,

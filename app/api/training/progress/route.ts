@@ -1,12 +1,15 @@
 /**
  * Training Progress API
  * POST /api/training/progress - Update lesson progress (mark complete, save video position)
+ *
+ * Phase 2 - Issue #12: Added validation for compliance requirements
  */
 
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 import { updateLessonProgress } from '@/lib/services/training-service';
+import { validateLessonCompletion, logComplianceValidation } from '@/lib/services/training-validation';
 import { ApiErrors, apiSuccess, handleZodError } from '@/lib/api/response';
 
 const progressUpdateSchema = z.object({
@@ -49,6 +52,28 @@ export async function POST(request: NextRequest) {
     }
 
     const { course_id, lesson_id, ...updates } = parseResult.data;
+
+    // PHASE 2 FIX: Validate completion requirements before allowing completion
+    if (updates.completed) {
+      const validation = await validateLessonCompletion(
+        agent.id,
+        lesson_id,
+        updates.time_spent_seconds,
+        updates.quiz_score
+      );
+
+      if (!validation.allowed) {
+        // Log validation failure for compliance audit
+        await logComplianceValidation(agent.id, lesson_id, validation);
+
+        return ApiErrors.badRequest(
+          validation.reason || 'Lesson completion requirements not met'
+        );
+      }
+
+      // Log successful validation
+      await logComplianceValidation(agent.id, lesson_id, validation);
+    }
 
     // Add completed_at if marking as completed
     const progressUpdates: Record<string, unknown> = { ...updates };

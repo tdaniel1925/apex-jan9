@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 import type { Agent, Contact, ContactUpdate } from '@/lib/types/database';
+import { applySanitization } from '@/lib/security/input-sanitizer';
 
 // Zod schema for contact updates
 const contactUpdateSchema = z.object({
@@ -127,7 +128,14 @@ export async function PATCH(
       );
     }
 
-    const updates: ContactUpdate = parseResult.data;
+    // PHASE 2 FIX - Issue #19: Sanitize user input to prevent XSS
+    const updates: ContactUpdate = applySanitization(parseResult.data, {
+      textFields: ['first_name', 'last_name', 'notes', 'source'],
+      maxLengths: {
+        notes: 5000,
+        source: 255,
+      },
+    });
 
     // Update contact
     const { data: contactData, error } = await supabase

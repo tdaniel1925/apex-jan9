@@ -10,6 +10,7 @@ import { NextRequest } from 'next/server';
 // Mock dependencies
 vi.mock('@/lib/db/supabase-server', () => ({
   createServerSupabaseClient: vi.fn(),
+  createAdminClient: vi.fn(),
 }));
 
 const mockAnthropicClient = {
@@ -29,21 +30,30 @@ vi.mock('@/lib/ai/claude-client', () => ({
   calculateCost: vi.fn(() => 0.001),
 }));
 
-import { createServerSupabaseClient } from '@/lib/db/supabase-server';
+import { createServerSupabaseClient, createAdminClient } from '@/lib/db/supabase-server';
 import { getAnthropicClient, calculateCost } from '@/lib/ai/claude-client';
 
-function createMockSupabase(user: any, agent: any = null) {
+function createMockSupabase(user: any, agent: any = null, rpcResponses: Record<string, any> = {}) {
   return {
     auth: {
       getUser: vi.fn(() => Promise.resolve({ data: { user }, error: null })),
     },
-    from: vi.fn(() => ({
+    from: vi.fn((table: string) => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
           single: vi.fn(() => Promise.resolve({ data: agent, error: null })),
         })),
       })),
+      insert: vi.fn(() => ({
+        select: vi.fn(() => ({
+          single: vi.fn(() => Promise.resolve({ data: {}, error: null })),
+        })),
+      })),
     })),
+    rpc: vi.fn((name: string, params: any) => {
+      const response = rpcResponses[name] || { data: [], error: null };
+      return Promise.resolve(response);
+    }),
   };
 }
 
@@ -57,6 +67,7 @@ describe('POST /api/ai/chat', () => {
   it('should return 401 if user is not authenticated', async () => {
     const mockSupabase = createMockSupabase(null);
     vi.mocked(createServerSupabaseClient).mockResolvedValue(mockSupabase as any);
+    vi.mocked(createAdminClient).mockReturnValue(mockSupabase as any);
 
     const request = new NextRequest('http://localhost:3000/api/ai/chat', {
       method: 'POST',
@@ -75,6 +86,7 @@ describe('POST /api/ai/chat', () => {
     const mockAgent = { ai_copilot_tier: 'basic' };
     const mockSupabase = createMockSupabase(mockUser, mockAgent);
     vi.mocked(createServerSupabaseClient).mockResolvedValue(mockSupabase as any);
+    vi.mocked(createAdminClient).mockReturnValue(mockSupabase as any);
 
     const request = new NextRequest('http://localhost:3000/api/ai/chat', {
       method: 'POST',
@@ -100,6 +112,7 @@ describe('POST /api/ai/chat', () => {
     };
     const mockSupabase = createMockSupabase(mockUser, mockAgent);
     vi.mocked(createServerSupabaseClient).mockResolvedValue(mockSupabase as any);
+    vi.mocked(createAdminClient).mockReturnValue(mockSupabase as any);
 
     const request = new NextRequest('http://localhost:3000/api/ai/chat', {
       method: 'POST',
@@ -119,9 +132,12 @@ describe('POST /api/ai/chat', () => {
 
   it('should handle successful non-streaming chat', async () => {
     const mockUser = { id: 'user-1', email: 'test@test.com' };
-    const mockAgent = { ai_copilot_tier: 'basic' };
-    const mockSupabase = createMockSupabase(mockUser, mockAgent);
+    const mockAgent = { id: 'agent-1', ai_copilot_tier: 'basic' };
+    const mockSupabase = createMockSupabase(mockUser, mockAgent, {
+      check_copilot_usage_limit: { data: [], error: null }
+    });
     vi.mocked(createServerSupabaseClient).mockResolvedValue(mockSupabase as any);
+    vi.mocked(createAdminClient).mockReturnValue(mockSupabase as any);
 
     vi.mocked(mockAnthropicClient.messages.create).mockResolvedValue({
       id: 'msg-1',
@@ -153,9 +169,12 @@ describe('POST /api/ai/chat', () => {
 
   it('should handle API errors', async () => {
     const mockUser = { id: 'user-1', email: 'test@test.com' };
-    const mockAgent = { ai_copilot_tier: 'basic' };
-    const mockSupabase = createMockSupabase(mockUser, mockAgent);
+    const mockAgent = { id: 'agent-1', ai_copilot_tier: 'basic' };
+    const mockSupabase = createMockSupabase(mockUser, mockAgent, {
+      check_copilot_usage_limit: { data: [], error: null }
+    });
     vi.mocked(createServerSupabaseClient).mockResolvedValue(mockSupabase as any);
+    vi.mocked(createAdminClient).mockReturnValue(mockSupabase as any);
 
     vi.mocked(mockAnthropicClient.messages.create).mockRejectedValue(new Error('API Error'));
 
@@ -176,9 +195,12 @@ describe('POST /api/ai/chat', () => {
 
   it('should sanitize message content', async () => {
     const mockUser = { id: 'user-1', email: 'test@test.com' };
-    const mockAgent = { ai_copilot_tier: 'pro' };
-    const mockSupabase = createMockSupabase(mockUser, mockAgent);
+    const mockAgent = { id: 'agent-1', ai_copilot_tier: 'pro' };
+    const mockSupabase = createMockSupabase(mockUser, mockAgent, {
+      check_copilot_usage_limit: { data: [], error: null }
+    });
     vi.mocked(createServerSupabaseClient).mockResolvedValue(mockSupabase as any);
+    vi.mocked(createAdminClient).mockReturnValue(mockSupabase as any);
 
     vi.mocked(mockAnthropicClient.messages.create).mockResolvedValue({
       id: 'msg-1',
@@ -212,13 +234,18 @@ describe('POST /api/ai/chat', () => {
   it('should add agent context when available', async () => {
     const mockUser = { id: 'user-1', email: 'test@test.com' };
     const mockAgent = {
+      id: 'agent-1',
       rank: 'agent',
       first_name: 'John',
       personal_premium_90d: 50000,
       team_count: 5,
+      ai_copilot_tier: 'basic'
     };
-    const mockSupabase = createMockSupabase(mockUser, mockAgent);
+    const mockSupabase = createMockSupabase(mockUser, mockAgent, {
+      check_copilot_usage_limit: { data: [], error: null }
+    });
     vi.mocked(createServerSupabaseClient).mockResolvedValue(mockSupabase as any);
+    vi.mocked(createAdminClient).mockReturnValue(mockSupabase as any);
 
     vi.mocked(mockAnthropicClient.messages.create).mockResolvedValue({
       id: 'msg-1',

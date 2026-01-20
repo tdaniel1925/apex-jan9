@@ -8,6 +8,8 @@ import { z } from 'zod';
 import { createAdminClient } from '@/lib/db/supabase-server';
 import { verifyAdmin, forbiddenResponse, badRequestResponse, serverErrorResponse } from '@/lib/auth/admin-auth';
 import { onCommissionCreated } from '@/lib/workflows/on-commission-created';
+import { applyRateLimit } from '@/lib/middleware/rate-limit';
+import { logAdminAction, AdminActions, ResourceTypes } from '@/lib/audit/admin-logger';
 import type { Commission, Agent } from '@/lib/types/database';
 
 // Schema for a single commission row
@@ -42,6 +44,12 @@ interface ImportResult {
 }
 
 export async function POST(request: NextRequest) {
+  // Apply rate limiting (10 requests per hour)
+  const rateLimitResult = await applyRateLimit(request, 'commission_import');
+  if ('status' in rateLimitResult) {
+    return rateLimitResult; // Rate limit exceeded
+  }
+
   const admin = await verifyAdmin();
   if (!admin) return forbiddenResponse();
 
@@ -95,21 +103,26 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
-        // Check for duplicate policy number
+        // PHASE 2 FIX: Check for duplicate policy number GLOBALLY (not just per agent)
         const { data: existingData } = await supabase
           .from('commissions')
-          .select('id')
+          .select('id, agent_id, agents(first_name, last_name, agent_code)')
           .eq('policy_number', row.policy_number)
-          .eq('agent_id', agent.id)
           .single();
 
         if (existingData) {
+          const typedExisting = existingData as {
+            id: string;
+            agent_id: string;
+            agents: { first_name: string; last_name: string; agent_code: string } | null
+          };
+          const existingAgent = typedExisting.agents;
           results.push({
             success: false,
             row: rowNum,
             agent_id: row.agent_id,
             policy_number: row.policy_number,
-            error: 'Duplicate policy number for this agent',
+            error: `Duplicate policy number. Already exists for agent ${existingAgent?.agent_code || typedExisting.agent_id} (${existingAgent?.first_name} ${existingAgent?.last_name})`,
           });
           errorCount++;
           continue;
@@ -179,6 +192,22 @@ export async function POST(request: NextRequest) {
         errorCount++;
       }
     }
+
+    // PHASE 2: Log admin action for compliance audit trail
+    await logAdminAction({
+      adminId: admin.userId,
+      adminEmail: admin.agent.email || `admin_${admin.userId}`,
+      action: AdminActions.IMPORT_COMMISSIONS,
+      resourceType: ResourceTypes.COMMISSION,
+      resourceId: `import_${Date.now()}`,
+      metadata: {
+        total: commissions.length,
+        success: successCount,
+        failed: errorCount,
+        timestamp: new Date().toISOString(),
+        trigger_workflows: trigger_workflows,
+      },
+    }, request);
 
     return NextResponse.json({
       summary: {

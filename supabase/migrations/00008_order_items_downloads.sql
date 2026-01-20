@@ -3,9 +3,16 @@
  * Track remaining downloads for each order item
  */
 
--- Add downloads_remaining column to order_items
-ALTER TABLE order_items
-ADD COLUMN downloads_remaining INTEGER NOT NULL DEFAULT 5;
+-- Add downloads_remaining column to order_items (if not exists)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'order_items' AND column_name = 'downloads_remaining'
+  ) THEN
+    ALTER TABLE order_items ADD COLUMN downloads_remaining INTEGER NOT NULL DEFAULT 5;
+  END IF;
+END $$;
 
 -- Create function to set initial downloads_remaining from product
 CREATE OR REPLACE FUNCTION set_order_item_downloads()
@@ -25,7 +32,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create trigger to set downloads_remaining on insert
+-- Create trigger to set downloads_remaining on insert (drop first if exists)
+DROP TRIGGER IF EXISTS set_order_item_downloads_trigger ON order_items;
 CREATE TRIGGER set_order_item_downloads_trigger
   BEFORE INSERT ON order_items
   FOR EACH ROW

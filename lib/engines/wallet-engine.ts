@@ -15,6 +15,7 @@ export type TransactionCategory =
 export interface WalletBalance {
   available: number;
   pending: number;
+  pendingWithdrawals: number; // NEW: Amount locked by pending withdrawals
   total: number;
   lifetimeEarnings: number;
 }
@@ -22,6 +23,12 @@ export interface WalletBalance {
 export interface WithdrawalRequest {
   amount: number;
   method: 'ach' | 'wire' | 'check';
+}
+
+export interface WithdrawalValidationContext {
+  wallet: Wallet;
+  request: WithdrawalRequest;
+  totalDebt?: number; // Optional: total active debt amount
 }
 
 export interface WithdrawalResult {
@@ -50,8 +57,9 @@ export const MIN_WITHDRAWAL = {
  */
 export function getWalletBalance(wallet: Wallet): WalletBalance {
   return {
-    available: wallet.balance,
+    available: wallet.balance - wallet.pending_withdrawals, // Subtract locked funds
     pending: wallet.pending_balance,
+    pendingWithdrawals: wallet.pending_withdrawals,
     total: wallet.balance + wallet.pending_balance,
     lifetimeEarnings: wallet.lifetime_earnings,
   };
@@ -83,14 +91,27 @@ export function calculateNetWithdrawal(
 
 /**
  * Validate withdrawal request
+ * FIXED: Now checks available balance minus pending withdrawals AND debts
  */
 export function validateWithdrawal(
   wallet: Wallet,
-  request: WithdrawalRequest
+  request: WithdrawalRequest,
+  totalDebt: number = 0 // NEW: Total active debt
 ): { valid: boolean; error?: string } {
   const { amount, method } = request;
   const minAmount = MIN_WITHDRAWAL[method];
   const fee = WITHDRAWAL_FEES[method];
+
+  // NEW: Check if agent has outstanding debt
+  if (totalDebt > 0) {
+    return {
+      valid: false,
+      error: `Withdrawals are blocked. You have an outstanding debt of $${totalDebt.toFixed(2)}. Please contact support to resolve this debt before requesting withdrawals.`,
+    };
+  }
+
+  // Calculate truly available balance (excluding locked funds)
+  const availableBalance = wallet.balance - wallet.pending_withdrawals;
 
   // Check minimum amount
   if (amount < minAmount) {
@@ -100,11 +121,11 @@ export function validateWithdrawal(
     };
   }
 
-  // Check sufficient balance
-  if (amount > wallet.balance) {
+  // Check sufficient balance (FIXED: now checks available minus pending withdrawals)
+  if (amount > availableBalance) {
     return {
       valid: false,
-      error: `Insufficient balance. Available: $${wallet.balance.toFixed(2)}`,
+      error: `Insufficient balance. Available: $${availableBalance.toFixed(2)} (${wallet.pending_withdrawals > 0 ? `$${wallet.pending_withdrawals.toFixed(2)} locked by pending withdrawals` : 'no pending withdrawals'})`,
     };
   }
 

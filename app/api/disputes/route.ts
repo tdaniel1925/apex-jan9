@@ -2,12 +2,16 @@
  * Agent Disputes API
  * GET - List agent's disputes
  * POST - Create a new dispute
+ *
+ * Phase 2 - Issue #24: Added pagination to prevent performance issues
  */
 
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 import { ApiErrors, apiSuccess, handleZodError } from '@/lib/api/response';
+import { applySanitization } from '@/lib/security/input-sanitizer';
+import { paginationSchema, createPaginatedResponse } from '@/lib/api/pagination';
 
 const DISPUTE_TYPES = ['commission', 'clawback', 'bonus', 'override', 'rank', 'policy', 'other'] as const;
 
@@ -69,21 +73,34 @@ export async function GET(request: NextRequest) {
       return ApiErrors.notFound('Agent');
     }
 
+    // PHASE 2 FIX - Issue #24: Parse pagination parameters
     const searchParams = request.nextUrl.searchParams;
+    const paginationParams = paginationSchema.safeParse({
+      limit: searchParams.get('limit'),
+      offset: searchParams.get('offset'),
+    });
+
+    if (!paginationParams.success) {
+      return ApiErrors.badRequest('Invalid pagination parameters');
+    }
+
+    const { limit, offset } = paginationParams.data;
     const status = searchParams.get('status');
 
+    // PHASE 2 FIX - Issue #24: Build query with pagination
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let query = (supabase as any)
       .from('disputes')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('agent_id', agent.id)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     if (status && status !== 'all') {
       query = query.eq('status', status);
     }
 
-    const { data, error } = await query as { data: Dispute[] | null; error: unknown };
+    const { data, error, count } = await query as { data: Dispute[] | null; error: unknown; count: number | null };
 
     if (error) {
       console.error('Disputes fetch error:', error);
@@ -92,15 +109,27 @@ export async function GET(request: NextRequest) {
 
     const disputes = data || [];
 
-    // Get stats
+    // Get stats from all records (not just current page)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: allDisputes } = await (supabase as any)
+      .from('disputes')
+      .select('status')
+      .eq('agent_id', agent.id) as { data: Array<{ status: string }> | null };
+
     const stats = {
-      total: disputes.length,
-      pending: disputes.filter((d) => d.status === 'pending').length,
-      under_review: disputes.filter((d) => d.status === 'under_review').length,
-      resolved: disputes.filter((d) => ['approved', 'denied', 'withdrawn'].includes(d.status)).length,
+      total: count || 0,
+      pending: (allDisputes || []).filter((d) => d.status === 'pending').length,
+      under_review: (allDisputes || []).filter((d) => d.status === 'under_review').length,
+      resolved: (allDisputes || []).filter((d) => ['approved', 'denied', 'withdrawn'].includes(d.status)).length,
     };
 
-    return apiSuccess({ disputes, stats });
+    // PHASE 2 FIX - Issue #24: Return paginated response
+    const paginatedResponse = createPaginatedResponse(disputes, count || 0, limit, offset);
+
+    return apiSuccess({
+      ...paginatedResponse,
+      stats,
+    });
   } catch (error) {
     console.error('Disputes GET error:', error);
     return ApiErrors.internal();
@@ -134,7 +163,15 @@ export async function POST(request: NextRequest) {
       return handleZodError(parseResult.error);
     }
 
-    const disputeData = parseResult.data;
+    // PHASE 2 FIX - Issue #19: Sanitize user input to prevent XSS
+    const sanitizedData = applySanitization(parseResult.data, {
+      textFields: ['subject', 'description'],
+      urlFields: [], // Attachment URLs are validated by zod schema
+      maxLengths: {
+        subject: 200,
+        description: 5000,
+      },
+    });
 
     // Create dispute
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -142,14 +179,14 @@ export async function POST(request: NextRequest) {
       .from('disputes')
       .insert({
         agent_id: agent.id,
-        dispute_type: disputeData.dispute_type,
-        subject: disputeData.subject,
-        description: disputeData.description,
-        commission_id: disputeData.commission_id || null,
-        clawback_id: disputeData.clawback_id || null,
-        bonus_id: disputeData.bonus_id || null,
-        amount_disputed: disputeData.amount_disputed || null,
-        attachments: disputeData.attachments || [],
+        dispute_type: sanitizedData.dispute_type,
+        subject: sanitizedData.subject,
+        description: sanitizedData.description,
+        commission_id: sanitizedData.commission_id || null,
+        clawback_id: sanitizedData.clawback_id || null,
+        bonus_id: sanitizedData.bonus_id || null,
+        amount_disputed: sanitizedData.amount_disputed || null,
+        attachments: sanitizedData.attachments || [],
         status: 'pending',
         priority: 'normal',
       })

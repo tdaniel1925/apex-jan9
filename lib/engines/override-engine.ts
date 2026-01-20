@@ -139,17 +139,44 @@ export function calculateTotalPotentialOverrides(commissionAmount: number): numb
 }
 
 /**
+ * Calculate override amounts for multiple generations
+ * @param commissionAmount The base commission amount
+ * @param generationCount Number of generations (up to 6)
+ * @returns Array of override amounts for each generation
+ */
+export function getOverrideAmounts(
+  commissionAmount: number,
+  generationCount: number
+): number[] {
+  const amounts: number[] = [];
+  const maxGens = Math.min(generationCount, MAX_GENERATIONS);
+
+  for (let gen = 1; gen <= maxGens; gen++) {
+    amounts.push(calculateAgentOverride(commissionAmount, gen));
+  }
+
+  return amounts;
+}
+
+/**
  * Determine which generation a sponsor is relative to an agent
  * @param agentPath Materialized path of the agent (e.g., "1.5.23.45")
- * @param sponsorPath Materialized path of the potential sponsor
+ * @param sponsorPath Materialized path of the potential sponsor (e.g., "1.5")
  * @returns Generation number (1-6) or 0 if not in override range
+ *
+ * FIXED: Now properly checks path boundaries to prevent false matches
+ * Example:
+ *   Agent "1.10.25" should NOT match sponsor "1.1" (was bug)
+ *   Agent "1.10.25" SHOULD match sponsor "1.10" (correct)
  */
 export function determineGeneration(
   agentPath: string,
   sponsorPath: string
 ): number {
-  // The sponsor path should be a prefix of the agent path
-  if (!agentPath.startsWith(sponsorPath)) {
+  // FIXED: Add delimiter check to prevent partial path matches
+  // The sponsor path should be a prefix of the agent path WITH a delimiter
+  // This prevents "1.1" from matching "1.10.25" incorrectly
+  if (!agentPath.startsWith(sponsorPath + '.')) {
     return 0;
   }
 

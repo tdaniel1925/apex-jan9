@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 import type { Agent, Contact, ContactInsert } from '@/lib/types/database';
+import { applySanitization } from '@/lib/security/input-sanitizer';
 
 // Zod schemas for validation
 const contactCreateSchema = z.object({
@@ -147,17 +148,26 @@ export async function POST(request: NextRequest) {
 
     const validatedData = parseResult.data;
 
+    // PHASE 2 FIX - Issue #19: Sanitize user input to prevent XSS
+    const sanitizedData = applySanitization(validatedData, {
+      textFields: ['first_name', 'last_name', 'notes', 'source'],
+      maxLengths: {
+        notes: 5000,
+        source: 255,
+      },
+    });
+
     // Build insert object with explicit typing
     const insertData: ContactInsert = {
       agent_id: agent.id,
-      first_name: validatedData.first_name,
-      last_name: validatedData.last_name,
-      email: validatedData.email ?? null,
-      phone: validatedData.phone ?? null,
-      type: validatedData.type,
-      stage: validatedData.stage,
-      source: validatedData.source ?? null,
-      notes: validatedData.notes ?? null,
+      first_name: sanitizedData.first_name,
+      last_name: sanitizedData.last_name,
+      email: sanitizedData.email ?? null,
+      phone: sanitizedData.phone ?? null,
+      type: sanitizedData.type,
+      stage: sanitizedData.stage,
+      source: sanitizedData.source ?? null,
+      notes: sanitizedData.notes ?? null,
     };
 
     // Create contact

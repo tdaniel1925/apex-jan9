@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
 import type { Agent, AgentUpdate } from '@/lib/types/database';
+import { applySanitization } from '@/lib/security/input-sanitizer';
+import { validateUsername, isUsernameAvailable } from '@/lib/validation/username-validator';
 
 // Zod schema for agent updates
 const agentUpdateSchema = z.object({
@@ -70,7 +72,50 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const updates: AgentUpdate = parseResult.data;
+    // PHASE 2 FIX - Issue #19: Sanitize user input to prevent XSS
+    const updates: AgentUpdate = applySanitization(parseResult.data, {
+      textFields: ['first_name', 'last_name', 'bio'],
+      urlFields: ['avatar_url'],
+      maxLengths: {
+        bio: 1000,
+      },
+    });
+
+    // PHASE 2 FIX - Issue #31: Validate username is URL-safe
+    if (updates.username) {
+      const usernameValidation = validateUsername(updates.username);
+      if (!usernameValidation.valid) {
+        return NextResponse.json(
+          { error: usernameValidation.error },
+          { status: 400 }
+        );
+      }
+
+      // Check if username is available
+      const { data: currentAgent } = await supabase
+        .from('agents')
+        .select('id')
+        .eq('user_id', user.id)
+        .single() as { data: { id: string } | null };
+
+      if (currentAgent) {
+        const available = await isUsernameAvailable(
+          usernameValidation.sanitized!,
+          supabase,
+          currentAgent.id
+        );
+
+        if (!available) {
+          return NextResponse.json(
+            { error: 'Username already taken. Please choose a different one.' },
+            { status: 400 }
+          );
+        }
+      }
+
+      // Use sanitized version
+      updates.username = usernameValidation.sanitized;
+    }
 
     const { data: agentData, error } = await supabase
       .from('agents')

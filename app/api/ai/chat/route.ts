@@ -7,28 +7,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAnthropicClient, CLAUDE_MODELS, SYSTEM_PROMPTS, calculateCost } from '@/lib/ai/claude-client';
 import { createServerSupabaseClient } from '@/lib/db/supabase-server';
-
-// Rate limiting (in production, use Redis or similar)
-const rateLimits = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 20; // requests per hour
-const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour
-
-function checkRateLimit(userId: string): boolean {
-  const now = Date.now();
-  const userLimit = rateLimits.get(userId);
-
-  if (!userLimit || now > userLimit.resetAt) {
-    rateLimits.set(userId, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
-    return true;
-  }
-
-  if (userLimit.count >= RATE_LIMIT) {
-    return false;
-  }
-
-  userLimit.count++;
-  return true;
-}
+import { applyRateLimit } from '@/lib/middleware/rate-limit';
+import { sanitizeText } from '@/lib/security/input-sanitizer';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -36,6 +16,12 @@ type Message = {
 };
 
 export async function POST(request: NextRequest) {
+  // Apply rate limiting (20 requests per minute)
+  const rateLimitResult = await applyRateLimit(request, 'ai_chat');
+  if ('status' in rateLimitResult) {
+    return rateLimitResult; // Rate limit exceeded
+  }
+
   try {
     // Check if API key is configured
     if (!process.env.ANTHROPIC_API_KEY) {
@@ -58,14 +44,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check rate limit
-    if (!checkRateLimit(user.id)) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded. Please try again later.' },
-        { status: 429 }
-      );
-    }
-
     // Parse request body
     const body = await request.json();
     const { messages, context = 'GENERAL_ASSISTANT', stream = true } = body;
@@ -75,10 +53,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Messages array required' }, { status: 400 });
     }
 
-    // Sanitize messages
+    // PHASE 2 FIX - Issue #19: Sanitize messages to prevent XSS
     const sanitizedMessages: Message[] = messages.map((msg: Message) => ({
       role: msg.role === 'assistant' ? 'assistant' : 'user',
-      content: String(msg.content).slice(0, 10000), // Limit message length
+      content: sanitizeText(String(msg.content), 10000) || '', // Escape HTML and limit length
     }));
 
     // Get system prompt
@@ -99,6 +77,39 @@ export async function POST(request: NextRequest) {
           message: 'Please subscribe to AI Copilot in your Settings to access this feature.',
         },
         { status: 403 }
+      );
+    }
+
+    // PHASE 2 FIX - Issue #21: Check monthly usage limit before processing
+    type UsageCheckResult = {
+      allowed: boolean;
+      monthly_limit: number;
+      tier: string;
+      reset_date: string;
+      current_usage: number;
+    };
+
+    const { data: usageCheck, error: usageError } = await supabase.rpc('check_copilot_usage_limit', {
+      p_agent_id: agent.id,
+    } as never) as { data: UsageCheckResult[] | null; error: any };
+
+    if (usageError || !usageCheck) {
+      console.error('Error checking usage limit:', usageError);
+      // Allow request to proceed if usage check fails (graceful degradation)
+    } else if (usageCheck.length > 0 && !usageCheck[0].allowed) {
+      const limit = usageCheck[0];
+      return NextResponse.json(
+        {
+          error: 'Monthly message limit exceeded',
+          message: `You've reached your monthly limit of ${limit.monthly_limit} messages for the ${limit.tier} tier. Your limit resets on ${new Date(limit.reset_date).toLocaleDateString()}.`,
+          usage: {
+            current: limit.current_usage,
+            limit: limit.monthly_limit,
+            tier: limit.tier,
+            resetDate: limit.reset_date,
+          },
+        },
+        { status: 429 }
       );
     }
 

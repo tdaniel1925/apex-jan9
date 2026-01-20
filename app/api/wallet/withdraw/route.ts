@@ -126,7 +126,38 @@ export async function POST(request: NextRequest) {
     // Calculate amounts
     const { gross, fee, net } = calculateNetWithdrawal(amount, method);
 
-    // Create payout record
+    // FIXED: Lock funds atomically to prevent race condition
+    const { data: lockResult, error: lockError } = await adminClient.rpc(
+      'lock_withdrawal_funds',
+      {
+        p_agent_id: agent.id,
+        p_amount: amount,
+      } as any
+    );
+
+    if (lockError || !lockResult) {
+      console.error('Failed to lock withdrawal funds:', lockError);
+      await logWithdrawalAttempt(
+        adminClient,
+        agent.id,
+        'request',
+        amount,
+        method,
+        undefined,
+        'Insufficient funds (concurrent withdrawal detected)',
+        ipAddress,
+        userAgent
+      );
+      return NextResponse.json(
+        {
+          error:
+            'Unable to process withdrawal. Please check your available balance and try again.',
+        },
+        { status: 400 }
+      );
+    }
+
+    // Create payout record (funds are now locked)
     const payoutRecord = createPayoutRecord(agent.id, { amount, method });
     const { data: payoutData, error: payoutError } = await adminClient
       .from('payouts')
@@ -136,6 +167,12 @@ export async function POST(request: NextRequest) {
 
     if (payoutError) {
       console.error('Payout create error:', payoutError);
+      // Unlock funds since payout creation failed
+      await adminClient.rpc('unlock_withdrawal_funds', {
+        p_agent_id: agent.id,
+        p_amount: amount,
+        p_deduct_from_balance: false,
+      } as any);
       return NextResponse.json(
         { error: 'Failed to create payout' },
         { status: 500 }
@@ -153,11 +190,9 @@ export async function POST(request: NextRequest) {
 
     await adminClient.from('wallet_transactions').insert(transactionRecord as never);
 
-    // Update wallet balance
-    await adminClient
-      .from('wallets')
-      .update({ balance: wallet.balance - amount } as never)
-      .eq('agent_id', agent.id);
+    // NOTE: Wallet balance is NO LONGER updated here
+    // The database trigger will handle unlocking/deducting when payout status changes to 'completed'
+    // This prevents the race condition where multiple withdrawals could be processed simultaneously
 
     // Log successful withdrawal request
     await logWithdrawalAttempt(

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Dialog,
@@ -407,7 +407,7 @@ export default function AdminDisputesPage() {
             ) : (
               filteredDisputes.map((dispute) => {
                 const statusConfig = STATUS_CONFIG[dispute.status] || STATUS_CONFIG.pending;
-                const StatusIcon = statusConfig.icon;
+                const StatusIcon = statusConfig!.icon;
                 return (
                   <TableRow key={dispute.id} className="cursor-pointer hover:bg-muted/50" onClick={() => fetchDisputeDetails(dispute)}>
                     <TableCell>
@@ -450,9 +450,9 @@ export default function AdminDisputesPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={statusConfig.variant}>
+                      <Badge variant={statusConfig!.variant}>
                         <StatusIcon className="h-3 w-3 mr-1" />
-                        {statusConfig.label}
+                        {statusConfig!.label}
                       </Badge>
                     </TableCell>
                     <TableCell>

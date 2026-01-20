@@ -183,7 +183,7 @@ describe('Clawback Engine', () => {
       expect(result.newBalance).toBe(350);
     });
 
-    it('should not allow negative balance', () => {
+    it('FIXED: should allow negative balance and track debt', () => {
       const result = createClawbackDebitTransactions(
         'agent-123',
         100, // current balance less than clawback
@@ -193,8 +193,13 @@ describe('Clawback Engine', () => {
         'clawback-123'
       );
 
-      expect(result.transaction.balance_after).toBe(0);
-      expect(result.newBalance).toBe(0);
+      // FIXED: Balance can now go negative to track debt
+      expect(result.transaction.balance_after).toBe(-50);
+      expect(result.newBalance).toBe(-50);
+      // NEW: Should indicate debt needs to be created
+      expect(result.shouldCreateDebt).toBe(true);
+      expect(result.debtAmount).toBe(50);
+      expect(result.transaction.description).toContain('Created debt of $50.00');
     });
   });
 

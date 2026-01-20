@@ -62,6 +62,8 @@ export interface ProcessQueueResult {
  * Process pending emails in the queue
  * This should be called by a cron job or scheduled task
  *
+ * PHASE 2 FIX - Issue #13: Added retry logic with exponential backoff
+ *
  * @param batchSize - Maximum number of emails to process (default: 50)
  */
 export async function processEmailQueue(batchSize = 50): Promise<ProcessQueueResult> {
@@ -74,7 +76,9 @@ export async function processEmailQueue(batchSize = 50): Promise<ProcessQueueRes
   };
 
   try {
-    // Fetch pending emails that are due to be sent
+    const now = new Date().toISOString();
+
+    // PHASE 2 FIX: Fetch both pending AND retrying emails that are due
     const { data: pendingEmails, error: fetchError } = await supabase
       .from('lead_email_queue' as 'agents') // Type assertion for new table
       .select(`
@@ -82,6 +86,8 @@ export async function processEmailQueue(batchSize = 50): Promise<ProcessQueueRes
         contact_id,
         sequence_step_id,
         scheduled_for,
+        retry_count,
+        max_retries,
         contacts!inner (
           id,
           first_name,
@@ -95,10 +101,11 @@ export async function processEmailQueue(batchSize = 50): Promise<ProcessQueueRes
           body_text
         )
       `)
-      .eq('status', 'pending')
-      .lte('scheduled_for', new Date().toISOString())
+      .in('status', ['pending', 'retrying'])
+      .eq('permanent_failure', false)
+      .or(`scheduled_for.lte.${now},and(status.eq.retrying,next_retry_at.lte.${now})`)
       .order('scheduled_for', { ascending: true })
-      .limit(batchSize) as unknown as { data: PendingEmailItem[] | null; error: unknown };
+      .limit(batchSize) as unknown as { data: (PendingEmailItem & { retry_count: number; max_retries: number })[] | null; error: unknown };
 
     if (fetchError) {
       console.error('Error fetching email queue:', fetchError);
@@ -178,7 +185,7 @@ export async function processEmailQueue(batchSize = 50): Promise<ProcessQueueRes
         queueId: queueItem.id,
       });
 
-      // Update queue item status
+      // PHASE 2 FIX - Issue #13: Update queue item with retry logic
       if (sendResult.success) {
         result.sent++;
 
@@ -187,6 +194,7 @@ export async function processEmailQueue(batchSize = 50): Promise<ProcessQueueRes
           .update({
             status: 'sent',
             sent_at: new Date().toISOString(),
+            last_attempt_at: new Date().toISOString(),
             resend_message_id: sendResult.messageId,
           })
           .eq('id', queueItem.id);
@@ -204,16 +212,59 @@ export async function processEmailQueue(batchSize = 50): Promise<ProcessQueueRes
           error: sendResult.error || 'Unknown error',
         });
 
-        const { error: updateError } = await (supabase
-          .from('lead_email_queue' as 'agents') as unknown as ReturnType<typeof supabase.from>)
-          .update({
-            status: 'failed',
-            error_message: sendResult.error,
-          })
-          .eq('id', queueItem.id);
+        // PHASE 2 FIX: Determine if we should retry or mark as permanent failure
+        const currentRetryCount = queueItem.retry_count || 0;
+        const maxRetries = queueItem.max_retries || 3;
+        const errorMessage = sendResult.error || 'Unknown error';
 
-        if (updateError) {
-          console.error('Error updating failed queue item:', updateError);
+        // Check if error is permanent (don't retry)
+        const isPermanentError =
+          errorMessage.toLowerCase().includes('invalid email') ||
+          errorMessage.toLowerCase().includes('bounce') ||
+          errorMessage.toLowerCase().includes('unsubscribe') ||
+          errorMessage.toLowerCase().includes('blocked');
+
+        if (isPermanentError || currentRetryCount >= maxRetries) {
+          // Mark as permanent failure (dead letter queue)
+          console.log(`Permanent failure for queue item ${queueItem.id}: ${errorMessage}`);
+
+          const { error: updateError } = await (supabase
+            .from('lead_email_queue' as 'agents') as unknown as ReturnType<typeof supabase.from>)
+            .update({
+              status: 'failed',
+              error_message: errorMessage,
+              last_attempt_at: new Date().toISOString(),
+              retry_count: currentRetryCount + 1,
+              permanent_failure: true,
+            })
+            .eq('id', queueItem.id);
+
+          if (updateError) {
+            console.error('Error updating failed queue item:', updateError);
+          }
+        } else {
+          // Schedule retry with exponential backoff
+          const nextRetryCount = currentRetryCount + 1;
+          const nextRetryAt = await calculateRetryTime(supabase, nextRetryCount);
+
+          console.log(
+            `Scheduling retry ${nextRetryCount}/${maxRetries} for queue item ${queueItem.id} at ${nextRetryAt}`
+          );
+
+          const { error: updateError } = await (supabase
+            .from('lead_email_queue' as 'agents') as unknown as ReturnType<typeof supabase.from>)
+            .update({
+              status: 'retrying',
+              error_message: errorMessage,
+              last_attempt_at: new Date().toISOString(),
+              retry_count: nextRetryCount,
+              next_retry_at: nextRetryAt,
+            })
+            .eq('id', queueItem.id);
+
+          if (updateError) {
+            console.error('Error updating retry queue item:', updateError);
+          }
         }
       }
 
@@ -226,6 +277,39 @@ export async function processEmailQueue(batchSize = 50): Promise<ProcessQueueRes
   } catch (error) {
     console.error('Error processing email queue:', error);
     throw error;
+  }
+}
+
+/**
+ * Calculate next retry time using exponential backoff
+ * PHASE 2 FIX - Issue #13: Uses database function for consistent calculation
+ */
+async function calculateRetryTime(
+  supabase: ReturnType<typeof createAdminClient>,
+  attemptNumber: number
+): Promise<string> {
+  try {
+    const { data, error } = await supabase.rpc('calculate_email_retry_time', {
+      attempt_number: attemptNumber,
+    } as never);
+
+    if (error) {
+      console.error('Error calculating retry time:', error);
+      // Fallback: manual calculation (5 min * 3^(attempt-1))
+      const baseDelayMinutes = 5;
+      const delayMinutes = Math.min(baseDelayMinutes * Math.pow(3, attemptNumber - 1), 1440);
+      const retryDate = new Date();
+      retryDate.setMinutes(retryDate.getMinutes() + delayMinutes);
+      return retryDate.toISOString();
+    }
+
+    return data as string;
+  } catch (error) {
+    console.error('Error in calculateRetryTime:', error);
+    // Fallback
+    const retryDate = new Date();
+    retryDate.setMinutes(retryDate.getMinutes() + 15); // Default 15 minutes
+    return retryDate.toISOString();
   }
 }
 

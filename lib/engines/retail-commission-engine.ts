@@ -5,6 +5,7 @@
 
 import { Agent, Product, Order, CommissionInsert } from '../types/database';
 import { Rank } from '../config/ranks';
+import { GENERATION_OVERRIDES } from '../config/overrides'; // NEW: Import override config
 
 // Commission rates for retail products by rank
 const RETAIL_COMMISSION_RATES: Record<Rank, number> = {
@@ -71,21 +72,29 @@ export function getRetailCommissionRate(rank: Rank): number {
 /**
  * Calculate total payout for retail sale (commission + overrides)
  * This is for display/preview purposes only
+ * FIXED: Now calculates override percentage dynamically from config
  */
 export function calculateRetailPayout(order: Order, agentRank: Rank): {
   directCommission: number;
   totalPayout: number; // Includes est. overrides
   commissionRate: number;
+  estimatedOverrideRate: number; // NEW: Show the calculated rate
 } {
   const rate = getRetailCommissionRate(agentRank);
   const directCommission = order.total_amount * rate;
 
-  // Estimate override total (6-gen averages ~27.5% of BV)
-  const estimatedOverrides = order.total_bonus_volume * 0.275;
+  // FIXED: Calculate total override rate from config instead of hardcoding
+  const totalOverrideRate = GENERATION_OVERRIDES.reduce(
+    (sum, gen) => sum + gen.percentage,
+    0
+  );
+
+  const estimatedOverrides = order.total_bonus_volume * totalOverrideRate;
 
   return {
     directCommission,
     totalPayout: directCommission + estimatedOverrides,
     commissionRate: rate,
+    estimatedOverrideRate: totalOverrideRate,
   };
 }

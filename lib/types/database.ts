@@ -228,6 +228,7 @@ export interface Wallet {
   agent_id: string;
   balance: number;
   pending_balance: number;
+  pending_withdrawals: number; // NEW: Amount locked by pending withdrawal requests
   lifetime_earnings: number;
   updated_at: string;
 }

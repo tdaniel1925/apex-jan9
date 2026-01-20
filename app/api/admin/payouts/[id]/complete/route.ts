@@ -1,12 +1,15 @@
 /**
  * Admin Payout Complete API
  * POST - Mark payout as completed
+ *
+ * Phase 2 - Issue #16: Added admin audit logging
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/db/supabase-server';
 import { verifyAdmin, forbiddenResponse, badRequestResponse, notFoundResponse, serverErrorResponse } from '@/lib/auth/admin-auth';
 import { sendPayoutNotification } from '@/lib/email/email-service';
+import { logAdminAction, AdminActions, ResourceTypes } from '@/lib/audit/admin-logger';
 import type { Payout } from '@/lib/types/database';
 
 interface RouteParams {
@@ -40,7 +43,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     // Update to completed
-    const { data, error } = await supabase
+    const { data, error} = await supabase
       .from('payouts')
       .update({
         status: 'completed',
@@ -54,6 +57,25 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       console.error('Payout complete error:', error);
       return serverErrorResponse();
     }
+
+    // PHASE 2: Log admin action for compliance audit trail
+    await logAdminAction({
+      adminId: admin.userId,
+      adminEmail: admin.agent.email || `admin_${admin.userId}`,
+      action: AdminActions.COMPLETE_PAYOUT,
+      resourceType: ResourceTypes.PAYOUT,
+      resourceId: id,
+      changes: {
+        before: { status: payout.status },
+        after: { status: 'completed' },
+        fields: ['status', 'processed_at'],
+      },
+      metadata: {
+        amount: payout.net_amount,
+        agent_id: payout.agent_id,
+        method: payout.method,
+      },
+    }, request);
 
     // Send email notification
     if (payout.agents?.email) {

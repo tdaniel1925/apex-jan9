@@ -32,7 +32,6 @@ import {
 import { toast } from 'sonner';
 import {
   CAR_BONUS_TIERS,
-  CAR_BONUS_CONFIG,
   FAST_START_MILESTONES,
   FAST_START_CONFIG,
   ELITE_10_CONFIG,
@@ -121,15 +120,6 @@ export default function CompPlanSettingsPage() {
       toast.error('Failed to save settings');
     } finally {
       setSaving(false);
-    }
-  };
-
-  const getProgramIcon = (key: string) => {
-    switch (key) {
-      case 'car_bonus': return Car;
-      case 'fast_start': return Rocket;
-      case 'elite_10': return Trophy;
-      default: return Award;
     }
   };
 

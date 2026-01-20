@@ -240,9 +240,12 @@ export function createQualificationSnapshot(
     gracePeriodUsedThisYear++;
   }
 
-  // Reset at year boundary
+  // FIXED: Reset at year boundary (with proper year validation)
   if (month === 1 && previousSnapshot && previousSnapshot.period_month === 12) {
-    gracePeriodUsedThisYear = determination.usedGracePeriod ? 1 : 0;
+    // Only reset if previous snapshot was from the previous year
+    if (previousSnapshot.period_year === year - 1) {
+      gracePeriodUsedThisYear = determination.usedGracePeriod ? 1 : 0;
+    }
   }
 
   // Calculate consecutive qualified months
