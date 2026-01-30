@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd apex-app && npm run build",
+  "devCommand": "cd apex-app && npm run dev",
+  "installCommand": "cd apex-app && npm install",
+  "framework": "nextjs",
+  "outputDirectory": "apex-app/.next"
+}
