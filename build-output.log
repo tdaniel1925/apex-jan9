@@ -1,0 +1,304 @@
+
+> apex-app@0.1.0 build
+> next build
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\dev\1 - Jan. 10 Apex Site\package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * C:\dev\1 - Jan. 10 Apex Site\apex-app\package-lock.json
+
+   ▲ Next.js 15.5.9
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 16.4s
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+OPENAI_API_KEY is not set - AI features will use fallback responses
+   Generating static pages (0/152) ...
+OPENAI_API_KEY is not set - AI features will use fallback responses
+   Generating static pages (38/152) 
+   Generating static pages (76/152) 
+   Generating static pages (114/152) 
+ ✓ Generating static pages (152/152)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                                       Size  First Load JS
+┌ ƒ /                                                          8.14 kB         228 kB
+├ ƒ /_not-found                                                  999 B         103 kB
+├ ƒ /about                                                       479 B         102 kB
+├ ƒ /admin                                                     4.45 kB         171 kB
+├ ƒ /admin-login                                                 12 kB         190 kB
+├ ƒ /admin/agents                                                11 kB         167 kB
+├ ƒ /admin/analytics                                           5.49 kB         217 kB
+├ ƒ /admin/audit                                               2.99 kB         150 kB
+├ ƒ /admin/bonuses                                             5.82 kB         174 kB
+├ ƒ /admin/bulk-operations                                     11.8 kB         167 kB
+├ ƒ /admin/clawbacks                                           6.55 kB         164 kB
+├ ƒ /admin/commissions                                         7.37 kB         127 kB
+├ ƒ /admin/comp-plan                                           9.09 kB         131 kB
+├ ƒ /admin/compensation-plan                                   6.09 kB         165 kB
+├ ƒ /admin/compliance                                           9.3 kB         131 kB
+├ ƒ /admin/compliance-reports                                  8.73 kB         168 kB
+├ ƒ /admin/copilot                                              7.1 kB         155 kB
+├ ƒ /admin/disputes                                            12.1 kB         169 kB
+├ ƒ /admin/email-templates                                      9.1 kB         165 kB
+├ ƒ /admin/email-templates/[id]                                11.6 kB         171 kB
+├ ƒ /admin/email-templates/[id]/preview                        9.24 kB         138 kB
+├ ƒ /admin/founders                                            11.9 kB         167 kB
+├ ƒ /admin/overrides                                           7.52 kB         127 kB
+├ ƒ /admin/pay-periods                                         6.52 kB         126 kB
+├ ƒ /admin/payouts                                             4.38 kB         163 kB
+├ ƒ /admin/products                                            10.8 kB         166 kB
+├ ƒ /admin/settings                                             8.5 kB         161 kB
+├ ƒ /admin/smartoffice                                         20.3 kB         170 kB
+├ ƒ /admin/training                                            5.15 kB         119 kB
+├ ƒ /admin/training/analytics                                  8.27 kB         155 kB
+├ ƒ /admin/training/certificates                               9.99 kB         200 kB
+├ ƒ /admin/training/courses                                    6.44 kB         162 kB
+├ ƒ /admin/training/courses/[courseId]                         12.4 kB         206 kB
+├ ƒ /admin/training/courses/new                                7.61 kB         194 kB
+├ ƒ /admin/training/quizzes                                     4.8 kB         153 kB
+├ ƒ /admin/training/quizzes/new                                7.81 kB         124 kB
+├ ƒ /admin/training/resources                                  11.3 kB         211 kB
+├ ƒ /admin/unauthorized                                        3.88 kB         117 kB
+├ ƒ /admin/users                                               12.2 kB         172 kB
+├ ƒ /admin/webhooks                                            10.9 kB         139 kB
+├ ƒ /api/admin/agents                                            479 B         102 kB
+├ ƒ /api/admin/agents/[id]                                       479 B         102 kB
+├ ƒ /api/admin/analytics                                         479 B         102 kB
+├ ƒ /api/admin/analytics/top-performers                          479 B         102 kB
+├ ƒ /api/admin/audit                                             479 B         102 kB
+├ ƒ /api/admin/auth/login                                        479 B         102 kB
+├ ƒ /api/admin/auth/logout                                       479 B         102 kB
+├ ƒ /api/admin/auth/magic-link                                   479 B         102 kB
+├ ƒ /api/admin/auth/magic-link/verify                            479 B         102 kB
+├ ƒ /api/admin/auth/me                                           479 B         102 kB
+├ ƒ /api/admin/bonuses                                           479 B         102 kB
+├ ƒ /api/admin/bonuses/[id]                                      479 B         102 kB
+├ ƒ /api/admin/bonuses/[id]/approve                              479 B         102 kB
+├ ƒ /api/admin/bulk                                              479 B         102 kB
+├ ƒ /api/admin/clawbacks                                         479 B         102 kB
+├ ƒ /api/admin/clawbacks/[id]                                    479 B         102 kB
+├ ƒ /api/admin/commissions                                       479 B         102 kB
+├ ƒ /api/admin/commissions/[id]                                  479 B         102 kB
+├ ƒ /api/admin/commissions/import                                479 B         102 kB
+├ ƒ /api/admin/comp-plan/settings                                479 B         102 kB
+├ ƒ /api/admin/compensation-plan                                 479 B         102 kB
+├ ƒ /api/admin/compliance-logs                                   479 B         102 kB
+├ ƒ /api/admin/compliance-logs/summary                           479 B         102 kB
+├ ƒ /api/admin/compliance/holds                                  479 B         102 kB
+├ ƒ /api/admin/compliance/holds/[id]                             479 B         102 kB
+├ ƒ /api/admin/copilot/subscriptions                             479 B         102 kB
+├ ƒ /api/admin/disputes                                          479 B         102 kB
+├ ƒ /api/admin/disputes/[id]                                     479 B         102 kB
+├ ƒ /api/admin/email-branding                                    479 B         102 kB
+├ ƒ /api/admin/email-branding/upload                             479 B         102 kB
+├ ƒ /api/admin/email-templates                                   479 B         102 kB
+├ ƒ /api/admin/email-templates/[id]                              479 B         102 kB
+├ ƒ /api/admin/email-templates/[id]/preview                      479 B         102 kB
+├ ƒ /api/admin/email-templates/[id]/send-test                    479 B         102 kB
+├ ƒ /api/admin/founders                                          479 B         102 kB
+├ ƒ /api/admin/overrides                                         479 B         102 kB
+├ ƒ /api/admin/overrides/[id]                                    479 B         102 kB
+├ ƒ /api/admin/pay-periods                                       479 B         102 kB
+├ ƒ /api/admin/pay-periods/[id]                                  479 B         102 kB
+├ ƒ /api/admin/payouts                                           479 B         102 kB
+├ ƒ /api/admin/payouts/[id]                                      479 B         102 kB
+├ ƒ /api/admin/payouts/[id]/complete                             479 B         102 kB
+├ ƒ /api/admin/payouts/[id]/process                              479 B         102 kB
+├ ƒ /api/admin/payouts/bulk                                      479 B         102 kB
+├ ƒ /api/admin/products                                          479 B         102 kB
+├ ƒ /api/admin/products/[id]                                     479 B         102 kB
+├ ƒ /api/admin/roles                                             479 B         102 kB
+├ ƒ /api/admin/settings                                          479 B         102 kB
+├ ƒ /api/admin/smartoffice                                       479 B         102 kB
+├ ƒ /api/admin/smartoffice/agents                                479 B         102 kB
+├ ƒ /api/admin/smartoffice/clear                                 479 B         102 kB
+├ ƒ /api/admin/smartoffice/debug                                 479 B         102 kB
+├ ƒ /api/admin/smartoffice/dictionary                            479 B         102 kB
+├ ƒ /api/admin/smartoffice/explorer                              479 B         102 kB
+├ ƒ /api/admin/smartoffice/logs                                  479 B         102 kB
+├ ƒ /api/admin/smartoffice/policies                              479 B         102 kB
+├ ƒ /api/admin/smartoffice/samples                               479 B         102 kB
+├ ƒ /api/admin/smartoffice/sync                                  479 B         102 kB
+├ ƒ /api/admin/smartoffice/sync/stream                           479 B         102 kB
+├ ƒ /api/admin/training/analytics                                479 B         102 kB
+├ ƒ /api/admin/training/certificates                             479 B         102 kB
+├ ƒ /api/admin/training/certificates/[certificateId]             479 B         102 kB
+├ ƒ /api/admin/training/certificates/issue                       479 B         102 kB
+├ ƒ /api/admin/training/courses                                  479 B         102 kB
+├ ƒ /api/admin/training/courses/[courseId]                       479 B         102 kB
+├ ƒ /api/admin/training/courses/[courseId]/lessons               479 B         102 kB
+├ ƒ /api/admin/training/courses/[courseId]/sections              479 B         102 kB
+├ ƒ /api/admin/training/lessons/[lessonId]                       479 B         102 kB
+├ ƒ /api/admin/training/progress                                 479 B         102 kB
+├ ƒ /api/admin/training/quizzes                                  479 B         102 kB
+├ ƒ /api/admin/training/quizzes/[quizId]                         479 B         102 kB
+├ ƒ /api/admin/training/quizzes/[quizId]/questions               479 B         102 kB
+├ ƒ /api/admin/training/resources                                479 B         102 kB
+├ ƒ /api/admin/training/resources/[resourceId]                   479 B         102 kB
+├ ƒ /api/admin/training/tracks                                   479 B         102 kB
+├ ƒ /api/admin/training/tracks/[trackId]                         479 B         102 kB
+├ ƒ /api/admin/users                                             479 B         102 kB
+├ ƒ /api/admin/users/[userId]                                    479 B         102 kB
+├ ƒ /api/admin/webhooks                                          479 B         102 kB
+├ ƒ /api/admin/webhooks/[id]                                     479 B         102 kB
+├ ƒ /api/admin/webhooks/[id]/test                                479 B         102 kB
+├ ƒ /api/agents/[id]/qualification                               479 B         102 kB
+├ ƒ /api/agents/me                                               479 B         102 kB
+├ ƒ /api/ai/chat                                                 479 B         102 kB
+├ ƒ /api/auth/login                                              479 B         102 kB
+├ ƒ /api/auth/signup                                             479 B         102 kB
+├ ƒ /api/checkout                                                479 B         102 kB
+├ ƒ /api/commissions                                             479 B         102 kB
+├ ƒ /api/contact                                                 479 B         102 kB
+├ ƒ /api/contacts                                                479 B         102 kB
+├ ƒ /api/contacts/[id]                                           479 B         102 kB
+├ ƒ /api/contacts/[id]/activities                                479 B         102 kB
+├ ƒ /api/copilot/checkout                                        479 B         102 kB
+├ ƒ /api/copilot/subscription                                    479 B         102 kB
+├ ƒ /api/copilot/trial                                           479 B         102 kB
+├ ƒ /api/copilot/usage                                           479 B         102 kB
+├ ƒ /api/copilot/widget                                          479 B         102 kB
+├ ƒ /api/crm/bulk                                                479 B         102 kB
+├ ƒ /api/cron/drip-emails                                        479 B         102 kB
+├ ƒ /api/cron/smartoffice-sync                                   479 B         102 kB
+├ ƒ /api/debug/auth                                              479 B         102 kB
+├ ƒ /api/disputes                                                479 B         102 kB
+├ ƒ /api/disputes/[id]                                           479 B         102 kB
+├ ƒ /api/email/process                                           479 B         102 kB
+├ ƒ /api/email/track/click/[queueId]                             479 B         102 kB
+├ ƒ /api/email/track/open/[queueId]                              479 B         102 kB
+├ ƒ /api/email/unsubscribe/[contactId]                           479 B         102 kB
+├ ƒ /api/genealogy                                               479 B         102 kB
+├ ƒ /api/health                                                  479 B         102 kB
+├ ƒ /api/leaderboard                                             479 B         102 kB
+├ ƒ /api/leads                                                   479 B         102 kB
+├ ƒ /api/orders                                                  479 B         102 kB
+├ ƒ /api/orders/download/[itemId]                                479 B         102 kB
+├ ƒ /api/ping                                                    479 B         102 kB
+├ ƒ /api/products                                                479 B         102 kB
+├ ƒ /api/replicated-site/settings                                479 B         102 kB
+├ ƒ /api/reports/tax-documents                                   479 B         102 kB
+├ ƒ /api/settings/banking                                        479 B         102 kB
+├ ƒ /api/status                                                  479 B         102 kB
+├ ƒ /api/team/metrics                                            479 B         102 kB
+├ ƒ /api/training/certificates                                   479 B         102 kB
+├ ƒ /api/training/courses                                        479 B         102 kB
+├ ƒ /api/training/courses/[courseId]                             479 B         102 kB
+├ ƒ /api/training/courses/[courseId]/enroll                      479 B         102 kB
+├ ƒ /api/training/lessons/[lessonId]/quiz                        479 B         102 kB
+├ ƒ /api/training/licenses                                       479 B         102 kB
+├ ƒ /api/training/progress                                       479 B         102 kB
+├ ƒ /api/training/quizzes/[quizId]                               479 B         102 kB
+├ ƒ /api/training/quizzes/[quizId]/submit                        479 B         102 kB
+├ ƒ /api/training/resources                                      479 B         102 kB
+├ ƒ /api/training/stats                                          479 B         102 kB
+├ ƒ /api/training/tracks                                         479 B         102 kB
+├ ƒ /api/training/tracks/[trackId]/enroll                        479 B         102 kB
+├ ƒ /api/upload/avatar                                           479 B         102 kB
+├ ƒ /api/username/check                                          479 B         102 kB
+├ ƒ /api/wallet                                                  479 B         102 kB
+├ ƒ /api/wallet/ensure                                           479 B         102 kB
+├ ƒ /api/wallet/transactions                                     479 B         102 kB
+├ ƒ /api/wallet/withdraw                                         479 B         102 kB
+├ ƒ /api/webhooks/stripe                                         479 B         102 kB
+├ ƒ /auth/callback                                               479 B         102 kB
+├ ƒ /carriers                                                    479 B         102 kB
+├ ƒ /commissions                                               7.86 kB         171 kB
+├ ƒ /compare                                                     178 B         105 kB
+├ ƒ /contact                                                   3.97 kB         187 kB
+├ ƒ /copilot                                                   9.09 kB         175 kB
+├ ƒ /copilot/subscribe                                         8.04 kB         171 kB
+├ ƒ /copilot/widget                                             6.3 kB         182 kB
+├ ƒ /dashboard                                                 8.92 kB         186 kB
+├ ƒ /dashboard/bonuses                                         6.62 kB         183 kB
+├ ƒ /dashboard/commissions                                        7 kB         184 kB
+├ ƒ /dashboard/crm                                             9.09 kB         235 kB
+├ ƒ /dashboard/crm/[contactId]                                  9.9 kB         208 kB
+├ ƒ /dashboard/crm/import-export                                8.8 kB         148 kB
+├ ƒ /dashboard/disputes                                        6.97 kB         175 kB
+├ ƒ /dashboard/disputes/[id]                                   11.4 kB         158 kB
+├ ƒ /dashboard/genealogy                                       57.3 kB         234 kB
+├ ƒ /dashboard/leaderboard                                     9.74 kB         170 kB
+├ ƒ /dashboard/orders                                          5.22 kB         131 kB
+├ ƒ /dashboard/qualification                                   6.69 kB         187 kB
+├ ƒ /dashboard/replicated-site                                 7.54 kB         157 kB
+├ ƒ /dashboard/reports                                         5.97 kB         228 kB
+├ ƒ /dashboard/reports/tax-documents                           5.37 kB         166 kB
+├ ƒ /dashboard/settings                                        21.5 kB         228 kB
+├ ƒ /dashboard/settings/banking                                7.48 kB         216 kB
+├ ƒ /dashboard/shop                                            6.54 kB         140 kB
+├ ƒ /dashboard/shop/cancel                                     3.81 kB         114 kB
+├ ƒ /dashboard/shop/cart                                       6.59 kB         126 kB
+├ ƒ /dashboard/shop/success                                    4.55 kB         115 kB
+├ ƒ /dashboard/team                                             9.2 kB         189 kB
+├ ƒ /dashboard/team/metrics                                    9.51 kB         123 kB
+├ ƒ /dashboard/training                                        6.26 kB         157 kB
+├ ƒ /dashboard/training/achievements                           6.95 kB         120 kB
+├ ƒ /dashboard/training/certificates                            4.9 kB         118 kB
+├ ƒ /dashboard/training/courses                                5.05 kB         166 kB
+├ ƒ /dashboard/training/courses/[courseId]                     7.16 kB         129 kB
+├ ƒ /dashboard/training/courses/[courseId]/lessons/[lessonId]  4.32 kB         133 kB
+├ ƒ /dashboard/training/licensing                              9.24 kB         159 kB
+├ ƒ /dashboard/training/quizzes/[quizId]                        2.2 kB         128 kB
+├ ƒ /dashboard/training/resources                              5.69 kB         152 kB
+├ ƒ /dashboard/training/tracks                                 7.74 kB         121 kB
+├ ƒ /dashboard/training/tracks/[trackId]                       8.04 kB         121 kB
+├ ƒ /dashboard/wallet                                          8.55 kB         222 kB
+├ ƒ /faq                                                         855 B         122 kB
+├ ƒ /forgot-password                                           5.31 kB         177 kB
+├ ƒ /income-disclaimer                                           479 B         102 kB
+├ ƒ /join                                                        11 kB         180 kB
+├ ƒ /join/[agentCode]                                          3.06 kB         122 kB
+├ ƒ /join/[agentCode]/about                                      185 B         111 kB
+├ ƒ /join/[agentCode]/about-me                                 3.05 kB         116 kB
+├ ƒ /join/[agentCode]/contact                                  9.58 kB         172 kB
+├ ƒ /join/[agentCode]/income-disclaimer                          479 B         102 kB
+├ ƒ /join/[agentCode]/opportunity                                185 B         111 kB
+├ ƒ /join/[agentCode]/privacy                                    479 B         102 kB
+├ ƒ /join/[agentCode]/products                                   185 B         111 kB
+├ ƒ /join/[agentCode]/signup                                   6.17 kB         181 kB
+├ ƒ /join/[agentCode]/signup/success                           4.16 kB         175 kB
+├ ƒ /join/[agentCode]/signup/verify-email                      8.23 kB         174 kB
+├ ƒ /join/[agentCode]/terms                                      479 B         102 kB
+├ ƒ /join/[agentCode]/testimonials                             3.05 kB         116 kB
+├ ƒ /login                                                      6.4 kB         192 kB
+├ ƒ /new-to-insurance                                            178 B         105 kB
+├ ƒ /opportunity                                                 178 B         105 kB
+├ ƒ /privacy                                                     479 B         102 kB
+├ ƒ /professionals                                               178 B         105 kB
+├ ƒ /reset-password                                             5.4 kB         177 kB
+├ ○ /robots.txt                                                  479 B         102 kB
+├ ƒ /signup                                                    6.32 kB         204 kB
+├ ○ /sitemap.xml                                                 479 B         102 kB
+├ ƒ /team/[username]                                           5.26 kB         138 kB
+├ ƒ /team/[username]/about-me                                  5.25 kB         132 kB
+├ ƒ /team/[username]/contact                                   9.44 kB         186 kB
+├ ƒ /team/[username]/income-disclaimer                           178 B         122 kB
+├ ƒ /team/[username]/opportunity                                 195 B         127 kB
+├ ƒ /team/[username]/privacy                                     178 B         122 kB
+├ ƒ /team/[username]/products                                    195 B         127 kB
+├ ƒ /team/[username]/signup                                    5.95 kB         194 kB
+├ ƒ /team/[username]/signup/success                            3.94 kB         189 kB
+├ ƒ /team/[username]/signup/verify-email                       8.22 kB         188 kB
+├ ƒ /team/[username]/terms                                       178 B         122 kB
+├ ƒ /team/[username]/testimonials                              5.25 kB         132 kB
+├ ƒ /terms                                                       178 B         105 kB
+└ ƒ /test-page                                                   479 B         102 kB
++ First Load JS shared by all                                   102 kB
+  ├ chunks/1255-8befde0980f5cba9.js                            45.6 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js                        54.2 kB
+  └ other shared chunks (total)                                2.02 kB
+
+
+ƒ Middleware                                                    184 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

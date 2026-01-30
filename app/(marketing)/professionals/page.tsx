@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,13 +15,15 @@ import {
   Building2,
   Zap,
   Target,
+  XCircle,
 } from 'lucide-react';
 import { Metadata } from 'next';
+import { CommissionCalculator } from '@/components/marketing/commission-calculator';
 
 export const metadata: Metadata = {
-  title: 'Licensed Insurance Professionals | Apex Affinity Group',
-  description: 'Already licensed? Take your insurance career to the next level with Apex. Higher commissions, better support, and unlimited growth potential.',
-  keywords: ['licensed insurance agent', 'insurance career change', 'higher commissions', 'IMO', 'FMO', 'insurance agency'],
+  title: 'For Licensed Professionals | Why Agents Switch to Apex',
+  description: 'Stop leaving money on the table. Higher commissions, ownership of your clients, and the freedom to build your own agency. See why agents switch to Apex.',
+  keywords: ['licensed insurance agent', 'insurance career change', 'higher commissions', 'insurance agency', 'agent ownership'],
 };
 
 export default function ProfessionalsPage() {
@@ -37,23 +38,23 @@ export default function ProfessionalsPage() {
               For Licensed Insurance Professionals
             </Badge>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              You&apos;ve Built the Skills.
-              <span className="text-amber-500 block mt-2">Now Build Real Wealth.</span>
+              You&apos;ve Worked Too Hard
+              <span className="text-amber-500 block mt-2">To Settle For Less</span>
             </h1>
             <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-              Stop leaving money on the table. Join an organization that rewards your experience
-              with higher commissions, ownership of your book, and a clear path to agency building.
+              Stop leaving money on the table. Stop building someone else's empire.
+              It's time to earn what you're worth and own what you build.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/join">
+              <Link href="/contact">
                 <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold">
-                  See Our Compensation
+                  See What You Could Earn
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link href="/contact">
+              <Link href="#comparison">
                 <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
-                  Get Started
+                  Compare Your Current Deal
                 </Button>
               </Link>
             </div>
@@ -61,29 +62,24 @@ export default function ProfessionalsPage() {
         </div>
       </section>
 
-      {/* Pain Points Section */}
-      <section className="py-16 bg-slate-50">
+      {/* Pain Points - Visual Cards */}
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-4">Sound Familiar?</h2>
             <p className="text-center text-muted-foreground mb-12">
-              If you&apos;re experiencing any of these, it might be time for a change.
+              If any of these hit home, keep reading.
             </p>
             <div className="grid md:grid-cols-2 gap-6">
               {[
-                'Commission splits that favor the agency, not you',
-                'No ownership of your client relationships',
-                'Limited product options forcing you to turn away business',
-                'Lack of support when you need help closing deals',
-                'No clear path to building your own agency',
-                'Outdated technology making your job harder',
-                'Captive contracts limiting your growth',
-                'Production requirements that feel like quotas',
-              ].map((pain, index) => (
-                <div key={index} className="flex items-start gap-3 p-4 bg-white rounded-lg border">
-                  <div className="h-6 w-6 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="text-red-600 text-sm font-bold">✗</span>
-                  </div>
+                "Splitting commissions with an agency that doesn't do anything for you",
+                "Clients you built relationships with—but don't actually own",
+                "Stuck selling one company's products, turning away business",
+                "No real support when you need help closing deals",
+                "No clear path to building your own thing",
+              ].map((pain) => (
+                <div key={pain} className="flex items-start gap-3 p-4 bg-red-50 rounded-lg border-2 border-red-100">
+                  <XCircle className="h-6 w-6 text-red-600 shrink-0 mt-0.5" />
                   <p className="text-slate-700">{pain}</p>
                 </div>
               ))}
@@ -92,13 +88,13 @@ export default function ProfessionalsPage() {
         </div>
       </section>
 
-      {/* What We Offer Section */}
-      <section className="py-20">
+      {/* What Apex Offers - Simplified */}
+      <section className="py-20 bg-slate-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">What Apex Offers Experienced Agents</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">What If You Could Keep More of What You Earn?</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              We built Apex for producers like you who deserve better.
+              Here's what changes when you switch to Apex.
             </p>
           </div>
 
@@ -106,10 +102,9 @@ export default function ProfessionalsPage() {
             <Card className="border-2 hover:border-amber-500/50 transition-colors">
               <CardContent className="pt-6">
                 <DollarSign className="h-12 w-12 text-amber-500 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Up to 145% Contracts</h3>
+                <h3 className="text-xl font-semibold mb-2">Top Commission Rates</h3>
                 <p className="text-muted-foreground">
-                  Street-level contracts from day one. Your production, your commissions.
-                  No splits with a middleman.
+                  Earn up to 145% on life products. No splits. No middleman taking a cut of your hard work.
                 </p>
               </CardContent>
             </Card>
@@ -117,10 +112,9 @@ export default function ProfessionalsPage() {
             <Card className="border-2 hover:border-amber-500/50 transition-colors">
               <CardContent className="pt-6">
                 <Shield className="h-12 w-12 text-amber-500 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Vested Day One</h3>
+                <h3 className="text-xl font-semibold mb-2">Your Clients Are Yours</h3>
                 <p className="text-muted-foreground">
-                  Your book is YOUR book. Full ownership of renewals from the start.
-                  No vesting schedules or clawback games.
+                  Full ownership from day one. No waiting period. No fine print. Build your book, keep your book.
                 </p>
               </CardContent>
             </Card>
@@ -128,10 +122,9 @@ export default function ProfessionalsPage() {
             <Card className="border-2 hover:border-amber-500/50 transition-colors">
               <CardContent className="pt-6">
                 <Building2 className="h-12 w-12 text-amber-500 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">7 A-Rated Carriers</h3>
+                <h3 className="text-xl font-semibold mb-2">7+ Top Insurance Companies</h3>
                 <p className="text-muted-foreground">
-                  Columbus Life, AIG, F&G, and more. Never turn away a client because
-                  you don&apos;t have the right product.
+                  Never turn away business again. Access to multiple top-rated carriers means the right product every time.
                 </p>
               </CardContent>
             </Card>
@@ -139,10 +132,9 @@ export default function ProfessionalsPage() {
             <Card className="border-2 hover:border-amber-500/50 transition-colors">
               <CardContent className="pt-6">
                 <Users className="h-12 w-12 text-amber-500 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Build Your Agency</h3>
+                <h3 className="text-xl font-semibold mb-2">Build Your Own Agency</h3>
                 <p className="text-muted-foreground">
-                  6 levels of override income. We&apos;ll help you recruit, train, and
-                  build a team that generates passive income.
+                  Want to grow a team? We'll help you recruit, train, and earn bonuses on their success. 6 levels deep.
                 </p>
               </CardContent>
             </Card>
@@ -150,10 +142,9 @@ export default function ProfessionalsPage() {
             <Card className="border-2 hover:border-amber-500/50 transition-colors">
               <CardContent className="pt-6">
                 <Zap className="h-12 w-12 text-amber-500 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">AI-Powered Tools</h3>
+                <h3 className="text-xl font-semibold mb-2">Modern Tools Included</h3>
                 <p className="text-muted-foreground">
-                  CRM, quoting tools, AI sales assistant, and marketing automation.
-                  Technology that makes you more productive.
+                  CRM, quoting tools, AI assistant, and marketing automation. All provided, no extra fees.
                 </p>
               </CardContent>
             </Card>
@@ -161,10 +152,9 @@ export default function ProfessionalsPage() {
             <Card className="border-2 hover:border-amber-500/50 transition-colors">
               <CardContent className="pt-6">
                 <Target className="h-12 w-12 text-amber-500 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Quotas</h3>
+                <h3 className="text-xl font-semibold mb-2">No Sales Quotas</h3>
                 <p className="text-muted-foreground">
-                  We&apos;re not here to micromanage. You&apos;re a professional.
-                  Set your own goals, work your own way.
+                  You're a professional. Set your own goals, work your own way. We're not here to micromanage.
                 </p>
               </CardContent>
             </Card>
@@ -172,52 +162,73 @@ export default function ProfessionalsPage() {
         </div>
       </section>
 
-      {/* Comparison Section */}
-      <section className="py-20 bg-slate-900 text-white">
+      {/* Commission Calculator */}
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-            How We Compare
-          </h2>
           <div className="max-w-4xl mx-auto">
-            <div className="grid grid-cols-3 gap-4 mb-4 text-center">
-              <div></div>
-              <div className="font-semibold text-amber-500">Apex Affinity</div>
-              <div className="font-semibold text-slate-400">Typical Captive</div>
-            </div>
-            {[
-              { label: 'Commission Level', apex: 'Up to 145%', captive: '50-80%' },
-              { label: 'Book Ownership', apex: '100% Vested', captive: 'Agency Owned' },
-              { label: 'Product Options', apex: '7+ Carriers', captive: '1 Carrier' },
-              { label: 'Override Income', apex: '6 Levels Deep', captive: 'Limited/None' },
-              { label: 'Quotas', apex: 'None', captive: 'Monthly Requirements' },
-              { label: 'Contract Type', apex: 'Independent', captive: 'Captive/Exclusive' },
-            ].map((row, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-3 gap-4 py-4 border-b border-slate-700 items-center"
-              >
-                <div className="font-medium">{row.label}</div>
-                <div className="text-center">
-                  <span className="inline-flex items-center gap-2 text-green-400">
-                    <CheckCircle2 className="h-4 w-4" />
-                    {row.apex}
-                  </span>
-                </div>
-                <div className="text-center text-slate-400">{row.captive}</div>
-              </div>
-            ))}
+            <CommissionCalculator />
           </div>
         </div>
       </section>
 
-      {/* Transition Support */}
-      <section className="py-20">
+      {/* Comparison Section */}
+      <section id="comparison" className="py-20 bg-slate-900 text-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+            How Apex Compares to Where You Are Now
+          </h2>
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white/5 backdrop-blur rounded-2xl p-8 border border-white/10">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b-2 border-white/20">
+                    <th className="text-left py-4 px-4"></th>
+                    <th className="text-center py-4 px-4">
+                      <div className="font-semibold text-amber-500 text-lg">Apex</div>
+                    </th>
+                    <th className="text-center py-4 px-4">
+                      <div className="font-semibold text-slate-400">Typical Agency</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="text-white">
+                  {[
+                    { label: 'Commission Rates', apex: 'Up to 145%', other: '50-80%' },
+                    { label: 'Client Ownership', apex: 'Yours immediately', other: 'Agency owned' },
+                    { label: 'Insurance Companies', apex: '7+ top carriers', other: '1 carrier' },
+                    { label: 'Team Bonuses', apex: '6 levels', other: 'Limited/None' },
+                    { label: 'Monthly Quotas', apex: 'None', other: 'Required' },
+                    { label: 'Enrollment Fees', apex: '$0', other: '$500-2,000' },
+                  ].map((row) => (
+                    <tr
+                      key={row.label}
+                      className="border-b border-white/10"
+                    >
+                      <td className="py-4 px-4 font-medium">{row.label}</td>
+                      <td className="text-center py-4 px-4">
+                        <span className="inline-flex items-center gap-2 text-green-400 font-semibold">
+                          <CheckCircle2 className="h-4 w-4" />
+                          {row.apex}
+                        </span>
+                      </td>
+                      <td className="text-center py-4 px-4 text-slate-400">{row.other}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Transition Support - Simplified */}
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Seamless Transition Support</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Switching Is Easier Than You Think</h2>
               <p className="text-xl text-muted-foreground">
-                We make switching easy so you can focus on what you do best—selling.
+                We've helped hundreds of agents make the transition. Here's how it works.
               </p>
             </div>
 
@@ -228,10 +239,9 @@ export default function ProfessionalsPage() {
                     <Clock className="h-5 w-5 text-amber-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">Fast Contracting</h3>
+                    <h3 className="font-semibold mb-1">Get Set Up Fast</h3>
                     <p className="text-muted-foreground">
-                      Get contracted with all carriers within 48-72 hours.
-                      Start writing business immediately.
+                      Authorized to sell with all carriers within 48-72 hours. Start earning immediately.
                     </p>
                   </div>
                 </div>
@@ -241,10 +251,9 @@ export default function ProfessionalsPage() {
                     <Briefcase className="h-5 w-5 text-amber-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">Appointment Transfers</h3>
+                    <h3 className="font-semibold mb-1">We Handle the Paperwork</h3>
                     <p className="text-muted-foreground">
-                      We&apos;ll help navigate carrier appointment transfers
-                      and handle the paperwork.
+                      Transferring authorizations and setting up accounts. We'll walk you through it.
                     </p>
                   </div>
                 </div>
@@ -254,37 +263,36 @@ export default function ProfessionalsPage() {
                     <Award className="h-5 w-5 text-amber-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">Production Bonuses</h3>
+                    <h3 className="font-semibold mb-1">Transition Bonuses Available</h3>
                     <p className="text-muted-foreground">
-                      Qualify for transition bonuses based on your
-                      prior 12-month production history.
+                      Based on your past performance, you may qualify for transition bonuses.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-slate-100 rounded-2xl p-8">
+              <div className="bg-amber-50 rounded-2xl p-8 border-2 border-amber-100">
                 <h3 className="text-xl font-semibold mb-4">What to Expect</h3>
                 <ol className="space-y-4">
                   <li className="flex gap-3">
                     <span className="h-6 w-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center shrink-0">1</span>
-                    <span>Schedule a confidential call to discuss your goals</span>
+                    <span>Confidential conversation about your goals</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="h-6 w-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center shrink-0">2</span>
-                    <span>Review contracts and compensation structure</span>
+                    <span>Review commission structure and support</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="h-6 w-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center shrink-0">3</span>
-                    <span>Complete contracting (48-72 hours)</span>
+                    <span>Complete setup (48-72 hours)</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="h-6 w-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center shrink-0">4</span>
-                    <span>Get access to systems, training, and support</span>
+                    <span>Access systems, training, and support</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="h-6 w-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center shrink-0">5</span>
-                    <span>Start writing business with full support</span>
+                    <span>Start earning higher commissions</span>
                   </li>
                 </ol>
               </div>
@@ -293,23 +301,29 @@ export default function ProfessionalsPage() {
         </div>
       </section>
 
-      {/* Testimonial */}
-      <section className="py-16 bg-amber-50">
+      {/* Testimonial - More Emotional */}
+      <section className="py-16 bg-gradient-to-br from-slate-900 to-slate-800 text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <div className="text-5xl text-amber-500 mb-6">&ldquo;</div>
-            <blockquote className="text-xl md:text-2xl text-slate-700 mb-6">
-              After 8 years captive, I thought I knew what success looked like.
-              My first year at Apex, I made more than my best three years combined at my old agency.
-              The freedom, the support, the technology—it&apos;s a completely different game.
+            <blockquote className="text-xl md:text-2xl mb-8 leading-relaxed">
+              After 8 years feeling trapped by low commissions and corporate BS,
+              I made more in my first year at Apex than my best three years combined.
+              The freedom alone was worth the switch—but the money didn't hurt either.
             </blockquote>
             <div className="flex items-center justify-center gap-4">
-              <div className="h-12 w-12 rounded-full bg-amber-200 flex items-center justify-center">
-                <span className="font-semibold text-amber-700">MR</span>
+              <div className="h-16 w-16 rounded-full bg-amber-500/20 border-2 border-amber-500/30 flex items-center justify-center">
+                <span className="font-semibold text-amber-400 text-xl">MR</span>
               </div>
               <div className="text-left">
-                <p className="font-semibold">Michael Rodriguez</p>
-                <p className="text-sm text-muted-foreground">Former Captive Agent, Now Regional Director</p>
+                <p className="font-semibold text-lg">Michael Rodriguez</p>
+                <p className="text-sm text-slate-400">Former Exclusive Agent → Regional Director</p>
+              </div>
+            </div>
+            <div className="mt-6 pt-6 border-t border-white/10">
+              <div className="inline-flex items-center gap-2 text-amber-400">
+                <TrendingUp className="h-5 w-5" />
+                <span className="font-semibold">Tripled income in year 1</span>
               </div>
             </div>
           </div>
@@ -317,29 +331,29 @@ export default function ProfessionalsPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-slate-900 text-white">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Take Control of Your Career?
+            Ready to Stop Settling?
           </h2>
-          <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-            Schedule a confidential conversation. No pressure, no obligation—just
-            an honest look at what&apos;s possible.
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            No obligation. No pressure. Just an honest conversation about what you're earning now
+            and what you could be earning at Apex.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/join">
-              <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold">
-                View Compensation Details
+            <Link href="/contact">
+              <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold text-lg px-8">
+                See Your Potential Earnings
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <Link href="/contact">
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
-                Get Started
+            <Link href="/about">
+              <Button size="lg" variant="outline" className="text-lg px-8">
+                Learn More About Apex
               </Button>
             </Link>
           </div>
-          <p className="text-sm text-slate-400 mt-6">
+          <p className="text-sm text-muted-foreground mt-6">
             All conversations are 100% confidential.
           </p>
         </div>

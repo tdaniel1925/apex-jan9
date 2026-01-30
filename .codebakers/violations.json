@@ -1,66 +1,36 @@
 {
-  "timestamp": "2026-01-17T04:20:31.500Z",
-  "count": 10,
+  "timestamp": "2026-01-30T00:05:20.013Z",
+  "count": 5,
   "violations": [
     {
-      "file": "lib/services/notification-service.ts",
-      "check": "Merge Conflict Markers",
-      "category": "security",
-      "message": "Merge conflict markers found - resolve conflicts first"
+      "file": "app/(marketing)/about/page.tsx",
+      "check": "Unused Import",
+      "category": "imports",
+      "message": "Possibly unused import: TrendingUp"
     },
     {
-      "file": "lib/services/notification-service.ts",
-      "check": "Large File",
-      "category": "quality",
-      "message": "File has 736 lines - consider splitting into smaller modules"
-    },
-    {
-      "file": "lib/services/notification-service.ts",
-      "check": "Any Type Usage",
-      "category": "typescript",
-      "message": "Using \"any\" type - provide proper TypeScript types"
-    },
-    {
-      "file": "lib/services/notification-service.ts",
-      "check": "Non-null Assertion",
-      "category": "typescript",
-      "message": "7 non-null assertions (!) - handle null cases properly"
-    },
-    {
-      "file": "lib/services/notification-service.ts",
+      "file": "app/(marketing)/new-to-insurance/page.tsx",
       "check": "Large Import",
       "category": "performance",
       "message": "Large library import - use specific imports for smaller bundle"
     },
     {
-      "file": "lib/services/notification-service.ts",
+      "file": "app/(marketing)/opportunity/page.tsx",
+      "check": "Index as Key",
+      "category": "react",
+      "message": "Using array index as key - use unique identifier instead"
+    },
+    {
+      "file": "app/(marketing)/opportunity/page.tsx",
       "check": "Unused Import",
       "category": "imports",
-      "message": "Possibly unused import: type EmailResult"
+      "message": "Possibly unused import: Award"
     },
     {
-      "file": "tests/services/notification-service.test.ts",
-      "check": "Large File",
-      "category": "quality",
-      "message": "File has 829 lines - consider splitting into smaller modules"
-    },
-    {
-      "file": "tests/services/notification-service.test.ts",
-      "check": "Any Type Usage",
-      "category": "typescript",
-      "message": "Using \"any\" type - provide proper TypeScript types"
-    },
-    {
-      "file": "tests/services/notification-service.test.ts",
+      "file": "app/(marketing)/professionals/page.tsx",
       "check": "Large Import",
       "category": "performance",
       "message": "Large library import - use specific imports for smaller bundle"
-    },
-    {
-      "file": "tests/services/notification-service.test.ts",
-      "check": "Unused Import",
-      "category": "imports",
-      "message": "Possibly unused import: type NotificationPayload"
     }
   ]
 }

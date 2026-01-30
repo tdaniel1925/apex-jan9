@@ -25,12 +25,6 @@ export default function MarketingLayout({
             <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               About
             </Link>
-            <Link href="/carriers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Carriers
-            </Link>
-            <Link href="/compare" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Compare
-            </Link>
             <Link href="/professionals" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               For Agents
             </Link>

@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Logo } from '@/components/ui/logo';
 import { Phone, Mail, MapPin, Facebook, Linkedin, Twitter, Instagram } from 'lucide-react';
 
-export function MarketingFooter() {
+export function MarketingFooter(): JSX.Element {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -45,8 +45,6 @@ export function MarketingFooter() {
             <h4 className="font-semibold mb-4">Company</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link href="/about" className="hover:text-foreground">About Us</Link></li>
-              <li><Link href="/carriers" className="hover:text-foreground">Our Carriers</Link></li>
-              <li><Link href="/compare" className="hover:text-foreground">Compare</Link></li>
               <li><Link href="/faq" className="hover:text-foreground">FAQ</Link></li>
               <li><Link href="/contact" className="hover:text-foreground">Contact Us</Link></li>
             </ul>
@@ -67,11 +65,9 @@ export function MarketingFooter() {
           <div>
             <h4 className="font-semibold mb-4">Products</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/carriers#life-insurance" className="hover:text-foreground">Life Insurance</Link></li>
-              <li><Link href="/carriers#annuities" className="hover:text-foreground">Annuities</Link></li>
-              <li><Link href="/carriers#iul" className="hover:text-foreground">IUL Policies</Link></li>
-              <li><Link href="/carriers#term-life" className="hover:text-foreground">Term Life</Link></li>
-              <li><Link href="/carriers#final-expense" className="hover:text-foreground">Final Expense</Link></li>
+              <li><Link href="/opportunity#life-insurance" className="hover:text-foreground">Life Insurance</Link></li>
+              <li><Link href="/opportunity#annuities" className="hover:text-foreground">Annuities</Link></li>
+              <li><Link href="/opportunity#final-expense" className="hover:text-foreground">Final Expense</Link></li>
             </ul>
           </div>
 
