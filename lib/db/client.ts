@@ -78,3 +78,11 @@ export function getDatabaseUrl(): string {
     "DATABASE_URL not set. Please add your Supabase database connection string to .env.local"
   );
 }
+
+/**
+ * Drizzle ORM database client
+ * Use this for all database queries
+ */
+const connectionString = getDatabaseUrl();
+const queryClient = postgres(connectionString);
+export const db = drizzle(queryClient, { schema });
