@@ -47,7 +47,7 @@ export function HeroSection({
       <div className="container max-w-optive mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-stretch min-h-screen">
           {/* Left: Content */}
-          <div className="px-6 lg:px-12 py-20 flex items-center">
+          <div className="px-6 lg:px-12 flex flex-col justify-center py-32">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
