@@ -287,6 +287,44 @@ export const auditLog = pgTable("audit_log", {
     .defaultNow(),
 });
 
+export const founderMembers = pgTable("founder_members", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  distributorId: uuid("distributor_id")
+    .notNull()
+    .references(() => distributors.id, { onDelete: "cascade" }),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email").notNull().unique(),
+  phone: text("phone"),
+  streetAddress: text("street_address"),
+  city: text("city"),
+  state: text("state"),
+  zipCode: text("zip_code"),
+  country: text("country").notNull().default("USA"),
+  ssnLastFour: text("ssn_last_four"),
+  dateOfBirth: timestamp("date_of_birth", { withTimezone: true, mode: "date" }),
+  commissionPercentage: integer("commission_percentage").notNull().default(25),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+export const founderLogins = pgTable("founder_logins", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  founderMemberId: uuid("founder_member_id")
+    .notNull()
+    .references(() => founderMembers.id, { onDelete: "cascade" }),
+  authUserId: uuid("auth_user_id").notNull().unique(),
+  lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 // ============================================
 // TYPE EXPORTS
 // ============================================
@@ -323,3 +361,9 @@ export type NewSystemSettings = typeof systemSettings.$inferInsert;
 
 export type AuditLog = typeof auditLog.$inferSelect;
 export type NewAuditLog = typeof auditLog.$inferInsert;
+
+export type FounderMember = typeof founderMembers.$inferSelect;
+export type NewFounderMember = typeof founderMembers.$inferInsert;
+
+export type FounderLogin = typeof founderLogins.$inferSelect;
+export type NewFounderLogin = typeof founderLogins.$inferInsert;

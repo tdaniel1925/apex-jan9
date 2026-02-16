@@ -22,4 +22,10 @@ export type DistributorSession = {
   firstName: string;
   lastName: string;
   photoUrl?: string;
+  isFounder?: boolean;
+  founderInfo?: {
+    founderId: string;
+    founderName: string;
+    founderEmail: string;
+  };
 } | null;

@@ -36,6 +36,11 @@ export default async function DashboardLayout({
                 {user.firstName} {user.lastName}
               </p>
               <p className="text-xs text-muted-foreground">@{user.username}</p>
+              {user.isFounder && user.founderInfo && (
+                <p className="text-[10px] text-blue-600 dark:text-blue-400 font-medium">
+                  Founder: {user.founderInfo.founderName}
+                </p>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -86,6 +91,11 @@ export default async function DashboardLayout({
                   <p className="text-xs text-muted-foreground truncate">
                     @{user.username}
                   </p>
+                  {user.isFounder && user.founderInfo && (
+                    <p className="text-[10px] text-blue-600 dark:text-blue-400 font-medium truncate">
+                      Founder: {user.founderInfo.founderName}
+                    </p>
+                  )}
                 </div>
                 <NotificationBell
                   notifications={notifications}

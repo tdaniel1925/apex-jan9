@@ -5,7 +5,7 @@
 import { createClient, createServiceClient } from "@/lib/db/client";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { adminUsers, distributors } from "@/lib/db/schema";
+import { adminUsers, distributors, founderMembers, founderLogins } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import type { SessionUser, DistributorSession } from "@/lib/types/auth";
 
@@ -46,7 +46,7 @@ export async function getUser(): Promise<
   }
 
   const queryClient = postgres(connectionString);
-  const db = drizzle(queryClient, { schema: { adminUsers, distributors } });
+  const db = drizzle(queryClient, { schema: { adminUsers, distributors, founderMembers, founderLogins } });
 
   // Try admin_users first
   const [adminUser] = await db
@@ -69,7 +69,52 @@ export async function getUser(): Promise<
     };
   }
 
-  // Try distributors
+  // Try founder logins (4 Horsemen)
+  const [founderLogin] = await db
+    .select({
+      founderId: founderMembers.id,
+      founderFirstName: founderMembers.firstName,
+      founderLastName: founderMembers.lastName,
+      founderEmail: founderMembers.email,
+      distributorId: founderMembers.distributorId,
+    })
+    .from(founderLogins)
+    .innerJoin(founderMembers, eq(founderLogins.founderMemberId, founderMembers.id))
+    .where(eq(founderLogins.authUserId, authUserId))
+    .limit(1);
+
+  if (founderLogin) {
+    // Founder found - get the associated distributor
+    const [distributor] = await db
+      .select()
+      .from(distributors)
+      .where(eq(distributors.id, founderLogin.distributorId))
+      .limit(1);
+
+    await queryClient.end();
+
+    if (distributor) {
+      return {
+        type: "distributor",
+        user: {
+          id: distributor.id,
+          email: distributor.email,
+          username: distributor.username,
+          firstName: distributor.firstName,
+          lastName: distributor.lastName,
+          photoUrl: distributor.photoUrl ?? undefined,
+          isFounder: true,
+          founderInfo: {
+            founderId: founderLogin.founderId,
+            founderName: `${founderLogin.founderFirstName} ${founderLogin.founderLastName}`,
+            founderEmail: founderLogin.founderEmail,
+          },
+        },
+      };
+    }
+  }
+
+  // Try regular distributors
   const [distributor] = await db
     .select()
     .from(distributors)
