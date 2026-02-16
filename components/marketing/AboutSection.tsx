@@ -141,7 +141,7 @@ export function AboutSection({
             >
               <div className="aspect-[4/3] bg-gradient-to-br from-apex-navy/10 to-apex-dark/10 rounded-2xl overflow-hidden relative">
                 <Image
-                  src="/image-gen.png"
+                  src="/about-hero.png"
                   alt="Apex Affinity Group"
                   fill
                   className="object-cover"
