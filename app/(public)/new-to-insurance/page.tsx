@@ -69,7 +69,7 @@ export default function NewToInsurancePage() {
       />
 
       {/* Contact */}
-      <ContactSection variant="corporate" />
+      <ContactSection />
 
       {/* Footer */}
       <MarketingFooter />

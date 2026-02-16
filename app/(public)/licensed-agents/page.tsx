@@ -69,7 +69,7 @@ export default function LicensedAgentsPage() {
       />
 
       {/* Contact */}
-      <ContactSection variant="corporate" />
+      <ContactSection />
 
       {/* Footer */}
       <MarketingFooter />
