@@ -1,138 +1,140 @@
-// SPEC: SPEC-PAGES > Corporate Marketing Page > Header
-// SPEC: SPEC-DEPENDENCY-MAP > FEATURE 1 > UI: Header
+// SPEC: OPTIVE REDESIGN > Marketing Header
+// SOURCE: index.html lines 48-105
 
 "use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import Image from "next/image";
+import { Menu, X, ArrowRight } from "lucide-react";
 
-export function MarketingHeader() {
+interface MarketingHeaderProps {
+  variant: "corporate" | "replicated";
+  distributorName?: string;
+  ctaLink: string;
+}
+
+export function MarketingHeader({ variant, distributorName, ctaLink }: MarketingHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 50);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-      setIsMobileMenuOpen(false);
-    }
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
+    e.preventDefault();
+    const target = document.querySelector(href);
+    target?.scrollIntoView({ behavior: "smooth" });
+    setIsMobileMenuOpen(false);
   };
+
+  const navLinks = variant === "corporate"
+    ? [
+        { label: "Home", href: "#home" },
+        { label: "About", href: "#about" },
+        { label: "Opportunity", href: "#opportunity" },
+        { label: "How It Works", href: "#how-it-works" },
+        { label: "FAQ", href: "#faq" },
+        { label: "Contact", href: "#contact" },
+      ]
+    : [
+        { label: `About ${distributorName?.split(" ")[0] || "Us"}`, href: "#about" },
+        { label: "Opportunity", href: "#opportunity" },
+        { label: "How to Join", href: "#how-to-join" },
+        { label: "Contact", href: "#contact" },
+      ];
+
+  const ctaText = variant === "corporate"
+    ? "Join Now"
+    : `Join ${distributorName?.split(" ")[0] || "Us"}`;
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-white shadow-md"
-          : "bg-transparent"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white ${
+        isScrolled ? "shadow-md" : ""
       }`}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
+      <nav className="container max-w-optive mx-auto px-6">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">A</span>
-            </div>
-            <span className="text-xl font-bold text-gray-900">
-              Apex Affinity Group
-            </span>
+          <Link href="/" className="flex items-center gap-3 group">
+            <Image
+              src="/logo/apex-full-color.png"
+              alt="Apex Affinity Group"
+              width={180}
+              height={60}
+              priority
+              className="h-12 w-auto transition-opacity group-hover:opacity-80"
+            />
+            {variant === "replicated" && distributorName && (
+              <span className="hidden sm:block text-sm text-apex-gray border-l border-apex-gray/30 pl-3">
+                with {distributorName.split(" ")[0]}
+              </span>
+            )}
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <button
-              onClick={() => scrollToSection("home")}
-              className="text-gray-700 hover:text-blue-600 transition-colors"
+          <div className="hidden lg:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(e) => handleNavClick(e, link.href)}
+                className="text-base font-medium text-apex-gray hover:text-apex-navy transition-colors duration-300 cursor-pointer"
+              >
+                {link.label}
+              </a>
+            ))}
+            <Link
+              href={ctaLink}
+              className="relative inline-flex items-center justify-center gap-2 px-6 py-3 pr-12 rounded bg-apex-red hover:bg-apex-red-dark text-white text-base font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 group"
             >
-              Home
-            </button>
-            <button
-              onClick={() => scrollToSection("about")}
-              className="text-gray-700 hover:text-blue-600 transition-colors"
-            >
-              About
-            </button>
-            <button
-              onClick={() => scrollToSection("opportunity")}
-              className="text-gray-700 hover:text-blue-600 transition-colors"
-            >
-              Opportunity
-            </button>
-            <button
-              onClick={() => scrollToSection("testimonials")}
-              className="text-gray-700 hover:text-blue-600 transition-colors"
-            >
-              Testimonials
-            </button>
-            <Link href="/join">
-              <Button size="lg">Join Now</Button>
+              {ctaText}
+              <span className="absolute right-5 transition-transform duration-400 group-hover:translate-x-0.5">
+                <ArrowRight className="w-4 h-4" />
+              </span>
             </Link>
-          </nav>
+          </div>
 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-gray-700 hover:text-blue-600"
+            className="lg:hidden p-2 text-apex-dark hover:text-apex-navy transition-colors"
             aria-label="Toggle menu"
           >
-            {isMobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200 bg-white">
-            <nav className="flex flex-col space-y-4">
-              <button
-                onClick={() => scrollToSection("home")}
-                className="text-gray-700 hover:text-blue-600 transition-colors text-left px-4 py-2"
+          <div className="lg:hidden py-4 border-t border-gray-200 animate-in slide-in-from-top duration-300">
+            <nav className="flex flex-col gap-1">
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => handleNavClick(e, link.href)}
+                  className="py-3 px-4 text-apex-gray hover:text-apex-navy hover:bg-apex-bg rounded transition-colors cursor-pointer"
+                >
+                  {link.label}
+                </a>
+              ))}
+              <Link
+                href={ctaLink}
+                className="mt-4 px-6 py-3 bg-apex-red hover:bg-apex-red-dark text-white text-center rounded font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                Home
-              </button>
-              <button
-                onClick={() => scrollToSection("about")}
-                className="text-gray-700 hover:text-blue-600 transition-colors text-left px-4 py-2"
-              >
-                About
-              </button>
-              <button
-                onClick={() => scrollToSection("opportunity")}
-                className="text-gray-700 hover:text-blue-600 transition-colors text-left px-4 py-2"
-              >
-                Opportunity
-              </button>
-              <button
-                onClick={() => scrollToSection("testimonials")}
-                className="text-gray-700 hover:text-blue-600 transition-colors text-left px-4 py-2"
-              >
-                Testimonials
-              </button>
-              <div className="px-4">
-                <Link href="/join" className="block">
-                  <Button className="w-full" size="lg">
-                    Join Now
-                  </Button>
-                </Link>
-              </div>
+                {ctaText}
+              </Link>
             </nav>
           </div>
         )}
-      </div>
+      </nav>
     </header>
   );
 }
