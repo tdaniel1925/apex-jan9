@@ -20,6 +20,8 @@ import { eq, sql, and, desc, asc } from "drizzle-orm";
 import { logActivity, createNotification } from "@/lib/db/queries";
 import { createClient } from "@/lib/db/client";
 import { revalidatePath } from "next/cache";
+import { profileUpdateSchema, passwordChangeSchema } from "@/lib/types/schemas";
+import { z } from "zod";
 
 // ============================================
 // DASHBOARD STATS
@@ -150,15 +152,24 @@ export type ProfileUpdateData = {
 
 export async function updateProfile(data: ProfileUpdateData): Promise<{ success: boolean; error?: string }> {
   try {
+    // Validate input first
+    const validation = profileUpdateSchema.safeParse(data);
+    if (!validation.success) {
+      return {
+        success: false,
+        error: validation.error.errors[0]?.message || "Invalid input data",
+      };
+    }
+
     const user = await requireDistributor();
 
     await db
       .update(distributors)
       .set({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        phone: data.phone || null,
-        bio: data.bio || null,
+        firstName: validation.data.firstName,
+        lastName: validation.data.lastName,
+        phone: validation.data.phone || null,
+        bio: validation.data.bio || null,
         updatedAt: new Date(),
       })
       .where(eq(distributors.id, user.id));
@@ -194,12 +205,21 @@ export async function updatePhoto(
   cropData?: Record<string, unknown>
 ): Promise<PhotoUploadResult> {
   try {
+    // Validate photo URL
+    const photoUrlValidation = z.string().url().safeParse(photoUrl);
+    if (!photoUrlValidation.success) {
+      return {
+        success: false,
+        error: "Invalid photo URL",
+      };
+    }
+
     const user = await requireDistributor();
 
     await db
       .update(distributors)
       .set({
-        photoUrl,
+        photoUrl: photoUrlValidation.data,
         photoCropData: cropData || null,
         updatedAt: new Date(),
       })
@@ -231,6 +251,23 @@ export async function changePassword(
   newPassword: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    // Validate passwords
+    const passwordValidation = z.object({
+      currentPassword: z.string().min(1, "Current password is required"),
+      newPassword: z
+        .string()
+        .min(8, "Password must be at least 8 characters")
+        .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+        .regex(/[0-9]/, "Password must contain at least one number"),
+    }).safeParse({ currentPassword, newPassword });
+
+    if (!passwordValidation.success) {
+      return {
+        success: false,
+        error: passwordValidation.error.errors[0]?.message || "Invalid password",
+      };
+    }
+
     const user = await requireDistributor();
     const supabase = await createClient();
 

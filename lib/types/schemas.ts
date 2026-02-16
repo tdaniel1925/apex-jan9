@@ -143,3 +143,28 @@ export const passwordChangeSchema = z
   });
 
 export type PasswordChangeFormData = z.infer<typeof passwordChangeSchema>;
+
+// ============================================
+// SERVER ACTION VALIDATIONS
+// ============================================
+
+// Photo URL validation - must be from Supabase storage
+export const photoUrlSchema = z.string().url().refine(
+  (url) => url.includes('supabase') || url.startsWith('/'),
+  "Photo URL must be from allowed storage provider"
+);
+
+// UUID validation for IDs
+export const uuidSchema = z.string().uuid("Invalid ID format");
+
+// System setting validation
+export const systemSettingSchema = z.object({
+  key: z.enum([
+    'site_name',
+    'support_email',
+    'maintenance_mode',
+    'max_matrix_depth',
+    'signup_enabled',
+  ]),
+  value: z.string().min(1).max(1000),
+});
