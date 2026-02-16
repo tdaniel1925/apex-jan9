@@ -12,13 +12,14 @@ import Link from "next/link";
 import { CopyUrlButton } from "@/components/dashboard/copy-url-button";
 import { Suspense } from "react";
 import { DashboardSkeleton } from "@/components/dashboard";
+import { env } from "@/lib/env";
 
 async function DashboardContent() {
   const user = await requireDistributor();
   const stats = await getDashboardStats();
   const recentActivity = await getRecentActivity(10);
 
-  const replicatedUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${user.username}`;
+  const replicatedUrl = `${env.NEXT_PUBLIC_APP_URL}/${user.username}`;
 
   return (
     <div className="space-y-8">

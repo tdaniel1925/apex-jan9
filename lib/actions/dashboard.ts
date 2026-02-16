@@ -35,16 +35,77 @@ export type DashboardStats = {
 };
 
 export async function getDashboardStats(): Promise<DashboardStats> {
-  const user = await requireDistributor();
+  try {
+    const user = await requireDistributor();
 
-  // Get distributor's matrix position
-  const [position] = await db
-    .select()
-    .from(matrixPositions)
-    .where(eq(matrixPositions.distributorId, user.id))
-    .limit(1);
+    // Get distributor's matrix position
+    const [position] = await db
+      .select()
+      .from(matrixPositions)
+      .where(eq(matrixPositions.distributorId, user.id))
+      .limit(1);
 
-  if (!position) {
+    if (!position) {
+      return {
+        totalOrg: 0,
+        directEnrollees: 0,
+        newThisMonth: 0,
+        unreadContacts: 0,
+      };
+    }
+
+    // Total org size using nested set
+    const orgCountResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(matrixPositions)
+      .where(
+        and(
+          sql`${matrixPositions.leftBoundary} > ${position.leftBoundary}`,
+          sql`${matrixPositions.rightBoundary} < ${position.rightBoundary}`
+        )
+      );
+
+    // Direct enrollees
+    const directCountResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(distributors)
+      .where(eq(distributors.enrollerId, user.id));
+
+    // New this month
+    const firstOfMonth = new Date();
+    firstOfMonth.setDate(1);
+    firstOfMonth.setHours(0, 0, 0, 0);
+
+    const newThisMonthResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(matrixPositions)
+      .innerJoin(distributors, eq(matrixPositions.distributorId, distributors.id))
+      .where(
+        and(
+          sql`${matrixPositions.leftBoundary} > ${position.leftBoundary}`,
+          sql`${matrixPositions.rightBoundary} < ${position.rightBoundary}`,
+          sql`${distributors.createdAt} >= ${firstOfMonth}`
+        )
+      );
+
+    // Unread contacts
+    const unreadContactsResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(contactSubmissions)
+      .where(
+        and(
+          eq(contactSubmissions.distributorId, user.id),
+          eq(contactSubmissions.status, "new")
+        )
+      );
+
+    return {
+      totalOrg: Number(orgCountResult[0]?.count || 0),
+      directEnrollees: Number(directCountResult[0]?.count || 0),
+      newThisMonth: Number(newThisMonthResult[0]?.count || 0),
+      unreadContacts: Number(unreadContactsResult[0]?.count || 0),
+    };
+  } catch (error) {
     return {
       totalOrg: 0,
       directEnrollees: 0,
@@ -52,58 +113,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       unreadContacts: 0,
     };
   }
-
-  // Total org size using nested set
-  const orgCountResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(matrixPositions)
-    .where(
-      and(
-        sql`${matrixPositions.leftBoundary} > ${position.leftBoundary}`,
-        sql`${matrixPositions.rightBoundary} < ${position.rightBoundary}`
-      )
-    );
-
-  // Direct enrollees
-  const directCountResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(distributors)
-    .where(eq(distributors.enrollerId, user.id));
-
-  // New this month
-  const firstOfMonth = new Date();
-  firstOfMonth.setDate(1);
-  firstOfMonth.setHours(0, 0, 0, 0);
-
-  const newThisMonthResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(matrixPositions)
-    .innerJoin(distributors, eq(matrixPositions.distributorId, distributors.id))
-    .where(
-      and(
-        sql`${matrixPositions.leftBoundary} > ${position.leftBoundary}`,
-        sql`${matrixPositions.rightBoundary} < ${position.rightBoundary}`,
-        sql`${distributors.createdAt} >= ${firstOfMonth}`
-      )
-    );
-
-  // Unread contacts
-  const unreadContactsResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(contactSubmissions)
-    .where(
-      and(
-        eq(contactSubmissions.distributorId, user.id),
-        eq(contactSubmissions.status, "new")
-      )
-    );
-
-  return {
-    totalOrg: Number(orgCountResult[0]?.count || 0),
-    directEnrollees: Number(directCountResult[0]?.count || 0),
-    newThisMonth: Number(newThisMonthResult[0]?.count || 0),
-    unreadContacts: Number(unreadContactsResult[0]?.count || 0),
-  };
 }
 
 // ============================================
@@ -120,23 +129,27 @@ export type ActivityItem = {
 };
 
 export async function getRecentActivity(limit: number = 10): Promise<ActivityItem[]> {
-  const user = await requireDistributor();
+  try {
+    const user = await requireDistributor();
 
-  const activities = await db
-    .select()
-    .from(activityLog)
-    .where(eq(activityLog.actorId, user.id))
-    .orderBy(desc(activityLog.createdAt))
-    .limit(limit);
+    const activities = await db
+      .select()
+      .from(activityLog)
+      .where(eq(activityLog.actorId, user.id))
+      .orderBy(desc(activityLog.createdAt))
+      .limit(limit);
 
-  return activities.map((a) => ({
-    id: a.id,
-    action: a.action,
-    targetId: a.targetId,
-    targetType: a.targetType,
-    metadata: a.metadata as Record<string, unknown> | null,
-    createdAt: a.createdAt,
-  }));
+    return activities.map((a) => ({
+      id: a.id,
+      action: a.action,
+      targetId: a.targetId,
+      targetType: a.targetType,
+      metadata: a.metadata as Record<string, unknown> | null,
+      createdAt: a.createdAt,
+    }));
+  } catch (error) {
+    return [];
+  }
 }
 
 // ============================================
@@ -497,86 +510,90 @@ export type TreeNode = {
 };
 
 export async function getOrgTree(maxDepth: number = 3): Promise<TreeNode | null> {
-  const user = await requireDistributor();
+  try {
+    const user = await requireDistributor();
 
-  // Get user's position
-  const [rootPosition] = await db
-    .select()
-    .from(matrixPositions)
-    .where(eq(matrixPositions.distributorId, user.id))
-    .limit(1);
-
-  if (!rootPosition) {
-    return null;
-  }
-
-  // Recursively build tree
-  async function buildNode(positionId: string, currentDepth: number): Promise<TreeNode | null> {
-    const [position] = await db
+    // Get user's position
+    const [rootPosition] = await db
       .select()
       .from(matrixPositions)
-      .where(eq(matrixPositions.id, positionId))
+      .where(eq(matrixPositions.distributorId, user.id))
       .limit(1);
 
-    if (!position) return null;
-
-    const [distributor] = await db
-      .select()
-      .from(distributors)
-      .where(eq(distributors.id, position.distributorId))
-      .limit(1);
-
-    if (!distributor) return null;
-
-    // Get direct children positions
-    const children = await db
-      .select()
-      .from(matrixPositions)
-      .where(eq(matrixPositions.parentId, position.id))
-      .orderBy(asc(matrixPositions.positionIndex));
-
-    // Count total children
-    const childCountResult = await db
-      .select({ count: sql<number>`COUNT(*)` })
-      .from(matrixPositions)
-      .where(
-        and(
-          sql`${matrixPositions.leftBoundary} > ${position.leftBoundary}`,
-          sql`${matrixPositions.rightBoundary} < ${position.rightBoundary}`,
-          sql`${matrixPositions.depth} = ${position.depth + 1}`
-        )
-      );
-
-    const node: TreeNode = {
-      name: `${distributor.firstName} ${distributor.lastName}`,
-      attributes: {
-        id: distributor.id,
-        firstName: distributor.firstName,
-        lastName: distributor.lastName,
-        email: distributor.email,
-        photoUrl: distributor.photoUrl || "",
-        username: distributor.username,
-        isDirect: distributor.enrollerId === user.id,
-        isSpillover: position.isSpillover,
-        joinedAt: distributor.createdAt.toISOString(),
-        depth: position.depth,
-        positionIndex: position.positionIndex,
-        childCount: Number(childCountResult[0]?.count || 0),
-      },
-    };
-
-    // Load children if under max depth
-    if (currentDepth < maxDepth && children.length > 0) {
-      const childNodes = await Promise.all(
-        children.map((child) => buildNode(child.id, currentDepth + 1))
-      );
-      node.children = childNodes.filter((n): n is TreeNode => n !== null);
+    if (!rootPosition) {
+      return null;
     }
 
-    return node;
-  }
+    // Recursively build tree
+    async function buildNode(positionId: string, currentDepth: number): Promise<TreeNode | null> {
+      const [position] = await db
+        .select()
+        .from(matrixPositions)
+        .where(eq(matrixPositions.id, positionId))
+        .limit(1);
 
-  return buildNode(rootPosition.id, 0);
+      if (!position) return null;
+
+      const [distributor] = await db
+        .select()
+        .from(distributors)
+        .where(eq(distributors.id, position.distributorId))
+        .limit(1);
+
+      if (!distributor) return null;
+
+      // Get direct children positions
+      const children = await db
+        .select()
+        .from(matrixPositions)
+        .where(eq(matrixPositions.parentId, position.id))
+        .orderBy(asc(matrixPositions.positionIndex));
+
+      // Count total children
+      const childCountResult = await db
+        .select({ count: sql<number>`COUNT(*)` })
+        .from(matrixPositions)
+        .where(
+          and(
+            sql`${matrixPositions.leftBoundary} > ${position.leftBoundary}`,
+            sql`${matrixPositions.rightBoundary} < ${position.rightBoundary}`,
+            sql`${matrixPositions.depth} = ${position.depth + 1}`
+          )
+        );
+
+      const node: TreeNode = {
+        name: `${distributor.firstName} ${distributor.lastName}`,
+        attributes: {
+          id: distributor.id,
+          firstName: distributor.firstName,
+          lastName: distributor.lastName,
+          email: distributor.email,
+          photoUrl: distributor.photoUrl || "",
+          username: distributor.username,
+          isDirect: distributor.enrollerId === user.id,
+          isSpillover: position.isSpillover,
+          joinedAt: distributor.createdAt.toISOString(),
+          depth: position.depth,
+          positionIndex: position.positionIndex,
+          childCount: Number(childCountResult[0]?.count || 0),
+        },
+      };
+
+      // Load children if under max depth
+      if (currentDepth < maxDepth && children.length > 0) {
+        const childNodes = await Promise.all(
+          children.map((child) => buildNode(child.id, currentDepth + 1))
+        );
+        node.children = childNodes.filter((n): n is TreeNode => n !== null);
+      }
+
+      return node;
+    }
+
+    return buildNode(rootPosition.id, 0);
+  } catch (error) {
+    return null;
+  }
 }
 
 // ============================================
@@ -590,34 +607,38 @@ export async function getContactSubmissions(params?: {
   page?: number;
   pageSize?: number;
 }): Promise<{ submissions: ContactSubmissionWithStatus[]; total: number }> {
-  const user = await requireDistributor();
-  const { status, page = 1, pageSize = 25 } = params || {};
+  try {
+    const user = await requireDistributor();
+    const { status, page = 1, pageSize = 25 } = params || {};
 
-  const conditions = [eq(contactSubmissions.distributorId, user.id)];
-  if (status) {
-    conditions.push(eq(contactSubmissions.status, status));
+    const conditions = [eq(contactSubmissions.distributorId, user.id)];
+    if (status) {
+      conditions.push(eq(contactSubmissions.status, status));
+    }
+
+    // Get total count
+    const totalResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(contactSubmissions)
+      .where(and(...conditions));
+
+    const total = Number(totalResult[0]?.count || 0);
+
+    // Get paginated results
+    const offset = (page - 1) * pageSize;
+
+    const submissions = await db
+      .select()
+      .from(contactSubmissions)
+      .where(and(...conditions))
+      .orderBy(desc(contactSubmissions.createdAt))
+      .limit(pageSize)
+      .offset(offset);
+
+    return { submissions, total };
+  } catch (error) {
+    return { submissions: [], total: 0 };
   }
-
-  // Get total count
-  const totalResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(contactSubmissions)
-    .where(and(...conditions));
-
-  const total = Number(totalResult[0]?.count || 0);
-
-  // Get paginated results
-  const offset = (page - 1) * pageSize;
-
-  const submissions = await db
-    .select()
-    .from(contactSubmissions)
-    .where(and(...conditions))
-    .orderBy(desc(contactSubmissions.createdAt))
-    .limit(pageSize)
-    .offset(offset);
-
-  return { submissions, total };
 }
 
 export async function markContactAsRead(submissionId: string): Promise<{ success: boolean; error?: string }> {

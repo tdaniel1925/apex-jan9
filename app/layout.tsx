@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { env } from "@/lib/env";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Apex Affinity Group",
   description: "Building success together",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+  metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
 };
 
 export default function RootLayout({

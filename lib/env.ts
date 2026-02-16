@@ -24,6 +24,11 @@ const envVars: EnvVar[] = [
     required: true,
   },
   {
+    key: "DATABASE_URL",
+    value: process.env.DATABASE_URL,
+    required: true,
+  },
+  {
     key: "RESEND_API_KEY",
     value: process.env.RESEND_API_KEY,
     required: true,
@@ -68,6 +73,7 @@ export const env = {
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL!,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  DATABASE_URL: process.env.DATABASE_URL!,
   RESEND_API_KEY: process.env.RESEND_API_KEY!,
   EMAIL_FROM: process.env.EMAIL_FROM!,
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL!,

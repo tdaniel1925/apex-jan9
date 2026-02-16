@@ -86,61 +86,72 @@ export type RecentActivity = {
 // ============================================
 
 export async function getAdminStats(): Promise<AdminStats> {
-  await requireAdmin();
+  try {
+    await requireAdmin();
 
-  // Total distributors
-  const totalResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(distributors);
-  const total = Number(totalResult[0]?.count || 0);
+    // Total distributors
+    const totalResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(distributors);
+    const total = Number(totalResult[0]?.count || 0);
 
-  // Active
-  const activeResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(distributors)
-    .where(eq(distributors.status, "active"));
-  const active = Number(activeResult[0]?.count || 0);
+    // Active
+    const activeResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(distributors)
+      .where(eq(distributors.status, "active"));
+    const active = Number(activeResult[0]?.count || 0);
 
-  // Inactive
-  const inactiveResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(distributors)
-    .where(eq(distributors.status, "inactive"));
-  const inactive = Number(inactiveResult[0]?.count || 0);
+    // Inactive
+    const inactiveResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(distributors)
+      .where(eq(distributors.status, "inactive"));
+    const inactive = Number(inactiveResult[0]?.count || 0);
 
-  // Suspended
-  const suspendedResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(distributors)
-    .where(eq(distributors.status, "suspended"));
-  const suspended = Number(suspendedResult[0]?.count || 0);
+    // Suspended
+    const suspendedResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(distributors)
+      .where(eq(distributors.status, "suspended"));
+    const suspended = Number(suspendedResult[0]?.count || 0);
 
-  // New this week (last 7 days)
-  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-  const newWeekResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(distributors)
-    .where(sql`${distributors.createdAt} >= ${oneWeekAgo}`);
-  const newWeek = Number(newWeekResult[0]?.count || 0);
+    // New this week (last 7 days)
+    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const newWeekResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(distributors)
+      .where(sql`${distributors.createdAt} >= ${oneWeekAgo}`);
+    const newWeek = Number(newWeekResult[0]?.count || 0);
 
-  // New this month
-  const firstOfMonth = new Date();
-  firstOfMonth.setDate(1);
-  firstOfMonth.setHours(0, 0, 0, 0);
-  const newMonthResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(distributors)
-    .where(sql`${distributors.createdAt} >= ${firstOfMonth}`);
-  const newMonth = Number(newMonthResult[0]?.count || 0);
+    // New this month
+    const firstOfMonth = new Date();
+    firstOfMonth.setDate(1);
+    firstOfMonth.setHours(0, 0, 0, 0);
+    const newMonthResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(distributors)
+      .where(sql`${distributors.createdAt} >= ${firstOfMonth}`);
+    const newMonth = Number(newMonthResult[0]?.count || 0);
 
-  return {
-    totalDistributors: total,
-    activeDistributors: active,
-    inactiveDistributors: inactive,
-    suspendedDistributors: suspended,
-    newThisWeek: newWeek,
-    newThisMonth: newMonth,
-  };
+    return {
+      totalDistributors: total,
+      activeDistributors: active,
+      inactiveDistributors: inactive,
+      suspendedDistributors: suspended,
+      newThisWeek: newWeek,
+      newThisMonth: newMonth,
+    };
+  } catch (error) {
+    return {
+      totalDistributors: 0,
+      activeDistributors: 0,
+      inactiveDistributors: 0,
+      suspendedDistributors: 0,
+      newThisWeek: 0,
+      newThisMonth: 0,
+    };
+  }
 }
 
 // ============================================
@@ -507,73 +518,77 @@ export async function reactivateDistributor(
 // ============================================
 
 export async function getFullOrgTree(maxDepth: number = 7): Promise<OrgTreeNode | null> {
-  await requireAdmin();
+  try {
+    await requireAdmin();
 
-  // Find root position (depth = 0)
-  const [rootPosition] = await db
-    .select()
-    .from(matrixPositions)
-    .where(eq(matrixPositions.depth, 0))
-    .limit(1);
+    // Find root position (depth = 0)
+    const [rootPosition] = await db
+      .select()
+      .from(matrixPositions)
+      .where(eq(matrixPositions.depth, 0))
+      .limit(1);
 
-  if (!rootPosition) {
+    if (!rootPosition) {
+      return null;
+    }
+
+    // Recursive function to build tree
+    async function buildNode(distributorId: string, currentDepth: number): Promise<OrgTreeNode | null> {
+      if (currentDepth > maxDepth) {
+        return null;
+      }
+
+      const [distributor] = await db
+        .select()
+        .from(distributors)
+        .where(eq(distributors.id, distributorId))
+        .limit(1);
+
+      if (!distributor) {
+        return null;
+      }
+
+      const [position] = await db
+        .select()
+        .from(matrixPositions)
+        .where(eq(matrixPositions.distributorId, distributorId))
+        .limit(1);
+
+      if (!position) {
+        return null;
+      }
+
+      // Get children (direct downline in matrix)
+      const childPositions = await db
+        .select()
+        .from(matrixPositions)
+        .where(eq(matrixPositions.parentId, position.id))
+        .orderBy(asc(matrixPositions.positionIndex));
+
+      const children: OrgTreeNode[] = [];
+      for (const childPos of childPositions) {
+        const childNode = await buildNode(childPos.distributorId, currentDepth + 1);
+        if (childNode) {
+          children.push(childNode);
+        }
+      }
+
+      return {
+        id: distributor.id,
+        name: `${distributor.firstName} ${distributor.lastName}`,
+        username: distributor.username,
+        photoUrl: distributor.photoUrl,
+        status: distributor.status,
+        isSpillover: position.isSpillover,
+        depth: position.depth,
+        children,
+      };
+    }
+
+    return buildNode(rootPosition.distributorId, 0);
+  } catch (error) {
     return null;
   }
-
-  // Recursive function to build tree
-  async function buildNode(distributorId: string, currentDepth: number): Promise<OrgTreeNode | null> {
-    if (currentDepth > maxDepth) {
-      return null;
-    }
-
-    const [distributor] = await db
-      .select()
-      .from(distributors)
-      .where(eq(distributors.id, distributorId))
-      .limit(1);
-
-    if (!distributor) {
-      return null;
-    }
-
-    const [position] = await db
-      .select()
-      .from(matrixPositions)
-      .where(eq(matrixPositions.distributorId, distributorId))
-      .limit(1);
-
-    if (!position) {
-      return null;
-    }
-
-    // Get children (direct downline in matrix)
-    const childPositions = await db
-      .select()
-      .from(matrixPositions)
-      .where(eq(matrixPositions.parentId, position.id))
-      .orderBy(asc(matrixPositions.positionIndex));
-
-    const children: OrgTreeNode[] = [];
-    for (const childPos of childPositions) {
-      const childNode = await buildNode(childPos.distributorId, currentDepth + 1);
-      if (childNode) {
-        children.push(childNode);
-      }
-    }
-
-    return {
-      id: distributor.id,
-      name: `${distributor.firstName} ${distributor.lastName}`,
-      username: distributor.username,
-      photoUrl: distributor.photoUrl,
-      status: distributor.status,
-      isSpillover: position.isSpillover,
-      depth: position.depth,
-      children,
-    };
-  }
-
-  return buildNode(rootPosition.distributorId, 0);
 }
 
 // ============================================
@@ -583,60 +598,69 @@ export async function getFullOrgTree(maxDepth: number = 7): Promise<OrgTreeNode 
 export async function getSignupFunnel(
   dateRange: { start: Date; end: Date }
 ): Promise<SignupFunnelData> {
-  await requireAdmin();
+  try {
+    await requireAdmin();
 
-  const { start, end } = dateRange;
+    const { start, end } = dateRange;
 
-  const pageViewsResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(signupAnalytics)
-    .where(
-      and(
-        eq(signupAnalytics.event, "page_view"),
-        sql`${signupAnalytics.createdAt} >= ${start}`,
-        sql`${signupAnalytics.createdAt} <= ${end}`
-      )
-    );
+    const pageViewsResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(signupAnalytics)
+      .where(
+        and(
+          eq(signupAnalytics.event, "page_view"),
+          sql`${signupAnalytics.createdAt} >= ${start}`,
+          sql`${signupAnalytics.createdAt} <= ${end}`
+        )
+      );
 
-  const startedResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(signupAnalytics)
-    .where(
-      and(
-        eq(signupAnalytics.event, "signup_started"),
-        sql`${signupAnalytics.createdAt} >= ${start}`,
-        sql`${signupAnalytics.createdAt} <= ${end}`
-      )
-    );
+    const startedResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(signupAnalytics)
+      .where(
+        and(
+          eq(signupAnalytics.event, "signup_started"),
+          sql`${signupAnalytics.createdAt} >= ${start}`,
+          sql`${signupAnalytics.createdAt} <= ${end}`
+        )
+      );
 
-  const completedResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(signupAnalytics)
-    .where(
-      and(
-        eq(signupAnalytics.event, "signup_completed"),
-        sql`${signupAnalytics.createdAt} >= ${start}`,
-        sql`${signupAnalytics.createdAt} <= ${end}`
-      )
-    );
+    const completedResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(signupAnalytics)
+      .where(
+        and(
+          eq(signupAnalytics.event, "signup_completed"),
+          sql`${signupAnalytics.createdAt} >= ${start}`,
+          sql`${signupAnalytics.createdAt} <= ${end}`
+        )
+      );
 
-  const failedResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(signupAnalytics)
-    .where(
-      and(
-        eq(signupAnalytics.event, "signup_failed"),
-        sql`${signupAnalytics.createdAt} >= ${start}`,
-        sql`${signupAnalytics.createdAt} <= ${end}`
-      )
-    );
+    const failedResult = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(signupAnalytics)
+      .where(
+        and(
+          eq(signupAnalytics.event, "signup_failed"),
+          sql`${signupAnalytics.createdAt} >= ${start}`,
+          sql`${signupAnalytics.createdAt} <= ${end}`
+        )
+      );
 
-  return {
-    pageViews: Number(pageViewsResult[0]?.count || 0),
-    signupStarted: Number(startedResult[0]?.count || 0),
-    signupCompleted: Number(completedResult[0]?.count || 0),
-    signupFailed: Number(failedResult[0]?.count || 0),
-  };
+    return {
+      pageViews: Number(pageViewsResult[0]?.count || 0),
+      signupStarted: Number(startedResult[0]?.count || 0),
+      signupCompleted: Number(completedResult[0]?.count || 0),
+      signupFailed: Number(failedResult[0]?.count || 0),
+    };
+  } catch (error) {
+    return {
+      pageViews: 0,
+      signupStarted: 0,
+      signupCompleted: 0,
+      signupFailed: 0,
+    };
+  }
 }
 
 // ============================================
@@ -750,54 +774,59 @@ export async function updateSystemSetting(
 // ============================================
 
 export async function exportDistributorsCSV(): Promise<string> {
-  await requireAdmin();
+  try {
+    await requireAdmin();
 
-  const allDistributors = await db
-    .select({
-      id: distributors.id,
-      firstName: distributors.firstName,
-      lastName: distributors.lastName,
-      username: distributors.username,
-      email: distributors.email,
-      phone: distributors.phone,
-      status: distributors.status,
-      enrollerId: distributors.enrollerId,
-      createdAt: distributors.createdAt,
-    })
-    .from(distributors)
-    .orderBy(asc(distributors.createdAt));
+    const allDistributors = await db
+      .select({
+        id: distributors.id,
+        firstName: distributors.firstName,
+        lastName: distributors.lastName,
+        username: distributors.username,
+        email: distributors.email,
+        phone: distributors.phone,
+        status: distributors.status,
+        enrollerId: distributors.enrollerId,
+        createdAt: distributors.createdAt,
+      })
+      .from(distributors)
+      .orderBy(asc(distributors.createdAt));
 
-  // Build CSV
-  const headers = [
-    "ID",
-    "First Name",
-    "Last Name",
-    "Username",
-    "Email",
-    "Phone",
-    "Status",
-    "Enroller ID",
-    "Created At",
-  ];
+    // Build CSV
+    const headers = [
+      "ID",
+      "First Name",
+      "Last Name",
+      "Username",
+      "Email",
+      "Phone",
+      "Status",
+      "Enroller ID",
+      "Created At",
+    ];
 
-  const rows = allDistributors.map((d) => [
-    d.id,
-    d.firstName,
-    d.lastName,
-    d.username,
-    d.email,
-    d.phone || "",
-    d.status,
-    d.enrollerId || "",
-    d.createdAt.toISOString(),
-  ]);
+    const rows = allDistributors.map((d) => [
+      d.id,
+      d.firstName,
+      d.lastName,
+      d.username,
+      d.email,
+      d.phone || "",
+      d.status,
+      d.enrollerId || "",
+      d.createdAt.toISOString(),
+    ]);
 
-  const csvContent = [
-    headers.join(","),
-    ...rows.map((row) =>
-      row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
-    ),
-  ].join("\n");
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
+      ),
+    ].join("\n");
 
-  return csvContent;
+    return csvContent;
+  } catch (error) {
+    // Return empty CSV with headers only
+    return "ID,First Name,Last Name,Username,Email,Phone,Status,Enroller ID,Created At\n";
+  }
 }

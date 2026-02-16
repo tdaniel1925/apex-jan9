@@ -152,7 +152,7 @@ export async function GET(request: NextRequest) {
         available: false,
         error: "invalid_format",
         message: usernameValidation.error.errors[0]?.message || "Invalid username format",
-      });
+      }, { status: 400 });
     }
 
     // Check availability

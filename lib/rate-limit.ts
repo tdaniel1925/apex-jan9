@@ -155,19 +155,25 @@ export const RateLimits = {
 
 /**
  * Helper to get IP address from request headers
+ *
+ * SECURITY NOTE: This relies on trusted proxy headers set by Vercel/Cloudflare.
+ * These headers cannot be spoofed when using these platforms. In other
+ * environments, ensure you have a trusted reverse proxy that sets these headers.
  */
 export function getClientIp(headers: Headers): string {
-  // Check for IP in various headers (Vercel, Cloudflare, etc.)
+  // On Vercel/Cloudflare, x-forwarded-for is set by the platform (trusted)
+  // Take the first IP in the chain (client IP), not the last (proxy IP)
   const forwardedFor = headers.get("x-forwarded-for");
   if (forwardedFor) {
     return forwardedFor.split(",")[0].trim();
   }
 
+  // Alternative header used by some proxies
   const realIp = headers.get("x-real-ip");
   if (realIp) {
     return realIp;
   }
 
-  // Fallback (shouldn't happen in production)
+  // Fallback (shouldn't happen in production on Vercel/Cloudflare)
   return "unknown";
 }

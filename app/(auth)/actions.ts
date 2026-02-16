@@ -7,6 +7,7 @@
 import { createClient } from "@/lib/db/client";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { env } from "@/lib/env";
 
 // ============================================
 // VALIDATION SCHEMAS
@@ -88,7 +89,7 @@ export async function forgotPasswordAction(formData: FormData) {
   const supabase = await createClient();
 
   const { error } = await supabase.auth.resetPasswordForEmail(result.data, {
-    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`,
+    redirectTo: `${env.NEXT_PUBLIC_APP_URL}/reset-password`,
   });
 
   if (error) {
