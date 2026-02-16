@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Calendar, Users, Globe, TrendingUp } from "lucide-react";
 import { aboutMessaging, type AudienceType } from "@/lib/content/audienceMessaging";
+import Image from "next/image";
 
 interface AboutSectionProps {
   variant: "corporate" | "replicated";
@@ -138,11 +139,14 @@ export function AboutSection({
               transition={{ duration: 0.6, delay: 0.2 }}
               className="relative"
             >
-              <div className="aspect-[4/3] bg-gradient-to-br from-apex-navy/10 to-apex-dark/10 rounded-2xl overflow-hidden">
-                <img
+              <div className="aspect-[4/3] bg-gradient-to-br from-apex-navy/10 to-apex-dark/10 rounded-2xl overflow-hidden relative">
+                <Image
                   src="/about-hero.png"
                   alt="Apex Affinity Group"
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  priority
                 />
               </div>
               {/* Decorative Element */}
