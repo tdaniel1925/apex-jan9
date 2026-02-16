@@ -47,7 +47,7 @@ export function AudienceChoice() {
               onClick={() => handleChoice("agents")}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="group relative bg-white/10 backdrop-blur-md border-2 border-white/30 rounded-2xl p-8 text-left transition-all hover:bg-white/20 hover:border-apex-navy"
+              className="group relative bg-white/95 backdrop-blur-md border-2 border-apex-navy/20 rounded-2xl p-8 text-left transition-all hover:bg-white hover:border-apex-navy shadow-xl"
             >
               {/* Icon */}
               <div className="w-16 h-16 bg-apex-navy rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -55,10 +55,10 @@ export function AudienceChoice() {
               </div>
 
               {/* Content */}
-              <h4 className="text-2xl font-heading font-bold text-white mb-3">
+              <h4 className="text-2xl font-heading font-bold text-apex-navy mb-3">
                 I'm a Licensed Agent
               </h4>
-              <p className="text-gray-200 leading-relaxed">
+              <p className="text-apex-dark/80 leading-relaxed">
                 Show me how Apex gives me better rates, full ownership, and the
                 AI-powered tools to grow my business.
               </p>
@@ -88,7 +88,7 @@ export function AudienceChoice() {
               onClick={() => handleChoice("newcomers")}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="group relative bg-white/10 backdrop-blur-md border-2 border-white/30 rounded-2xl p-8 text-left transition-all hover:bg-white/20 hover:border-apex-red"
+              className="group relative bg-white/95 backdrop-blur-md border-2 border-apex-red/20 rounded-2xl p-8 text-left transition-all hover:bg-white hover:border-apex-red shadow-xl"
             >
               {/* Icon */}
               <div className="w-16 h-16 bg-apex-red rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -96,10 +96,10 @@ export function AudienceChoice() {
               </div>
 
               {/* Content */}
-              <h4 className="text-2xl font-heading font-bold text-white mb-3">
+              <h4 className="text-2xl font-heading font-bold text-apex-navy mb-3">
                 I'm New to Insurance
               </h4>
-              <p className="text-gray-200 leading-relaxed">
+              <p className="text-apex-dark/80 leading-relaxed">
                 Show me the career path, training, and income opportunity to
                 build my future in insurance.
               </p>
