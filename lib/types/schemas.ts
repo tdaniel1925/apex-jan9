@@ -47,7 +47,7 @@ export const signUpSchema = z
       .or(z.literal("")),
     licenseStatus: z.enum(["licensed", "not_licensed"], {
       errorMap: () => ({ message: "Please select your license status" }),
-    }),
+    }).optional(),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")

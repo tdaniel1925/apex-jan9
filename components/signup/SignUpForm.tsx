@@ -223,7 +223,7 @@ export function SignUpForm({ enrollerId, enrollerName }: SignUpFormProps) {
       {/* License Status */}
       <div>
         <Label>
-          License Status <span className="text-red-500">*</span>
+          License Status <span className="text-muted-foreground">(optional)</span>
         </Label>
         <div className="mt-3 space-y-3">
           <div className="flex items-center space-x-2">

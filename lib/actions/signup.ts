@@ -160,7 +160,7 @@ export async function createDistributor(
             status: "active",
             dripStatus: "enrolled",
             replicatedSiteActive: true,
-            licenseStatus: validData.licenseStatus,
+            ...(validData.licenseStatus && { licenseStatus: validData.licenseStatus }),
           })
           .returning();
 
