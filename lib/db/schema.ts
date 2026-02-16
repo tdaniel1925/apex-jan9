@@ -78,11 +78,10 @@ export const targetAudienceEnum = pgEnum("target_audience", [
   "both",
 ]);
 
-// TODO: Uncomment after running migration 0002_add_license_status.sql
-// export const licenseStatusEnum = pgEnum("license_status", [
-//   "licensed",
-//   "not_licensed",
-// ]);
+export const licenseStatusEnum = pgEnum("license_status", [
+  "licensed",
+  "not_licensed",
+]);
 
 // ============================================
 // TABLES
@@ -109,8 +108,7 @@ export const distributors = pgTable("distributors", {
   targetAudience: targetAudienceEnum("target_audience")
     .notNull()
     .default("both"),
-  // TODO: Uncomment after running migration 0002_add_license_status.sql
-  // licenseStatus: licenseStatusEnum("license_status"),
+  licenseStatus: licenseStatusEnum("license_status"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
