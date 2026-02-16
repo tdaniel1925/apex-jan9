@@ -44,10 +44,10 @@ export function HeroSection({
   return (
     <section id="home" className="relative min-h-screen flex items-center bg-gradient-to-br from-apex-navy via-apex-navy-dark to-apex-navy-950 text-white overflow-hidden">
       {/* Split Layout: Text Left, Video Right */}
-      <div className="container max-w-optive mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen py-20">
+      <div className="container max-w-optive mx-auto relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-stretch min-h-screen">
           {/* Left: Content */}
-          <div>
+          <div className="px-6 lg:px-12 py-20 flex items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -89,7 +89,7 @@ export function HeroSection({
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl"
+              className="relative h-full min-h-screen overflow-hidden"
             >
               <video
                 autoPlay
