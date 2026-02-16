@@ -2,7 +2,6 @@
 import type { Metadata } from "next";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
 import { HeroSection } from "@/components/marketing/HeroSection";
-import { AboutSection } from "@/components/marketing/AboutSection";
 import { ServicesSection } from "@/components/marketing/ServicesSection";
 import { ProcessSection } from "@/components/marketing/ProcessSection";
 import { TestimonialsSection } from "@/components/marketing/TestimonialsSection";
@@ -39,16 +38,6 @@ export default function NewToInsurancePage() {
         ctaText="Start Your Journey"
         ctaLink="/join"
         audiencePreference="newcomers"
-      />
-
-      {/* About Section */}
-      <AboutSection
-        variant="corporate"
-        stats={{
-          yearsInBusiness: 5,
-          activeDistributors: 500,
-          memberEarnings: 2500000,
-        }}
       />
 
       {/* Services/Benefits */}
