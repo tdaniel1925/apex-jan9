@@ -1,5 +1,4 @@
-// SPEC: AUDIENCE SEGMENTATION > Stage 6: Client component for corporate page
-// Separated to allow server-side metadata export
+// Corporate homepage - Main landing page
 
 "use client";
 
@@ -12,13 +11,9 @@ import { ProcessSection } from "./ProcessSection";
 import { TestimonialsSection } from "./TestimonialsSection";
 import { FAQSection } from "./FAQSection";
 import { CTASection } from "./CTASection";
-import { AudienceChoice } from "./AudienceChoice";
-import { AudienceToggle } from "./AudienceToggle";
-import { useAudiencePreference } from "@/hooks/useAudiencePreference";
+import { PathChoice } from "./PathChoice";
 
 export function CorporatePageClient() {
-  const { preference } = useAudiencePreference();
-
   return (
     <div className="min-h-screen overflow-x-hidden">
       <MarketingHeader variant="corporate" ctaLink="/join" />
@@ -27,12 +22,12 @@ export function CorporatePageClient() {
           variant="corporate"
           title="Are You Enjoying What You Do?"
           subtitle="If not, why settle? Own your book. Access top rates. Build wealth through your team. The only insurance company with AI-powered automation."
-          ctaText="See How It Works"
-          ctaLink="#opportunity"
-          audiencePreference={preference}
+          ctaText="Explore Opportunities"
+          ctaLink="#choose-path"
         />
-        <AudienceChoice />
-        <AudienceToggle />
+        <div id="choose-path">
+          <PathChoice />
+        </div>
         <AboutSection
           variant="corporate"
           stats={{
@@ -40,13 +35,12 @@ export function CorporatePageClient() {
             countries: 50,
             memberEarnings: 5,
           }}
-          audiencePreference={preference}
         />
         <ServicesSection />
-        <ProcessSection variant="corporate" audiencePreference={preference} />
+        <ProcessSection variant="corporate" />
         <TestimonialsSection variant="corporate" />
         <FAQSection />
-        <CTASection variant="corporate" ctaLink="/join" audiencePreference={preference} />
+        <CTASection variant="corporate" ctaLink="/join" />
       </main>
       <MarketingFooter />
     </div>

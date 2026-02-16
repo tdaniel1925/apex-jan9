@@ -27,18 +27,22 @@ export function MarketingHeader({ variant, distributorName, ctaLink }: Marketing
   }, []);
 
   const handleNavClick = (e: React.MouseEvent, href: string) => {
-    e.preventDefault();
-    const target = document.querySelector(href);
-    target?.scrollIntoView({ behavior: "smooth" });
+    // Only handle smooth scrolling for hash links (anchors on same page)
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      target?.scrollIntoView({ behavior: "smooth" });
+    }
+    // Close mobile menu for all clicks
     setIsMobileMenuOpen(false);
   };
 
   const navLinks = variant === "corporate"
     ? [
-        { label: "Home", href: "#home" },
+        { label: "Home", href: "/" },
+        { label: "For Newcomers", href: "/new-to-insurance" },
+        { label: "For Licensed Agents", href: "/licensed-agents" },
         { label: "About", href: "#about" },
-        { label: "Opportunity", href: "#opportunity" },
-        { label: "How It Works", href: "#how-it-works" },
         { label: "FAQ", href: "#faq" },
         { label: "Contact", href: "#contact" },
       ]
@@ -81,14 +85,25 @@ export function MarketingHeader({ variant, distributorName, ctaLink }: Marketing
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleNavClick(e, link.href)}
-                className="text-base font-medium text-apex-gray hover:text-apex-navy transition-colors duration-300 cursor-pointer"
-              >
-                {link.label}
-              </a>
+              link.href.startsWith("#") ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => handleNavClick(e, link.href)}
+                  className="text-base font-medium text-apex-gray hover:text-apex-navy transition-colors duration-300 cursor-pointer"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-base font-medium text-apex-gray hover:text-apex-navy transition-colors duration-300"
+                >
+                  {link.label}
+                </Link>
+              )
             ))}
             <Link
               href={ctaLink}
@@ -116,14 +131,25 @@ export function MarketingHeader({ variant, distributorName, ctaLink }: Marketing
           <div className="lg:hidden py-4 border-t border-gray-200 animate-in slide-in-from-top duration-300">
             <nav className="flex flex-col gap-1">
               {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => handleNavClick(e, link.href)}
-                  className="py-3 px-4 text-apex-gray hover:text-apex-navy hover:bg-apex-bg rounded transition-colors cursor-pointer"
-                >
-                  {link.label}
-                </a>
+                link.href.startsWith("#") ? (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={(e) => handleNavClick(e, link.href)}
+                    className="py-3 px-4 text-apex-gray hover:text-apex-navy hover:bg-apex-bg rounded transition-colors cursor-pointer"
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="py-3 px-4 text-apex-gray hover:text-apex-navy hover:bg-apex-bg rounded transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                )
               ))}
               <Link
                 href={ctaLink}
