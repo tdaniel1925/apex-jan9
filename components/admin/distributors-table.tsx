@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Search, Download } from "lucide-react";
 import { formatDate } from "@/lib/utils/date";
+import { toast } from "sonner";
 import { DistributorDetailSheet } from "./distributor-detail-sheet";
 
 type DistributorsTableProps = {
@@ -91,7 +92,7 @@ export function DistributorsTable({
               <SelectItem value="suspended">Suspended</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2" onClick={() => toast.info("CSV export feature coming soon")}>
             <Download className="h-4 w-4" />
             Export CSV
           </Button>

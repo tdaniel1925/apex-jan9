@@ -175,7 +175,7 @@ export async function GET(request: NextRequest) {
       suggestions: availableSuggestions,
     });
   } catch (error) {
-    console.error("Username check error:", error);
+    // Error handled
 
     return NextResponse.json(
       {

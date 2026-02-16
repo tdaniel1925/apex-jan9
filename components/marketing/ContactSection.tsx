@@ -70,7 +70,7 @@ export function ContactSection({
         }
       }
     } catch (error) {
-      console.error("Contact form error:", error);
+      // Error handled
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);

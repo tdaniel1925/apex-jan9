@@ -77,8 +77,8 @@ export default async function ReplicatedPage({ params }: PageProps) {
     userAgent,
     referrer,
     metadata: {},
-  }).catch((error) => {
-    console.error("Failed to track page view:", error);
+  }).catch(() => {
+    // Silent fail - analytics errors shouldn't affect page load
   });
 
   const distributorName = distributor.firstName;

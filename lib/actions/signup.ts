@@ -198,7 +198,7 @@ export async function createDistributor(
       matrixPosition = result.position;
       parentDistributor = result.parent;
     } catch (txError: any) {
-      console.error("Sign-up transaction failed:", txError);
+      // Transaction error will be handled below
 
       // Check for specific error messages
       if (
@@ -222,19 +222,19 @@ export async function createDistributor(
     try {
       await createDripEnrollment(newDistributor.id);
     } catch (error) {
-      console.error("Failed to create drip enrollment:", error);
+      // Non-critical error - drip campaign can be retried
       // Continue - this is not critical
     }
 
     // Step 11: Send welcome email (non-blocking)
-    sendWelcomeEmail(newDistributor).catch((error) => {
-      console.error("Failed to send welcome email:", error);
+    sendWelcomeEmail(newDistributor).catch(() => {
+      // Silent fail - email errors shouldn't block sign-up
     });
 
     // Step 12: Send notification to enroller
     if (enroller) {
-      sendNewTeamMemberEmail(enroller, newDistributor).catch((error) => {
-        console.error("Failed to send new team member email:", error);
+      sendNewTeamMemberEmail(enroller, newDistributor).catch(() => {
+        // Silent fail - email errors shouldn't block sign-up
       });
 
       // Create in-app notification for enroller
@@ -244,8 +244,8 @@ export async function createDistributor(
         title: "New Team Member",
         body: `${newDistributor.firstName} ${newDistributor.lastName} just joined your team!`,
         actionUrl: "/dashboard/team",
-      }).catch((error) => {
-        console.error("Failed to create notification:", error);
+      }).catch(() => {
+        // Silent fail - notification errors shouldn't block sign-up
       });
     }
 
@@ -255,8 +255,8 @@ export async function createDistributor(
         parentDistributor,
         newDistributor,
         enroller
-      ).catch((error) => {
-        console.error("Failed to send spillover notification:", error);
+      ).catch(() => {
+        // Silent fail - email errors shouldn't block sign-up
       });
 
       createNotification({
@@ -265,8 +265,8 @@ export async function createDistributor(
         title: "Spillover Placement",
         body: `${newDistributor.firstName} ${newDistributor.lastName} was placed in your organization`,
         actionUrl: "/dashboard/team",
-      }).catch((error) => {
-        console.error("Failed to create spillover notification:", error);
+      }).catch(() => {
+        // Silent fail - notification errors shouldn't block sign-up
       });
     }
 
@@ -303,7 +303,7 @@ export async function createDistributor(
       redirectTo: "/login",
     };
   } catch (error) {
-    console.error("Sign-up error:", error);
+    // Error handled
 
     // Track failed sign-up
     await trackSignupEvent({

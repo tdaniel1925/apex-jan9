@@ -63,7 +63,7 @@ export function PhotoCropModal({
       };
       await onCropComplete(croppedBlob, cropData);
     } catch (error) {
-      console.error("Crop error:", error);
+      // Error handled
     }
   };
 

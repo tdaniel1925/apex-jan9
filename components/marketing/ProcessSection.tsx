@@ -227,15 +227,15 @@ export function ProcessSection({ variant, distributorName }: ProcessSectionProps
               : `Ready to join ${distributorName ? `${distributorName}'s` : "my"} team?`
             }
           </p>
-          <a
-            href="#home"
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="inline-flex items-center justify-center gap-2 px-8 py-4 pr-14 rounded bg-gradient-to-r from-apex-navy via-apex-navy-dark to-apex-navy bg-[length:200%_auto] hover:bg-right-center text-white text-lg font-semibold transition-all duration-400 group shadow-lg hover:shadow-xl relative"
           >
             Get Started Today
             <span className="absolute right-6 transition-transform duration-400 group-hover:translate-x-0.5">
               <ArrowRight className="w-5 h-5" />
             </span>
-          </a>
+          </button>
         </motion.div>
       </div>
     </section>

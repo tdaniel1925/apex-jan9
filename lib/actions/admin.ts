@@ -18,6 +18,8 @@ import {
 } from "@/lib/db/schema";
 import { eq, sql, and, or, desc, asc, ilike, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+import { getClientIp } from "@/lib/rate-limit";
 
 // ============================================
 // TYPES
@@ -342,6 +344,10 @@ export async function suspendDistributor(
     return { success: false, error: "Super admin access required" };
   }
 
+  // Get client IP for audit trail
+  const headersList = await headers();
+  const clientIp = getClientIp(headersList);
+
   // Get current distributor state
   const [distributor] = await db
     .select()
@@ -388,7 +394,7 @@ export async function suspendDistributor(
       status: "suspended",
       replicatedSiteActive: false,
     },
-    ipAddress: "system", // TODO: Get real IP from request
+    ipAddress: clientIp,
   });
 
   // Log to activity_log
@@ -417,6 +423,10 @@ export async function reactivateDistributor(
   if (admin.role !== "super_admin") {
     return { success: false, error: "Super admin access required" };
   }
+
+  // Get client IP for audit trail
+  const headersList = await headers();
+  const clientIp = getClientIp(headersList);
 
   // Get current distributor state
   const [distributor] = await db
@@ -453,7 +463,7 @@ export async function reactivateDistributor(
       status: "active",
       replicatedSiteActive: true,
     },
-    ipAddress: "system", // TODO: Get real IP from request
+    ipAddress: clientIp,
   });
 
   // Log to activity_log
@@ -661,6 +671,10 @@ export async function updateSystemSetting(
     return { success: false, error: "Super admin access required" };
   }
 
+  // Get client IP for audit trail
+  const headersList = await headers();
+  const clientIp = getClientIp(headersList);
+
   // Get current setting value for audit log
   const [currentSetting] = await db
     .select()
@@ -694,7 +708,7 @@ export async function updateSystemSetting(
     targetType: "system_setting",
     beforeState: currentSetting ? { value: currentSetting.value } : null,
     afterState: { value },
-    ipAddress: "system", // TODO: Get real IP from request
+    ipAddress: clientIp,
   });
 
   revalidatePath("/admin/settings");

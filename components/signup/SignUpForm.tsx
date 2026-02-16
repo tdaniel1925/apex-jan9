@@ -101,7 +101,7 @@ export function SignUpForm({ enrollerId, enrollerName }: SignUpFormProps) {
           });
         }
       } catch (error) {
-        console.error("Username check failed:", error);
+        // Error handled
         setUsernameStatus("idle");
       }
     };
@@ -130,7 +130,7 @@ export function SignUpForm({ enrollerId, enrollerName }: SignUpFormProps) {
         toast.error(result.error || "Failed to create account");
       }
     } catch (error) {
-      console.error("Sign-up error:", error);
+      // Error handled
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);

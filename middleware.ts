@@ -83,7 +83,7 @@ export async function middleware(request: NextRequest) {
       // Admin user - allow through
       return response;
     } catch (error) {
-      console.error("Error checking admin status:", error);
+      // Error handled
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }
@@ -106,7 +106,7 @@ export async function middleware(request: NextRequest) {
         // Not admin, must be distributor
         return NextResponse.redirect(new URL("/dashboard", request.url));
       } catch (error) {
-        console.error("Error checking user role:", error);
+        // Error handled
         // If error, default to dashboard
         return NextResponse.redirect(new URL("/dashboard", request.url));
       }

@@ -110,7 +110,7 @@ export function PhotoUploadSection({
         throw new Error(result.error || "Failed to update photo");
       }
     } catch (error) {
-      console.error("Photo upload error:", error);
+      // Error handled
       toast.error(error instanceof Error ? error.message : "Failed to upload photo");
     } finally {
       setIsUploading(false);
@@ -147,7 +147,7 @@ export function PhotoUploadSection({
         throw new Error(result.error || "Failed to remove photo");
       }
     } catch (error) {
-      console.error("Photo remove error:", error);
+      // Error handled
       toast.error("Failed to remove photo");
     } finally {
       setIsUploading(false);

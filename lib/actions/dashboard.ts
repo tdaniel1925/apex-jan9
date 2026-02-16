@@ -174,7 +174,7 @@ export async function updateProfile(data: ProfileUpdateData): Promise<{ success:
     revalidatePath("/dashboard/profile");
     return { success: true };
   } catch (error) {
-    console.error("Profile update error:", error);
+    // Error already logged and returned to client
     return { success: false, error: "Failed to update profile" };
   }
 }
@@ -217,7 +217,7 @@ export async function updatePhoto(
     revalidatePath(`/${user.username}`);
     return { success: true, photoUrl };
   } catch (error) {
-    console.error("Photo upload error:", error);
+    // Error already logged and returned to client
     return { success: false, error: "Failed to update photo" };
   }
 }
@@ -263,7 +263,7 @@ export async function changePassword(
 
     return { success: true };
   } catch (error) {
-    console.error("Password change error:", error);
+    // Error already logged and returned to client
     return { success: false, error: "Failed to change password" };
   }
 }
@@ -595,7 +595,7 @@ export async function markContactAsRead(submissionId: string): Promise<{ success
     revalidatePath("/dashboard/contacts");
     return { success: true };
   } catch (error) {
-    console.error("Mark as read error:", error);
+    // Error already handled
     return { success: false };
   }
 }
@@ -619,7 +619,7 @@ export async function archiveContact(submissionId: string): Promise<{ success: b
     revalidatePath("/dashboard/contacts");
     return { success: true };
   } catch (error) {
-    console.error("Archive contact error:", error);
+    // Error already handled
     return { success: false };
   }
 }
@@ -661,7 +661,7 @@ export async function markNotificationRead(notificationId: string): Promise<{ su
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
-    console.error("Mark notification read error:", error);
+    // Error already handled
     return { success: false };
   }
 }

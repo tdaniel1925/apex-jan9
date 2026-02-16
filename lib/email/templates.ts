@@ -77,7 +77,7 @@ Need help? Reply to this email or contact support.
       `.trim(),
     });
   } catch (error) {
-    console.error("Failed to send welcome email:", error);
+    // Error handled
     // Don't throw - email failures shouldn't block sign-up
   }
 }
@@ -154,7 +154,7 @@ View Your Team: ${APP_URL}/dashboard/team
       `.trim(),
     });
   } catch (error) {
-    console.error("Failed to send new team member email:", error);
+    // Error handled
     // Don't throw - email failures shouldn't block sign-up
   }
 }
@@ -243,7 +243,7 @@ View All Messages: ${APP_URL}/dashboard/contacts
       `.trim(),
     });
   } catch (error) {
-    console.error("Failed to send contact notification email:", error);
+    // Error handled
     // Don't throw - email failures shouldn't block contact submission
   }
 }
@@ -330,7 +330,7 @@ View Your Team: ${APP_URL}/dashboard/team
       `.trim(),
     });
   } catch (error) {
-    console.error("Failed to send spillover notification email:", error);
+    // Error handled
     // Don't throw - email failures shouldn't block sign-up
   }
 }

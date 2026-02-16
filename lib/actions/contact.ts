@@ -91,7 +91,7 @@ export async function submitContactForm(
         message: validData.message,
       }
     ).catch((error) => {
-      console.error("Failed to send contact notification email:", error);
+      // Error handled
       // Don't fail the submission if email fails
     });
 
@@ -123,7 +123,7 @@ export async function submitContactForm(
       message: `Thank you! Your message has been sent to ${distributorData.firstName} ${distributorData.lastName}.`,
     };
   } catch (error) {
-    console.error("Contact form submission error:", error);
+    // Error handled
 
     return {
       success: false,
