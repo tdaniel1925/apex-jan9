@@ -7,6 +7,7 @@ import { requireDistributor } from "@/lib/auth";
 import { ProfileForm } from "@/components/dashboard/profile-form";
 import { PhotoUploadSection } from "@/components/dashboard/photo-upload-section";
 import { PasswordChangeForm } from "@/components/dashboard/password-change-form";
+import { AudiencePreferenceCard } from "@/components/dashboard/AudiencePreferenceCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { db } from "@/lib/db/client";
@@ -58,6 +59,18 @@ export default async function ProfilePage() {
         </CardHeader>
         <CardContent>
           <ProfileForm distributor={distributor} />
+        </CardContent>
+      </Card>
+
+      {/* Target Audience Preference */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Target Audience</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AudiencePreferenceCard
+            currentPreference={distributor.targetAudience}
+          />
         </CardContent>
       </Card>
 

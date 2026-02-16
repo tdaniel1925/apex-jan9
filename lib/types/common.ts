@@ -28,3 +28,5 @@ export type PaginationOptions = {
   page: number;
   pageSize: number;
 };
+
+export type TargetAudience = "agents" | "newcomers" | "both";

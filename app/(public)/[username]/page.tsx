@@ -1,5 +1,6 @@
 // SPEC: OPTIVE REDESIGN > Replicated Distributor Page
 // SPEC: SPEC-DEPENDENCY-MAP > FEATURE 2: Replicated Page
+// SPEC: AUDIENCE SEGMENTATION > Stage 5: Replicated page with conditional audience logic
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -10,14 +11,8 @@ import { getClientIp } from "@/lib/rate-limit";
 
 // Optive Marketing Components
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
-import { HeroSection } from "@/components/marketing/HeroSection";
-import { AboutSection } from "@/components/marketing/AboutSection";
-import { ServicesSection } from "@/components/marketing/ServicesSection";
-import { ProcessSection } from "@/components/marketing/ProcessSection";
-import { TestimonialsSection } from "@/components/marketing/TestimonialsSection";
-import { ContactSection } from "@/components/marketing/ContactSection";
-import { CTASection } from "@/components/marketing/CTASection";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
+import { ReplicatedPageContent } from "@/components/marketing/ReplicatedPageContent";
 
 export const dynamic = "force-dynamic";
 
@@ -81,7 +76,6 @@ export default async function ReplicatedPage({ params }: PageProps) {
     // Silent fail - analytics errors shouldn't affect page load
   });
 
-  const distributorName = distributor.firstName;
   const fullName = `${distributor.firstName} ${distributor.lastName}`;
 
   return (
@@ -93,53 +87,22 @@ export default async function ReplicatedPage({ params }: PageProps) {
       />
 
       <main className="overflow-x-hidden">
-        <HeroSection
-          variant="replicated"
-          title={`Join ${fullName}'s Team at Apex`}
-          subtitle={`Build your financial future with ${distributorName} as your sponsor and mentor`}
-          ctaText={`Join ${distributorName}'s Team`}
-          ctaLink={`/join/${distributor.username}`}
-          distributorPhoto={distributor.photoUrl}
-          distributorName={distributorName}
-        />
-
-        <AboutSection
-          variant="replicated"
+        <ReplicatedPageContent
           distributor={{
+            id: distributor.id,
+            username: distributor.username,
             firstName: distributor.firstName,
             lastName: distributor.lastName,
+            email: distributor.email,
             photoUrl: distributor.photoUrl,
             bio: distributor.bio,
             createdAt: distributor.createdAt,
+            targetAudience: distributor.targetAudience || "both",
           }}
           teamStats={{
             totalTeamSize: teamSize,
             directEnrollees: directCount,
           }}
-        />
-
-        <ServicesSection />
-
-        <ProcessSection
-          variant="replicated"
-          distributorName={distributorName}
-        />
-
-        <TestimonialsSection
-          variant="replicated"
-          distributorName={distributorName}
-        />
-
-        <ContactSection
-          distributorId={distributor.id}
-          distributorName={distributorName}
-          distributorEmail={distributor.email}
-        />
-
-        <CTASection
-          variant="replicated"
-          distributorName={distributorName}
-          ctaLink={`/join/${distributor.username}`}
         />
       </main>
 

@@ -1,59 +1,28 @@
 // SPEC: OPTIVE REDESIGN > Corporate Page
 // SPEC: SPEC-DEPENDENCY-MAP > FEATURE 1: Corporate Marketing Site
+// SPEC: AUDIENCE SEGMENTATION > Stage 6: Server component with SEO metadata
 
 import type { Metadata } from "next";
-import { MarketingHeader } from "@/components/marketing/MarketingHeader";
-import { MarketingFooter } from "@/components/marketing/MarketingFooter";
-import { HeroSection } from "@/components/marketing/HeroSection";
-import { AboutSection } from "@/components/marketing/AboutSection";
-import { ServicesSection } from "@/components/marketing/ServicesSection";
-import { ProcessSection } from "@/components/marketing/ProcessSection";
-import { TestimonialsSection } from "@/components/marketing/TestimonialsSection";
-import { FAQSection } from "@/components/marketing/FAQSection";
-import { CTASection } from "@/components/marketing/CTASection";
+import { CorporatePageClient } from "@/components/marketing/CorporatePageClient";
 
 export const metadata: Metadata = {
-  title: "Build Your Future with Apex Affinity Group",
+  title: "Apex Affinity Group - Own Your Insurance Business",
   description:
-    "Join a community of entrepreneurs creating financial freedom through proven systems and support. 1000+ active members in 50+ countries worldwide.",
-  keywords: "apex affinity group, financial freedom, network marketing, MLM, team building, passive income, forced matrix",
+    "Own your book. Access top rates. Build wealth through your team. The only insurance company with AI-powered automation. For licensed agents and newcomers.",
   openGraph: {
-    title: "Build Your Future with Apex Affinity Group",
+    title: "Apex Affinity Group - Own Your Insurance Business",
     description:
-      "Join a community of 1000+ entrepreneurs in 50+ countries creating financial freedom through proven business systems.",
-    images: ["/logo/apex-full-color.png"],
+      "Own your book. Access top rates. Build wealth through your team. The only insurance company with AI-powered automation.",
     type: "website",
-    url: "https://theapexway.net",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Apex Affinity Group - Own Your Insurance Business",
+    description:
+      "Own your book. Access top rates. Build wealth through your team. The only insurance company with AI-powered automation.",
   },
 };
 
-export default async function CorporatePage() {
-  return (
-    <div className="min-h-screen overflow-x-hidden">
-      <MarketingHeader variant="corporate" ctaLink="/join" />
-      <main className="overflow-x-hidden">
-        <HeroSection
-          variant="corporate"
-          title="Build Your Future with Apex Affinity Group"
-          subtitle="Join a community of entrepreneurs creating financial freedom through proven systems and support"
-          ctaText="Join Now"
-          ctaLink="/join"
-        />
-        <AboutSection
-          variant="corporate"
-          stats={{
-            activeMembers: 1000,
-            countries: 50,
-            memberEarnings: 5,
-          }}
-        />
-        <ServicesSection />
-        <ProcessSection variant="corporate" />
-        <TestimonialsSection variant="corporate" />
-        <FAQSection />
-        <CTASection variant="corporate" ctaLink="/join" />
-      </main>
-      <MarketingFooter />
-    </div>
-  );
+export default function CorporatePage() {
+  return <CorporatePageClient />;
 }

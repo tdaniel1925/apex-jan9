@@ -7,31 +7,37 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { ctaMessaging, type AudienceType } from "@/lib/content/audienceMessaging";
 
 interface CTASectionProps {
   variant: "corporate" | "replicated";
   distributorName?: string;
   ctaLink: string;
+  audiencePreference?: AudienceType | null;
 }
 
-export function CTASection({ variant, distributorName, ctaLink }: CTASectionProps) {
+export function CTASection({ variant, distributorName, ctaLink, audiencePreference }: CTASectionProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
+  // Get audience-specific messaging
+  const audience = audiencePreference || "both";
+  const messaging = ctaMessaging[audience];
+
   const heading = variant === "corporate"
-    ? "Ready to Start Building Your Future?"
-    : `Ready to Join ${distributorName}'s Team?`;
+    ? messaging.heading
+    : "What If Insurance Could Be Different?";
 
   const subheading = variant === "corporate"
-    ? "Join thousands of entrepreneurs creating financial freedom with Apex Affinity Group. Start your journey today."
-    : `Take the first step toward financial independence with ${distributorName} as your sponsor and mentor. Your future starts now.`;
+    ? messaging.subheading
+    : `${distributorName} found a better path. Own your business. Keep your commissions. Build a legacy. Your turn.`;
 
   const ctaText = variant === "corporate"
-    ? "Join Apex Today"
-    : `Get Started with ${distributorName}`;
+    ? messaging.primaryCta
+    : "Let's Talk";
 
   const secondaryCtaText = variant === "corporate"
-    ? "Learn More"
+    ? messaging.secondaryCta
     : "Ask a Question";
 
   const secondaryCtaLink = variant === "corporate"

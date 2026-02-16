@@ -72,6 +72,12 @@ export const signupEventEnum = pgEnum("signup_event", [
   "signup_failed",
 ]);
 
+export const targetAudienceEnum = pgEnum("target_audience", [
+  "agents",
+  "newcomers",
+  "both",
+]);
+
 // ============================================
 // TABLES
 // ============================================
@@ -94,6 +100,9 @@ export const distributors = pgTable("distributors", {
   replicatedSiteActive: boolean("replicated_site_active")
     .notNull()
     .default(true),
+  targetAudience: targetAudienceEnum("target_audience")
+    .notNull()
+    .default("both"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

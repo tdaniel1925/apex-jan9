@@ -6,10 +6,12 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight, Grid, Users, DollarSign, BookOpen } from "lucide-react";
+import { processMessaging, type AudienceType } from "@/lib/content/audienceMessaging";
 
 interface ProcessSectionProps {
   variant: "corporate" | "replicated";
   distributorName?: string;
+  audiencePreference?: AudienceType | null;
 }
 
 interface ProcessStep {
@@ -19,37 +21,21 @@ interface ProcessStep {
   icon: typeof ArrowRight;
 }
 
-export function ProcessSection({ variant, distributorName }: ProcessSectionProps) {
+export function ProcessSection({ variant, distributorName, audiencePreference }: ProcessSectionProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  // Define steps based on variant
-  const corporateSteps: ProcessStep[] = [
-    {
-      number: 1,
-      title: "Sign Up",
-      description: "Choose your sponsor and create your account",
-      icon: ArrowRight,
-    },
-    {
-      number: 2,
-      title: "Get Placed",
-      description: "Automatic placement in our 5×7 forced matrix",
-      icon: Grid,
-    },
-    {
-      number: 3,
-      title: "Build Team",
-      description: "Share your replicated site and grow your organization",
-      icon: Users,
-    },
-    {
-      number: 4,
-      title: "Earn Income",
-      description: "Receive commissions as your team grows",
-      icon: DollarSign,
-    },
-  ];
+  // Get audience-specific messaging for corporate
+  const audience = audiencePreference || "both";
+  const messaging = processMessaging[audience];
+
+  // Define steps based on variant and audience
+  const corporateSteps: ProcessStep[] = messaging.steps.map((step, index) => ({
+    number: index + 1,
+    title: step.title,
+    description: step.description,
+    icon: [ArrowRight, Grid, Users, DollarSign][index] || ArrowRight,
+  }));
 
   const replicatedSteps: ProcessStep[] = [
     {
@@ -80,7 +66,7 @@ export function ProcessSection({ variant, distributorName }: ProcessSectionProps
 
   const steps = variant === "corporate" ? corporateSteps : replicatedSteps;
   const sectionId = variant === "corporate" ? "how-it-works" : "how-to-join";
-  const sectionTitle = variant === "corporate" ? "How Apex Works" : `How to Join ${distributorName || "My Team"}`;
+  const sectionTitle = variant === "corporate" ? messaging.sectionTitle : `How to Join ${distributorName || "My Team"}`;
 
   return (
     <section id={sectionId} className="py-20 bg-white">
@@ -100,7 +86,7 @@ export function ProcessSection({ variant, distributorName }: ProcessSectionProps
             </h2>
             <p className="text-lg text-apex-gray max-w-3xl mx-auto">
               {variant === "corporate"
-                ? "Four simple steps to start building your income stream with Apex Affinity Group"
+                ? messaging.subtitle
                 : `Join ${distributorName ? `${distributorName}'s` : "my"} team in four easy steps and start your journey to financial freedom`
               }
             </p>
@@ -223,7 +209,7 @@ export function ProcessSection({ variant, distributorName }: ProcessSectionProps
         >
           <p className="text-lg text-apex-gray mb-6">
             {variant === "corporate"
-              ? "Ready to start your journey with Apex?"
+              ? messaging.ctaText
               : `Ready to join ${distributorName ? `${distributorName}'s` : "my"} team?`
             }
           </p>

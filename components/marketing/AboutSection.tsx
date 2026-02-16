@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Calendar, Users, Globe, TrendingUp } from "lucide-react";
+import { aboutMessaging, type AudienceType } from "@/lib/content/audienceMessaging";
 
 interface AboutSectionProps {
   variant: "corporate" | "replicated";
@@ -30,6 +31,7 @@ interface AboutSectionProps {
     totalTeamSize: number;
     directEnrollees: number;
   };
+  audiencePreference?: AudienceType | null;
 }
 
 // Animated counter component
@@ -71,9 +73,14 @@ export function AboutSection({
   stats,
   distributor,
   teamStats,
+  audiencePreference,
 }: AboutSectionProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  // Get audience-specific messaging
+  const audience = audiencePreference || "both";
+  const messaging = aboutMessaging[audience];
 
   // Calculate years since distributor joined
   const getYearsJoined = (createdAt: Date) => {
@@ -95,19 +102,16 @@ export function AboutSection({
               transition={{ duration: 0.6 }}
             >
               <span className="inline-block text-sm font-semibold text-apex-navy uppercase tracking-wider mb-4">
-                Our Mission
+                Why Apex
               </span>
               <h2 className="text-4xl md:text-5xl font-heading font-semibold text-apex-dark mb-6">
-                Empowering Financial Independence
+                {messaging.heading}
               </h2>
               <p className="text-lg text-apex-gray leading-relaxed mb-6">
-                We're a community-driven organization dedicated to empowering individuals to achieve
-                financial independence through proven business systems, comprehensive training, and
-                unwavering support.
+                {messaging.paragraph1}
               </p>
               <p className="text-lg text-apex-gray leading-relaxed mb-8">
-                Our proven 5×7 forced matrix system combines cutting-edge technology with time-tested
-                business strategies, allowing members to benefit from both their own efforts and team spillover.
+                {messaging.paragraph2}
               </p>
 
               {/* Stats Grid */}
@@ -136,13 +140,9 @@ export function AboutSection({
             >
               <div className="aspect-[4/3] bg-gradient-to-br from-apex-navy/10 to-apex-dark/10 rounded-2xl overflow-hidden">
                 <img
-                  src="/images/about-corporate.jpg"
+                  src="/about-hero.png"
                   alt="Apex Affinity Group"
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    // Fallback to gradient if image doesn't exist
-                    e.currentTarget.style.display = 'none';
-                  }}
                 />
               </div>
               {/* Decorative Element */}
@@ -159,50 +159,23 @@ export function AboutSection({
     <section id="about" className="py-20 bg-white">
       <div className="container max-w-optive mx-auto px-6">
         <div ref={ref} className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left Column: Distributor Photo */}
+          {/* Left Column: Content */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="flex justify-center lg:justify-start"
-          >
-            {distributor?.photoUrl ? (
-              <div className="relative">
-                <div className="w-64 h-64 sm:w-80 sm:h-80 rounded-2xl overflow-hidden border-4 border-apex-navy shadow-2xl">
-                  <img
-                    src={distributor.photoUrl}
-                    alt={`${distributor.firstName} ${distributor.lastName}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="absolute -bottom-4 -right-4 bg-apex-navy rounded-full p-6 shadow-lg">
-                  <TrendingUp className="w-8 h-8 text-white" />
-                </div>
-              </div>
-            ) : (
-              <div className="w-64 h-64 sm:w-80 sm:h-80 rounded-2xl bg-gradient-to-br from-apex-navy to-apex-navy-dark flex items-center justify-center text-white text-7xl font-heading font-bold shadow-2xl border-4 border-white/20">
-                {distributor?.firstName[0]}{distributor?.lastName[0]}
-              </div>
-            )}
-          </motion.div>
-
-          {/* Right Column: Content */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
           >
             <span className="inline-block text-sm font-semibold text-apex-navy uppercase tracking-wider mb-4">
-              Your Sponsor
+              Your Partner
             </span>
             <h2 className="text-4xl md:text-5xl font-heading font-semibold text-apex-dark mb-6">
-              About {distributor?.firstName}
+              Why {distributor?.firstName} Chose Apex
             </h2>
             <p className="text-lg text-apex-gray leading-relaxed mb-8">
               {distributor?.bio ||
-                `${distributor?.firstName} is a dedicated distributor with Apex Affinity Group,
-                committed to helping others achieve financial success through our proven system.
-                Join their team today and benefit from personalized support and guidance.`
+                `${distributor?.firstName} joined Apex Affinity Group to break free from the traditional insurance grind.
+                Here, you own your book of business, access industry-leading life insurance rates through 3Mark Financial,
+                and build wealth through team growth—not just personal sales. It's insurance, reimagined for your success.`
               }
             </p>
 
@@ -247,6 +220,33 @@ export function AboutSection({
                     month: 'long'
                   })}
                 </span>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Right Column: Distributor Photo */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex justify-center lg:justify-end"
+          >
+            {distributor?.photoUrl ? (
+              <div className="relative">
+                <div className="w-80 h-80 sm:w-96 sm:h-96 rounded-2xl overflow-hidden border-4 border-apex-navy shadow-2xl">
+                  <img
+                    src={distributor.photoUrl}
+                    alt={`${distributor.firstName} ${distributor.lastName}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute -bottom-4 -right-4 bg-apex-navy rounded-full p-6 shadow-lg">
+                  <TrendingUp className="w-8 h-8 text-white" />
+                </div>
+              </div>
+            ) : (
+              <div className="w-80 h-80 sm:w-96 sm:h-96 rounded-2xl bg-gradient-to-br from-apex-navy to-apex-navy-dark flex items-center justify-center text-white text-8xl font-heading font-bold shadow-2xl border-4 border-white/20">
+                {distributor?.firstName[0]}{distributor?.lastName[0]}
               </div>
             )}
           </motion.div>

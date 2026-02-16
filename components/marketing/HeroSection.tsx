@@ -6,30 +6,41 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { heroMessaging, type AudienceType } from "@/lib/content/audienceMessaging";
 
 interface HeroSectionProps {
   variant: "corporate" | "replicated";
-  title: string;
-  subtitle: string;
+  title?: string;
+  subtitle?: string;
   ctaText: string;
   ctaLink: string;
   backgroundVideo?: string;
   backgroundImage?: string;
   distributorPhoto?: string | null;
   distributorName?: string;
+  audiencePreference?: AudienceType | null;
 }
 
 export function HeroSection({
   variant,
-  title,
-  subtitle,
+  title: titleProp,
+  subtitle: subtitleProp,
   ctaText,
   ctaLink,
   backgroundVideo,
   backgroundImage,
   distributorPhoto,
   distributorName,
+  audiencePreference,
 }: HeroSectionProps) {
+  // Use audience-specific messaging for corporate, or fallback to props
+  const audience = audiencePreference || "both";
+  const title = variant === "corporate" && !titleProp
+    ? heroMessaging[audience].title
+    : titleProp || heroMessaging.both.title;
+  const subtitle = variant === "corporate" && !subtitleProp
+    ? heroMessaging[audience].subtitle
+    : subtitleProp || heroMessaging.both.subtitle;
   return (
     <section id="home" className="relative min-h-screen flex items-end pb-20 bg-gradient-to-br from-apex-navy via-apex-navy-dark to-apex-navy-950 text-white overflow-hidden">
       {/* Background Video or Image */}
@@ -63,12 +74,12 @@ export function HeroSection({
           )}
         </>
       ) : (
-        // Replicated variant - Flag background
+        // Replicated variant - Dark background
         <div className="absolute inset-0 z-0">
           <img
-            src="/images/hero-flag.png"
+            src="/hero-bg-dark.png"
             alt=""
-            className="w-full h-full object-cover opacity-40"
+            className="w-full h-full object-cover opacity-50"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-apex-navy/70 via-apex-navy-dark/50 to-apex-navy-950/80" />
         </div>
@@ -84,13 +95,12 @@ export function HeroSection({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              {/* Section Subtitle */}
-              <span className="inline-block text-sm font-semibold text-apex-red uppercase tracking-wider mb-4">
-                {variant === "corporate"
-                  ? "Transforming Financial Challenges Into Growth"
-                  : `Your Sponsor: ${distributorName}`
-                }
-              </span>
+              {/* Section Subtitle - Only show for corporate */}
+              {variant === "corporate" && (
+                <span className="inline-block text-sm font-semibold text-apex-red uppercase tracking-wider mb-4">
+                  Transforming Financial Challenges Into Growth
+                </span>
+              )}
 
               {/* Main Title */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-heading font-bold leading-tight mb-6">
@@ -136,13 +146,6 @@ export function HeroSection({
               </div>
             </motion.div>
           )}
-        </div>
-      </div>
-
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce z-10">
-        <div className="w-6 h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
-          <div className="w-1 h-3 bg-white rounded-full"></div>
         </div>
       </div>
     </section>
