@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
@@ -116,9 +117,9 @@ export default function LoginPage() {
 
             <div className="text-sm text-center text-gray-600 dark:text-gray-400">
               Don't have an account?{" "}
-              <a href="/join" className="text-primary hover:underline font-medium">
+              <Link href="/join" className="text-primary hover:underline font-medium">
                 Sign up
-              </a>
+              </Link>
             </div>
           </CardFooter>
         </form>
