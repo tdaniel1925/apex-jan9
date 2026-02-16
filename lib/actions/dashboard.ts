@@ -20,7 +20,11 @@ import { eq, sql, and, or, desc, asc, ilike } from "drizzle-orm";
 import { logActivity, createNotification } from "@/lib/db/queries";
 import { createClient } from "@/lib/db/client";
 import { revalidatePath } from "next/cache";
-import { profileUpdateSchema, passwordChangeSchema } from "@/lib/types/schemas";
+import {
+  profileUpdateSchema,
+  passwordChangeSchema,
+  photoUrlSchema,
+} from "@/lib/types/schemas";
 import { z } from "zod";
 
 // ============================================
@@ -218,12 +222,15 @@ export async function updatePhoto(
   cropData?: Record<string, unknown>
 ): Promise<PhotoUploadResult> {
   try {
-    // Validate photo URL
-    const photoUrlValidation = z.string().url().safeParse(photoUrl);
+    // Validate photo URL - must be from Supabase storage or empty for removal
+    const photoUrlValidation = photoUrl
+      ? photoUrlSchema.safeParse(photoUrl)
+      : { success: true, data: "" };
+
     if (!photoUrlValidation.success) {
       return {
         success: false,
-        error: "Invalid photo URL",
+        error: "Photo URL must be from Supabase storage",
       };
     }
 

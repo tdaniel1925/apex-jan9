@@ -75,7 +75,7 @@ export function PhotoUploadSection({
         if (oldFilename) {
           await supabase.storage
             .from("profile-photos")
-            .remove([`${oldFilename}`]);
+            .remove([`profile-photos/${oldFilename}`]);
         }
       }
 
@@ -133,7 +133,7 @@ export function PhotoUploadSection({
         if (filename) {
           await supabase.storage
             .from("profile-photos")
-            .remove([filename]);
+            .remove([`profile-photos/${filename}`]);
         }
       }
 
