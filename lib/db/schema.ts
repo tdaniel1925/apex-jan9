@@ -83,6 +83,12 @@ export const licenseStatusEnum = pgEnum("license_status", [
   "not_licensed",
 ]);
 
+export const displayPreferenceEnum = pgEnum("display_preference", [
+  "personal",
+  "business",
+  "both",
+]);
+
 // ============================================
 // TABLES
 // ============================================
@@ -109,6 +115,10 @@ export const distributors = pgTable("distributors", {
     .notNull()
     .default("both"),
   licenseStatus: licenseStatusEnum("license_status"),
+  businessName: text("business_name"),
+  displayPreference: displayPreferenceEnum("display_preference")
+    .notNull()
+    .default("personal"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
