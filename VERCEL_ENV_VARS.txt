@@ -1,0 +1,39 @@
+VERCEL ENVIRONMENT VARIABLES - Copy and paste these into Vercel Dashboard
+===========================================================================
+
+NEXT_PUBLIC_SUPABASE_URL
+https://pmawmgvjrfqmpcbnrutk.supabase.co
+
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtYXdtZ3ZqcmZxbXBjYm5ydXRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExOTQzODQsImV4cCI6MjA4Njc3MDM4NH0.8oMjc4AJo9LDLyvx1hIdLB56zUiZ7iKrAty9bEhONrg
+
+SUPABASE_SERVICE_ROLE_KEY
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtYXdtZ3ZqcmZxbXBjYm5ydXRrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTE5NDM4NCwiZXhwIjoyMDg2NzcwMzg0fQ.xAONuaLtvTd0FedeccPcA-mz5akQuX3bpMpbcgX52Uo
+
+DATABASE_URL
+postgresql://postgres.pmawmgvjrfqmpcbnrutk:ttandSellaBella1234@aws-1-us-east-1.pooler.supabase.com:5432/postgres
+
+RESEND_API_KEY
+re_DjMiknb1_T8MdjYu6hBvdpCbbxeZeKi7A
+
+EMAIL_FROM
+noreply@theapexway.net
+
+NEXT_PUBLIC_APP_NAME
+Apex Affinity Group
+
+CRON_SECRET
+6873f525b93e55e9b8819d4477e55cf6d490f0d9ef95b76d8e2b81a9336020c3
+
+NEXT_PUBLIC_APP_URL
+https://theapexway.net
+(OR use your Vercel deployment URL like: https://apex-jan9.vercel.app)
+
+===========================================================================
+For each variable above:
+1. Copy the variable name (e.g., NEXT_PUBLIC_SUPABASE_URL)
+2. Paste the value on the line below it
+3. Select: Production, Preview, Development (all three)
+4. Click Save
+
+After adding all variables, go to Deployments tab and click "Redeploy" on the latest deployment.
