@@ -16,7 +16,7 @@ import {
   type ContactSubmission,
   type Notification,
 } from "@/lib/db/schema";
-import { eq, sql, and, desc, asc } from "drizzle-orm";
+import { eq, sql, and, or, desc, asc, ilike } from "drizzle-orm";
 import { logActivity, createNotification } from "@/lib/db/queries";
 import { createClient } from "@/lib/db/client";
 import { revalidatePath } from "next/cache";
@@ -368,9 +368,17 @@ export async function getOrgList(params?: {
   }
 
   if (searchTerm) {
-    conditions.push(
-      sql`(LOWER(${distributors.firstName}) LIKE LOWER(${`%${searchTerm}%`}) OR LOWER(${distributors.lastName}) LIKE LOWER(${`%${searchTerm}%`}) OR LOWER(${distributors.email}) LIKE LOWER(${`%${searchTerm}%`}))`
-    );
+    // Sanitize and validate search input
+    const sanitizedSearch = searchTerm.trim().slice(0, 100);
+    if (sanitizedSearch) {
+      conditions.push(
+        or(
+          ilike(distributors.firstName, `%${sanitizedSearch}%`),
+          ilike(distributors.lastName, `%${sanitizedSearch}%`),
+          ilike(distributors.email, `%${sanitizedSearch}%`)
+        )!
+      );
+    }
   }
 
   // Get total count
@@ -612,8 +620,14 @@ export async function getContactSubmissions(params?: {
   return { submissions, total };
 }
 
-export async function markContactAsRead(submissionId: string): Promise<{ success: boolean }> {
+export async function markContactAsRead(submissionId: string): Promise<{ success: boolean; error?: string }> {
   try {
+    // Validate submission ID
+    const idValidation = z.string().uuid().safeParse(submissionId);
+    if (!idValidation.success) {
+      return { success: false, error: "Invalid submission ID" };
+    }
+
     const user = await requireDistributor();
 
     await db
@@ -632,13 +646,18 @@ export async function markContactAsRead(submissionId: string): Promise<{ success
     revalidatePath("/dashboard/contacts");
     return { success: true };
   } catch (error) {
-    // Error already handled
-    return { success: false };
+    return { success: false, error: "Failed to mark contact as read" };
   }
 }
 
-export async function archiveContact(submissionId: string): Promise<{ success: boolean }> {
+export async function archiveContact(submissionId: string): Promise<{ success: boolean; error?: string }> {
   try {
+    // Validate submission ID
+    const idValidation = z.string().uuid().safeParse(submissionId);
+    if (!idValidation.success) {
+      return { success: false, error: "Invalid submission ID" };
+    }
+
     const user = await requireDistributor();
 
     await db
@@ -656,8 +675,7 @@ export async function archiveContact(submissionId: string): Promise<{ success: b
     revalidatePath("/dashboard/contacts");
     return { success: true };
   } catch (error) {
-    // Error already handled
-    return { success: false };
+    return { success: false, error: "Failed to archive contact" };
   }
 }
 

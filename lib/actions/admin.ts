@@ -20,6 +20,8 @@ import { eq, sql, and, or, desc, asc, ilike, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { getClientIp } from "@/lib/rate-limit";
+import { uuidSchema, systemSettingSchema } from "@/lib/types/schemas";
+import { z } from "zod";
 
 // ============================================
 // TYPES
@@ -176,14 +178,18 @@ export async function getAllDistributors(params: GetDistributorsParams = {}) {
   }
 
   if (search) {
-    conditions.push(
-      or(
-        ilike(distributors.firstName, `%${search}%`),
-        ilike(distributors.lastName, `%${search}%`),
-        ilike(distributors.email, `%${search}%`),
-        ilike(distributors.username, `%${search}%`)
-      )!
-    );
+    // Sanitize search input (Drizzle parameterizes queries, but validate input)
+    const sanitizedSearch = search.trim().slice(0, 100); // Limit length
+    if (sanitizedSearch) {
+      conditions.push(
+        or(
+          ilike(distributors.firstName, `%${sanitizedSearch}%`),
+          ilike(distributors.lastName, `%${sanitizedSearch}%`),
+          ilike(distributors.email, `%${sanitizedSearch}%`),
+          ilike(distributors.username, `%${sanitizedSearch}%`)
+        )!
+      );
+    }
   }
 
   // Get total count
@@ -344,6 +350,12 @@ export async function suspendDistributor(
     return { success: false, error: "Super admin access required" };
   }
 
+  // Validate distributor ID
+  const idValidation = uuidSchema.safeParse(distributorId);
+  if (!idValidation.success) {
+    return { success: false, error: "Invalid distributor ID" };
+  }
+
   // Get client IP for audit trail
   const headersList = await headers();
   const clientIp = getClientIp(headersList);
@@ -407,6 +419,7 @@ export async function suspendDistributor(
     metadata: { reason },
   });
 
+  revalidatePath("/admin");
   revalidatePath("/admin/distributors");
   revalidatePath(`/admin/distributors/${distributorId}`);
   revalidatePath(`/${distributor.username}`);
@@ -422,6 +435,12 @@ export async function reactivateDistributor(
   // Only super_admin can reactivate
   if (admin.role !== "super_admin") {
     return { success: false, error: "Super admin access required" };
+  }
+
+  // Validate distributor ID
+  const idValidation = uuidSchema.safeParse(distributorId);
+  if (!idValidation.success) {
+    return { success: false, error: "Invalid distributor ID" };
   }
 
   // Get client IP for audit trail
@@ -475,6 +494,7 @@ export async function reactivateDistributor(
     targetType: "distributor",
   });
 
+  revalidatePath("/admin");
   revalidatePath("/admin/distributors");
   revalidatePath(`/admin/distributors/${distributorId}`);
   revalidatePath(`/${distributor.username}`);
@@ -669,6 +689,15 @@ export async function updateSystemSetting(
   // Only super_admin can update settings
   if (admin.role !== "super_admin") {
     return { success: false, error: "Super admin access required" };
+  }
+
+  // Validate input
+  const validation = systemSettingSchema.safeParse({ key, value });
+  if (!validation.success) {
+    return {
+      success: false,
+      error: "Invalid setting key or value",
+    };
   }
 
   // Get client IP for audit trail
