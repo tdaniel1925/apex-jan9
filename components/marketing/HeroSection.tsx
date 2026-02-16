@@ -162,30 +162,6 @@ export function HeroSection({
           </div>
         </div>
       )}
-
-          {/* Sidebar Info Box (Corporate only) */}
-          {variant === "corporate" && (
-            <motion.div
-              className="xl:col-span-4"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <div className="bg-white/10 backdrop-blur-md rounded-xl p-8 border border-white/20">
-                <div className="aspect-video bg-white/5 rounded-lg mb-6 flex items-center justify-center">
-                  <div className="w-16 h-16 bg-apex-navy rounded-full flex items-center justify-center">
-                    <ArrowRight className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                <h2 className="text-2xl font-heading font-semibold mb-3">Smart Advisory</h2>
-                <p className="text-gray-200">
-                  Our smart advisory services combine expert insight, data-driven analysis, and proven strategies.
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </div>
     </section>
   );
 }
