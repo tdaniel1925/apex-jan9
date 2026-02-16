@@ -31,9 +31,9 @@ export function CorporatePageClient() {
         <AboutSection
           variant="corporate"
           stats={{
-            activeMembers: 1000,
-            countries: 50,
-            memberEarnings: 5,
+            activeMembers: 54,
+            countries: 160,
+            memberEarnings: 693,
           }}
         />
         <ServicesSection />

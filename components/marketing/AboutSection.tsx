@@ -118,16 +118,16 @@ export function AboutSection({
               {/* Stats Grid */}
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <AnimatedCounter target={stats?.activeMembers || 1000} suffix="+" />
-                  <p className="text-sm text-apex-gray mt-2 font-medium">Active Members</p>
+                  <AnimatedCounter target={stats?.activeMembers || 54} prefix="$" suffix="M" />
+                  <p className="text-sm text-apex-gray mt-2 font-medium">Avg Lifetime Coverage</p>
                 </div>
                 <div>
-                  <AnimatedCounter target={stats?.countries || 50} suffix="+" />
-                  <p className="text-sm text-apex-gray mt-2 font-medium">Countries Worldwide</p>
+                  <AnimatedCounter target={stats?.countries || 160} suffix="M" />
+                  <p className="text-sm text-apex-gray mt-2 font-medium">Policies Nationwide</p>
                 </div>
                 <div>
-                  <AnimatedCounter target={stats?.memberEarnings || 5} prefix="$" suffix="M+" />
-                  <p className="text-sm text-apex-gray mt-2 font-medium">Member Earnings</p>
+                  <AnimatedCounter target={stats?.memberEarnings || 693} prefix="$" suffix="B" />
+                  <p className="text-sm text-apex-gray mt-2 font-medium">Industry Size</p>
                 </div>
               </div>
             </motion.div>
