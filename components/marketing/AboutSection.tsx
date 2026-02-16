@@ -141,12 +141,13 @@ export function AboutSection({
             >
               <div className="aspect-[4/3] bg-gradient-to-br from-apex-navy/10 to-apex-dark/10 rounded-2xl overflow-hidden relative">
                 <Image
-                  src="/about-hero.png"
-                  alt="Apex Affinity Group"
+                  src="/flag-waving.gif"
+                  alt="Apex Affinity Group Flag"
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
                   priority
+                  unoptimized
                 />
               </div>
               {/* Decorative Element */}
