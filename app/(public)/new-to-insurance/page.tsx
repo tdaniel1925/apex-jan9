@@ -7,7 +7,6 @@ import { ServicesSection } from "@/components/marketing/ServicesSection";
 import { ProcessSection } from "@/components/marketing/ProcessSection";
 import { TestimonialsSection } from "@/components/marketing/TestimonialsSection";
 import { CTASection } from "@/components/marketing/CTASection";
-import { ContactSection } from "@/components/marketing/ContactSection";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 
 export const metadata: Metadata = {
@@ -67,9 +66,6 @@ export default function NewToInsurancePage() {
         ctaLink="/join"
         audiencePreference="newcomers"
       />
-
-      {/* Contact */}
-      <ContactSection />
 
       {/* Footer */}
       <MarketingFooter />
