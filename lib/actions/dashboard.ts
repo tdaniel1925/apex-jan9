@@ -165,6 +165,8 @@ export type ProfileUpdateData = {
   lastName: string;
   phone?: string;
   bio?: string;
+  businessName?: string;
+  displayPreference?: "personal" | "business" | "both";
 };
 
 export async function updateProfile(data: ProfileUpdateData): Promise<{ success: boolean; error?: string }> {
@@ -187,6 +189,8 @@ export async function updateProfile(data: ProfileUpdateData): Promise<{ success:
         lastName: validation.data.lastName,
         phone: validation.data.phone || null,
         bio: validation.data.bio || null,
+        businessName: validation.data.businessName || null,
+        displayPreference: validation.data.displayPreference || "personal",
         updatedAt: new Date(),
       })
       .where(eq(distributors.id, user.id));

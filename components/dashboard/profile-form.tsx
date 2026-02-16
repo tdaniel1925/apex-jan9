@@ -8,6 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { updateProfile } from "@/lib/actions";
 import { toast } from "sonner";
 import type { Distributor } from "@/lib/db/schema";
@@ -23,6 +30,8 @@ export function ProfileForm({ distributor }: ProfileFormProps) {
     lastName: distributor.lastName,
     phone: distributor.phone || "",
     bio: distributor.bio || "",
+    businessName: distributor.businessName || "",
+    displayPreference: distributor.displayPreference || "personal",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -54,6 +63,8 @@ export function ProfileForm({ distributor }: ProfileFormProps) {
       lastName: formData.lastName.trim(),
       phone: formData.phone.trim() || undefined,
       bio: formData.bio.trim() || undefined,
+      businessName: formData.businessName.trim() || undefined,
+      displayPreference: formData.displayPreference as "personal" | "business" | "both",
     });
 
     setIsLoading(false);
@@ -124,6 +135,54 @@ export function ProfileForm({ distributor }: ProfileFormProps) {
           }
           disabled={isLoading}
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="businessName">Business Name (optional)</Label>
+        <Input
+          id="businessName"
+          type="text"
+          placeholder="Mike's Insurance Agency"
+          value={formData.businessName}
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, businessName: e.target.value }))
+          }
+          disabled={isLoading}
+        />
+        <p className="text-sm text-muted-foreground">
+          Optional business name to display on your replicated site
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="displayPreference">Display Name On Site</Label>
+        <Select
+          value={formData.displayPreference}
+          onValueChange={(value) =>
+            setFormData((prev) => ({ ...prev, displayPreference: value as "personal" | "business" | "both" }))
+          }
+          disabled={isLoading}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="personal">
+              Personal Name ({distributor.firstName} {distributor.lastName})
+            </SelectItem>
+            <SelectItem value="business" disabled={!formData.businessName}>
+              Business Name Only
+              {!formData.businessName && " (enter business name first)"}
+            </SelectItem>
+            <SelectItem value="both" disabled={!formData.businessName}>
+              Both Names
+              {!formData.businessName && " (enter business name first)"}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        <p className="text-sm text-muted-foreground">
+          Choose how your name appears on your replicated website
+        </p>
       </div>
 
       <div className="space-y-2">

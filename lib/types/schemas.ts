@@ -122,6 +122,12 @@ export const profileUpdateSchema = z.object({
     .max(500, "Bio must be at most 500 characters")
     .optional()
     .or(z.literal("")),
+  businessName: z
+    .string()
+    .max(100, "Business name must be at most 100 characters")
+    .optional()
+    .or(z.literal("")),
+  displayPreference: z.enum(["personal", "business", "both"]).optional(),
 });
 
 export type ProfileUpdateFormData = z.infer<typeof profileUpdateSchema>;
