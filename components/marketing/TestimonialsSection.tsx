@@ -31,42 +31,28 @@ export function TestimonialsSection({ variant, distributorName }: TestimonialsSe
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  // Corporate testimonials
+  // Corporate testimonials - Real success stories
   const corporateTestimonials: Testimonial[] = [
     {
-      name: "Sarah Johnson",
+      name: "Bill Propper",
       photo: null,
-      quote: "Joining Apex was the best decision I ever made. The support and training are incredible! Within 6 months, I built a thriving team and started earning residual income.",
+      quote: "As CEO of Apex Affinity Group, I've witnessed firsthand the transformative power of our platform. The 5×7 forced matrix system isn't just innovative—it's revolutionary. We've created a level playing field where every member, regardless of experience, can achieve financial independence through our proven systems and unwavering support.",
       rating: 5,
-      location: "Austin, TX",
+      location: "CEO, Apex Affinity Group",
     },
     {
-      name: "Michael Chen",
+      name: "Darrell Wolfe",
       photo: null,
-      quote: "The 5×7 matrix system really works. I benefited from spillover within my first month, and my team keeps growing. The community here is amazing!",
+      quote: "The Apex Affinity Group opportunity changed my life. The combination of cutting-edge technology, proven business strategies, and genuine community support created the perfect environment for success. The spillover from the forced matrix means you're building wealth even while you sleep. This isn't just a business—it's a movement.",
       rating: 5,
-      location: "Seattle, WA",
+      location: "Top Distributor",
     },
     {
-      name: "Jennifer Martinez",
+      name: "Johnathon Bunch",
       photo: null,
-      quote: "I was skeptical at first, but the proven system and mentorship changed everything. I'm now earning more than my previous full-time job while working part-time.",
+      quote: "What sets Apex apart is the integrity and vision behind it. The forced matrix system ensures everyone benefits, not just the early adopters. I've seen countless lives transformed through this opportunity. The training, the tools, and the team culture are second to none. If you're serious about financial freedom, Apex is your vehicle.",
       rating: 5,
-      location: "Miami, FL",
-    },
-    {
-      name: "David Thompson",
-      photo: null,
-      quote: "As a former teacher, I never thought I'd find financial freedom. Apex gave me the tools, training, and support to build something real. Forever grateful!",
-      rating: 5,
-      location: "Denver, CO",
-    },
-    {
-      name: "Lisa Anderson",
-      photo: null,
-      quote: "The replicated website made it so easy to share the opportunity. My team loves the system, and I love the passive income it generates. Highly recommend!",
-      rating: 5,
-      location: "Phoenix, AZ",
+      location: "Senior Leader",
     },
   ];
 

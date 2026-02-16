@@ -12,6 +12,7 @@ import {
   GraduationCap,
   DollarSign,
   Users,
+  Bot,
   type LucideIcon,
 } from "lucide-react";
 
@@ -23,40 +24,40 @@ interface ServiceCard {
 
 const services: ServiceCard[] = [
   {
-    icon: Grid,
-    title: "5×7 Forced Matrix",
+    icon: Bot,
+    title: "AI Business Growth Co-Pilot",
     description:
-      "Guaranteed placement in our proven matrix system that builds your team automatically",
-  },
-  {
-    icon: TrendingUp,
-    title: "Spillover Benefits",
-    description:
-      "Benefit from your upline's recruiting efforts as new members fill your matrix",
-  },
-  {
-    icon: Globe,
-    title: "Professional Website",
-    description:
-      "Get your own replicated marketing page with a personal URL to share",
-  },
-  {
-    icon: GraduationCap,
-    title: "Training & Support",
-    description:
-      "Comprehensive training and ongoing mentorship to ensure your success",
+      "The ONLY insurance company with AI that automates lead nurture, follow-ups, and communication. Work smarter, not harder.",
   },
   {
     icon: DollarSign,
-    title: "Residual Income",
+    title: "Own Your Book of Business",
     description:
-      "Build long-term wealth with passive income from your growing organization",
+      "You keep what you build—100% ownership with no company buybacks. Your clients stay yours forever.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Industry-Leading Rates",
+    description:
+      "Access top life insurance carriers through 3Mark Financial. Better rates mean easier sales and happier clients.",
   },
   {
     icon: Users,
-    title: "Supportive Community",
+    title: "Team-Powered Growth",
     description:
-      "Join a network of successful entrepreneurs who support each other",
+      "Earn from your team's success, not just your own sales. Build lasting wealth while you sleep.",
+  },
+  {
+    icon: Globe,
+    title: "Done-For-You Marketing",
+    description:
+      "Get your own professional website and marketing tools. Share your link and watch qualified leads come in.",
+  },
+  {
+    icon: GraduationCap,
+    title: "Training That Works",
+    description:
+      "Brand new or seasoned pro—get the training and support you need. We'll help you succeed from day one.",
   },
 ];
 
@@ -75,14 +76,14 @@ export function ServicesSection() {
             transition={{ duration: 0.5 }}
           >
             <span className="inline-block text-sm font-semibold text-apex-navy uppercase tracking-wider mb-4">
-              The Opportunity
+              What You Get
             </span>
             <h2 className="text-4xl md:text-5xl font-heading font-semibold text-apex-dark mb-6">
-              Why Choose Apex
+              Why Apex Makes Sense for You
             </h2>
             <p className="text-lg text-apex-gray max-w-3xl mx-auto">
-              Experience the advantages of a system designed for your success. From automated
-              placement to ongoing support, we provide everything you need to thrive.
+              Stop settling for commissions that disappear and territories that limit you.
+              Here's what changes when you join Apex.
             </p>
           </motion.div>
         </div>

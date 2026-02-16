@@ -38,3 +38,4 @@ next-env.d.ts
 
 # drizzle (keep .sql migrations, ignore meta)
 drizzle/meta/
+.env.production

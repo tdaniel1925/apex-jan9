@@ -43,7 +43,7 @@ export function MarketingHeader({ variant, distributorName, ctaLink }: Marketing
         { label: "Contact", href: "#contact" },
       ]
     : [
-        { label: `About ${distributorName?.split(" ")[0] || "Us"}`, href: "#about" },
+        { label: `About ${distributorName || "Us"}`, href: "#about" },
         { label: "Opportunity", href: "#opportunity" },
         { label: "How to Join", href: "#how-to-join" },
         { label: "Contact", href: "#contact" },
@@ -51,7 +51,7 @@ export function MarketingHeader({ variant, distributorName, ctaLink }: Marketing
 
   const ctaText = variant === "corporate"
     ? "Join Now"
-    : `Join ${distributorName?.split(" ")[0] || "Us"}`;
+    : `Join ${distributorName || "Us"}`;
 
   return (
     <header
@@ -73,7 +73,7 @@ export function MarketingHeader({ variant, distributorName, ctaLink }: Marketing
             />
             {variant === "replicated" && distributorName && (
               <span className="hidden sm:block text-sm text-apex-gray border-l border-apex-gray/30 pl-3">
-                with {distributorName.split(" ")[0]}
+                with {distributorName}
               </span>
             )}
           </Link>
