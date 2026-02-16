@@ -24,6 +24,7 @@ export function CorporatePageClient() {
           subtitle="Apex gives you what captive agencies can't: 7 premier carriers, up to 100% commissions, AI-powered CRM, and a 6-generation team override structure. Free to join."
           ctaText="Choose Your Path"
           ctaLink="#choose-path"
+          backgroundVideo="/flag-waving.mp4"
         />
         <div id="choose-path">
           <PathChoice />
