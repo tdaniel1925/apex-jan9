@@ -1,56 +1,103 @@
+// SPEC: SPEC-PAGES > Admin Dashboard (/admin)
 // SPEC: SPEC-DEPENDENCY-MAP > FEATURE 5 > Admin Dashboard
-// Temporary placeholder for admin - will be built in Stage 6
+// Admin dashboard with stats, funnel, and activity feed
 
 import { requireAdmin } from "@/lib/auth";
-import { logoutAction } from "@/app/(auth)/actions";
-import { Button } from "@/components/ui/button";
+import {
+  getAdminStats,
+  getSignupFunnel,
+  getAdminRecentActivity,
+} from "@/lib/actions";
+import { StatsCard } from "@/components/admin/stats-card";
+import { SignupFunnelChart } from "@/components/admin/signup-funnel-chart";
+import { ActivityFeed } from "@/components/admin/activity-feed";
+import {
+  Users,
+  UserCheck,
+  UserX,
+  UserMinus,
+  TrendingUp,
+  Calendar,
+} from "lucide-react";
 
-export default async function AdminPage() {
-  const user = await requireAdmin();
+export default async function AdminDashboard() {
+  await requireAdmin();
+
+  // Get stats
+  const stats = await getAdminStats();
+
+  // Get signup funnel for last 30 days
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - 30);
+  const funnelData = await getSignupFunnel({ start: startDate, end: endDate });
+
+  // Get recent activity
+  const activities = await getAdminRecentActivity(20);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Admin Panel
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">
-                {user.firstName} {user.lastName} ({user.role})
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-500">
-                {user.email}
-              </p>
-            </div>
-            <form action={logoutAction}>
-              <Button type="submit" variant="outline">
-                Sign out
-              </Button>
-            </form>
-          </div>
+    <div className="space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground mt-1">
+          System overview and recent activity
+        </p>
+      </div>
 
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-              Admin Dashboard
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              Admin panel features will be available here. This is a placeholder
-              for Stage 6.
-            </p>
-          </div>
+      {/* Stats Grid */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <StatsCard
+          title="Total Distributors"
+          value={stats.totalDistributors}
+          icon={Users}
+          trend={stats.newThisMonth > 0 ? "up" : "neutral"}
+          trendLabel={`+${stats.newThisMonth} this month`}
+        />
+        <StatsCard
+          title="Active"
+          value={stats.activeDistributors}
+          icon={UserCheck}
+          color="green"
+        />
+        <StatsCard
+          title="Inactive"
+          value={stats.inactiveDistributors}
+          icon={UserX}
+          color="gray"
+        />
+        <StatsCard
+          title="Suspended"
+          value={stats.suspendedDistributors}
+          icon={UserMinus}
+          color="red"
+        />
+        <StatsCard
+          title="New This Week"
+          value={stats.newThisWeek}
+          icon={TrendingUp}
+          color="blue"
+        />
+        <StatsCard
+          title="New This Month"
+          value={stats.newThisMonth}
+          icon={Calendar}
+          color="purple"
+        />
+      </div>
 
-          <div className="mt-6 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-md p-4">
-            <h3 className="text-sm font-medium text-purple-800 dark:text-purple-200">
-              Stage 2 Complete
-            </h3>
-            <p className="text-sm text-purple-700 dark:text-purple-300 mt-1">
-              Authentication, middleware, and RLS are now active. You are
-              accessing this page as an authenticated admin with role: {user.role}.
-            </p>
-          </div>
-        </div>
+      {/* Signup Funnel Chart */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border p-6">
+        <h2 className="text-lg font-semibold mb-4">
+          Sign-Up Funnel (Last 30 Days)
+        </h2>
+        <SignupFunnelChart data={funnelData} />
+      </div>
+
+      {/* Recent Activity Feed */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border p-6">
+        <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
+        <ActivityFeed activities={activities} />
       </div>
     </div>
   );
