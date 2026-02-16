@@ -29,8 +29,8 @@ export function AudienceToggle() {
     }
   }, [preference]);
 
-  // Don't render if no preference set
-  if (!preference) return null;
+  // Always show toggle after scroll, even if no preference
+  if (!isVisible) return null;
 
   return (
     <AnimatePresence>
@@ -77,6 +77,21 @@ export function AudienceToggle() {
                   `}
                 >
                   🌟 Newcomer
+                </button>
+
+                <button
+                  onClick={() => setPreference(null)}
+                  className={`
+                    px-4 py-2 rounded-full text-sm font-semibold transition-all
+                    ${
+                      !preference
+                        ? "bg-gray-700 text-white shadow-md"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }
+                  `}
+                  title="View general content for both audiences"
+                >
+                  👥 Both
                 </button>
               </div>
             </div>
