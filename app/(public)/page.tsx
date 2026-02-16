@@ -29,9 +29,9 @@ export const metadata: Metadata = {
 
 export default async function CorporatePage() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       <MarketingHeader variant="corporate" ctaLink="/join" />
-      <main>
+      <main className="overflow-x-hidden">
         <HeroSection
           variant="corporate"
           title="Build Your Future with Apex Affinity Group"

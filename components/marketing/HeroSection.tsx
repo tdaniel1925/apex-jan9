@@ -33,38 +33,52 @@ export function HeroSection({
   return (
     <section id="home" className="relative min-h-screen flex items-end pb-20 bg-gradient-to-br from-apex-navy via-apex-navy-dark to-apex-navy-950 text-white overflow-hidden">
       {/* Background Video or Image */}
-      {backgroundVideo ? (
-        <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover opacity-40"
-          >
-            <source src={backgroundVideo} type="video/mp4" />
-          </video>
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-apex-navy/80 via-apex-navy-dark/60 to-apex-navy-950/90" />
-        </div>
-      ) : (
-        <div className="absolute inset-0 z-0">
-          {backgroundImage && (
-            <img
-              src={backgroundImage}
-              alt=""
-              className="w-full h-full object-cover opacity-30"
-            />
+      {variant === "corporate" ? (
+        <>
+          {backgroundVideo ? (
+            <div className="absolute inset-0 z-0">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover opacity-40"
+              >
+                <source src={backgroundVideo} type="video/mp4" />
+              </video>
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-apex-navy/80 via-apex-navy-dark/60 to-apex-navy-950/90" />
+            </div>
+          ) : (
+            <div className="absolute inset-0 z-0">
+              {backgroundImage && (
+                <img
+                  src={backgroundImage}
+                  alt=""
+                  className="w-full h-full object-cover opacity-30"
+                />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-b from-apex-navy/80 via-apex-navy-dark/60 to-apex-navy-950/90" />
+            </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-b from-apex-navy/80 via-apex-navy-dark/60 to-apex-navy-950/90" />
+        </>
+      ) : (
+        // Replicated variant - Flag background
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/images/hero-flag.png"
+            alt=""
+            className="w-full h-full object-cover opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-apex-navy/70 via-apex-navy-dark/50 to-apex-navy-950/80" />
         </div>
       )}
 
       {/* Content */}
-      <div className="container max-w-optive mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 items-end">
+      <div className="container max-w-optive mx-auto px-6 pt-32 relative z-10">
+        <div className={variant === "corporate" ? "grid grid-cols-1 xl:grid-cols-12 gap-12 items-end" : "flex justify-center"}>
           {/* Main Content */}
-          <div className={variant === "corporate" ? "xl:col-span-8" : "xl:col-span-12"}>
+          <div className={variant === "corporate" ? "xl:col-span-8" : "max-w-4xl text-center"}>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -84,7 +98,7 @@ export function HeroSection({
               </h1>
 
               {/* Subtitle */}
-              <p className="text-xl sm:text-2xl text-gray-200 mb-8 max-w-2xl leading-relaxed">
+              <p className={`text-xl sm:text-2xl text-gray-200 mb-8 max-w-2xl leading-relaxed ${variant === "replicated" ? "mx-auto" : ""}`}>
                 {subtitle}
               </p>
 
@@ -101,8 +115,8 @@ export function HeroSection({
             </motion.div>
           </div>
 
-          {/* Sidebar Info Box (Corporate) or Distributor Photo (Replicated) */}
-          {variant === "corporate" ? (
+          {/* Sidebar Info Box (Corporate only) */}
+          {variant === "corporate" && (
             <motion.div
               className="xl:col-span-4"
               initial={{ opacity: 0, x: 30 }}
@@ -121,38 +135,7 @@ export function HeroSection({
                 </p>
               </div>
             </motion.div>
-          ) : distributorPhoto ? (
-            <motion.div
-              className="xl:col-span-12 flex justify-center mt-8"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <div className="relative">
-                <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full overflow-hidden border-4 border-apex-navy shadow-2xl">
-                  <img
-                    src={distributorPhoto}
-                    alt={distributorName || "Distributor"}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="absolute -bottom-2 -right-2 bg-apex-navy rounded-full p-4 shadow-lg">
-                  <ArrowRight className="w-6 h-6 text-white" />
-                </div>
-              </div>
-            </motion.div>
-          ) : variant === "replicated" && distributorName ? (
-            <motion.div
-              className="xl:col-span-12 flex justify-center mt-8"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full bg-gradient-to-br from-apex-navy to-apex-navy-dark flex items-center justify-center text-white text-6xl font-heading font-bold shadow-2xl border-4 border-white/20">
-                {distributorName.split(" ").map(n => n[0]).join("").toUpperCase()}
-              </div>
-            </motion.div>
-          ) : null}
+          )}
         </div>
       </div>
 

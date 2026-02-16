@@ -82,7 +82,41 @@ export function getDatabaseUrl(): string {
 /**
  * Drizzle ORM database client
  * Use this for all database queries
+ *
+ * Connection pooling configuration:
+ * - max: Maximum number of connections in pool
+ * - idle_timeout: How long to keep idle connections (seconds)
+ * - connect_timeout: How long to wait for connection (seconds)
+ *
+ * Development mode: Use global variable to prevent connection exhaustion
+ * during Next.js hot reloading
  */
-const connectionString = getDatabaseUrl();
-const queryClient = postgres(connectionString);
-export const db = drizzle(queryClient, { schema });
+declare global {
+  // eslint-disable-next-line no-var
+  var __db_client: postgres.Sql | undefined;
+}
+
+function getQueryClient() {
+  if (process.env.NODE_ENV === "development") {
+    // In development, reuse connection across hot reloads
+    if (!global.__db_client) {
+      const connectionString = getDatabaseUrl();
+      global.__db_client = postgres(connectionString, {
+        max: 5, // Lower max for development
+        idle_timeout: 20,
+        connect_timeout: 10,
+      });
+    }
+    return global.__db_client;
+  } else {
+    // In production, create a single connection pool
+    const connectionString = getDatabaseUrl();
+    return postgres(connectionString, {
+      max: 10,
+      idle_timeout: 20,
+      connect_timeout: 10,
+    });
+  }
+}
+
+export const db = drizzle(getQueryClient(), { schema });

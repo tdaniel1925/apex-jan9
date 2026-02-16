@@ -85,14 +85,14 @@ export default async function ReplicatedPage({ params }: PageProps) {
   const fullName = `${distributor.firstName} ${distributor.lastName}`;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       <MarketingHeader
         variant="replicated"
         distributorName={fullName}
         ctaLink={`/join/${distributor.username}`}
       />
 
-      <main>
+      <main className="overflow-x-hidden">
         <HeroSection
           variant="replicated"
           title={`Join ${fullName}'s Team at Apex`}
