@@ -3,6 +3,7 @@
 
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { getCompanyRootDistributor } from "@/lib/db/queries";
 import { SignUpForm } from "@/components/signup/SignUpForm";
 
@@ -23,11 +24,15 @@ export default async function JoinPage() {
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <Link
-            href="/"
-            className="inline-block mb-8 text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent"
-          >
-            Apex Affinity Group
+          <Link href="/" className="inline-block mb-8">
+            <Image
+              src="/logo-color.png"
+              alt="Apex Affinity Group"
+              width={300}
+              height={80}
+              className="mx-auto"
+              priority
+            />
           </Link>
 
           <div className="mb-6">
