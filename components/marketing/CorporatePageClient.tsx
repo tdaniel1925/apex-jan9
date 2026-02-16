@@ -28,19 +28,25 @@ export function CorporatePageClient() {
         <div id="choose-path">
           <PathChoice />
         </div>
-        <AboutSection
-          variant="corporate"
-          stats={{
-            activeMembers: 54,
-            countries: 160,
-            memberEarnings: 693,
-          }}
-        />
+        <div id="about">
+          <AboutSection
+            variant="corporate"
+            stats={{
+              activeMembers: 54,
+              countries: 160,
+              memberEarnings: 693,
+            }}
+          />
+        </div>
         <ServicesSection />
         <ProcessSection variant="corporate" />
         <TestimonialsSection variant="corporate" />
-        <FAQSection />
-        <CTASection variant="corporate" ctaLink="/join" />
+        <div id="faq">
+          <FAQSection />
+        </div>
+        <div id="contact">
+          <CTASection variant="corporate" ctaLink="/join" />
+        </div>
       </main>
       <MarketingFooter />
     </div>
