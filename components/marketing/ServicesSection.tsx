@@ -24,40 +24,40 @@ interface ServiceCard {
 
 const services: ServiceCard[] = [
   {
-    icon: Bot,
-    title: "AI Business Growth Co-Pilot",
+    icon: Globe,
+    title: "7 Premier Life Insurance Carriers",
     description:
-      "The ONLY insurance company with AI that automates lead nurture, follow-ups, and communication. Work smarter, not harder.",
+      "Columbus Life, AIG, F&G, Mutual of Omaha, National Life Group, Symetra, North American. Sell term, whole life, and IUL.",
   },
   {
     icon: DollarSign,
-    title: "Own Your Book of Business",
+    title: "50-100% Commissions Paid Direct",
     description:
-      "You keep what you build—100% ownership with no company buybacks. Your clients stay yours forever.",
+      "Start at 50-60%, advance to 85-100% at MGA level. Commissions paid directly by carriers—we don't take a cut.",
   },
   {
-    icon: TrendingUp,
-    title: "Industry-Leading Rates",
+    icon: Bot,
+    title: "CoPilot AI-Powered CRM",
     description:
-      "Access top life insurance carriers through 3Mark Financial. Better rates mean easier sales and happier clients.",
+      "Optional ($49-$199/mo): AI lead scoring, automated follow-up, multi-carrier quoting, real-time objection handling. Mobile access.",
   },
   {
     icon: Users,
-    title: "Team-Powered Growth",
+    title: "6-Generation Override Structure",
     description:
-      "Earn from your team's success, not just your own sales. Build lasting wealth while you sleep.",
+      "15% on Gen 1, 5% on Gen 2, 3% on Gen 3, 2% on Gen 4, 1% on Gen 5, 0.5% on Gen 6. Or go solo—recruiting is optional.",
   },
   {
-    icon: Globe,
-    title: "Done-For-You Marketing",
+    icon: TrendingUp,
+    title: "Free to Join, No Monthly Fees",
     description:
-      "Get your own professional website and marketing tools. Share your link and watch qualified leads come in.",
+      "Zero application fees. No desk fees. No monthly charges. Fast Start Bonus up to $750. Rank bonuses from $25 to $20,000.",
   },
   {
     icon: GraduationCap,
-    title: "Training That Works",
+    title: "Complete Training & Mentorship",
     description:
-      "Brand new or seasoned pro—get the training and support you need. We'll help you succeed from day one.",
+      "Fast-start training, proven scripts, weekly coaching with top producers, 1-on-1 mentor, 100+ video library. Selling within week 1.",
   },
 ];
 

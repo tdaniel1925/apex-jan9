@@ -33,9 +33,9 @@ export default function NewToInsurancePage() {
       {/* Hero Section - Newcomer focused */}
       <HeroSection
         variant="corporate"
-        title="What If You Could Build Wealth Helping Families?"
-        subtitle="No insurance experience? No problem. Get complete training, proven systems, and the income opportunity to build your future—starting today."
-        ctaText="Start Your Journey"
+        title="No Experience? No Problem. We'll Get You Licensed and Selling."
+        subtitle="Complete training. 1-on-1 mentorship. Write your first policy within 2 weeks. Earn 50-100% commissions on 7 top carriers. Free to join, no monthly fees."
+        ctaText="Start Your Career"
         ctaLink="/join"
         audiencePreference="newcomers"
       />

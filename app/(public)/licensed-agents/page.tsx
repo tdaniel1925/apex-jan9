@@ -33,9 +33,9 @@ export default function LicensedAgentsPage() {
       {/* Hero Section - Agent focused */}
       <HeroSection
         variant="corporate"
-        title="Are You Tired of Giving Away Your Book?"
-        subtitle="Own what you build. Access industry-leading rates through 3Mark Financial. Let AI handle follow-ups while you close more deals."
-        ctaText="Own Your Future"
+        title="50% Commissions or 100%? Your Choice."
+        subtitle="7 premier carriers. Up to 100% commissions paid direct. AI-powered CRM. Build a team and earn 6-generation overrides. Keep 100% ownership. Free to join."
+        ctaText="Join Now"
         ctaLink="/join"
         audiencePreference="agents"
       />

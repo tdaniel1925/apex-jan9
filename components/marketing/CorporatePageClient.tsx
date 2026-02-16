@@ -20,9 +20,9 @@ export function CorporatePageClient() {
       <main className="overflow-x-hidden">
         <HeroSection
           variant="corporate"
-          title="Are You Enjoying What You Do?"
-          subtitle="If not, why settle? Own your book. Access top rates. Build wealth through your team. The only insurance company with AI-powered automation."
-          ctaText="Explore Opportunities"
+          title="More Carriers. Better Technology. Higher Commissions."
+          subtitle="Apex gives you what captive agencies can't: 7 premier carriers, up to 100% commissions, AI-powered CRM, and a 6-generation team override structure. Free to join."
+          ctaText="Choose Your Path"
           ctaLink="#choose-path"
         />
         <div id="choose-path">
