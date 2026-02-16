@@ -45,6 +45,9 @@ export const signUpSchema = z
       .min(10, "Phone number must be at least 10 digits")
       .optional()
       .or(z.literal("")),
+    licenseStatus: z.enum(["licensed", "not_licensed"], {
+      errorMap: () => ({ message: "Please select your license status" }),
+    }),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")

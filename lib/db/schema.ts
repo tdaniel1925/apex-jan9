@@ -78,6 +78,11 @@ export const targetAudienceEnum = pgEnum("target_audience", [
   "both",
 ]);
 
+export const licenseStatusEnum = pgEnum("license_status", [
+  "licensed",
+  "not_licensed",
+]);
+
 // ============================================
 // TABLES
 // ============================================
@@ -103,6 +108,7 @@ export const distributors = pgTable("distributors", {
   targetAudience: targetAudienceEnum("target_audience")
     .notNull()
     .default("both"),
+  licenseStatus: licenseStatusEnum("license_status"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

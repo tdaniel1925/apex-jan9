@@ -220,6 +220,46 @@ export function SignUpForm({ enrollerId, enrollerName }: SignUpFormProps) {
         )}
       </div>
 
+      {/* License Status */}
+      <div>
+        <Label>
+          License Status <span className="text-red-500">*</span>
+        </Label>
+        <div className="mt-3 space-y-3">
+          <div className="flex items-center space-x-2">
+            <input
+              type="radio"
+              id="licensed"
+              value="licensed"
+              {...register("licenseStatus")}
+              className="w-4 h-4"
+              disabled={isSubmitting}
+            />
+            <Label htmlFor="licensed" className="font-normal cursor-pointer">
+              I am a licensed insurance agent
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <input
+              type="radio"
+              id="not_licensed"
+              value="not_licensed"
+              {...register("licenseStatus")}
+              className="w-4 h-4"
+              disabled={isSubmitting}
+            />
+            <Label htmlFor="not_licensed" className="font-normal cursor-pointer">
+              I am new to insurance (not licensed)
+            </Label>
+          </div>
+        </div>
+        {errors.licenseStatus && (
+          <p className="text-sm text-red-500 mt-1">
+            {errors.licenseStatus.message}
+          </p>
+        )}
+      </div>
+
       {/* Username with real-time check */}
       <div>
         <Label htmlFor="username">
