@@ -26,6 +26,9 @@ interface ReplicatedPageContentProps {
     bio: string | null;
     createdAt: Date;
     targetAudience: TargetAudience;
+    businessName: string | null;
+    displayPreference: "personal" | "business" | "both" | null;
+    displayName: string;
   };
   teamStats: {
     totalTeamSize: number;
@@ -46,7 +49,7 @@ export function ReplicatedPageContent({
       : distributor.targetAudience;
 
   const distributorName = distributor.firstName;
-  const fullName = `${distributor.firstName} ${distributor.lastName}`;
+  const displayName = distributor.displayName;
   const showAudienceChoice = distributor.targetAudience === "both";
 
   return (
@@ -54,7 +57,7 @@ export function ReplicatedPageContent({
       <HeroSection
         variant="replicated"
         title="Ready to Own Your Future?"
-        subtitle={`Partner with ${fullName} and get the only AI-powered system in insurance that does the follow-up for you.`}
+        subtitle={`Partner with ${displayName} and get the only AI-powered system in insurance that does the follow-up for you.`}
         ctaText="Start Your Journey"
         ctaLink={`/join/${distributor.username}`}
         distributorPhoto={distributor.photoUrl}

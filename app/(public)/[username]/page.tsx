@@ -8,6 +8,7 @@ import { findDistributorByUsername, trackSignupEvent } from "@/lib/db/queries";
 import { getOrganizationSize, getDirectEnrolleesCount } from "@/lib/matrix";
 import { headers } from "next/headers";
 import { getClientIp } from "@/lib/rate-limit";
+import { getDisplayName } from "@/lib/utils/displayName";
 
 // Optive Marketing Components
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
@@ -30,14 +31,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const fullName = `${distributor.firstName} ${distributor.lastName}`;
+  const displayName = getDisplayName(
+    distributor.firstName,
+    distributor.lastName,
+    distributor.businessName,
+    distributor.displayPreference
+  );
 
   return {
-    title: `${fullName} — Apex Affinity Group`,
-    description: `Join ${fullName}'s team at Apex Affinity Group and start building your financial future today.`,
+    title: `${displayName} — Apex Affinity Group`,
+    description: `Join ${displayName}'s team at Apex Affinity Group and start building your financial future today.`,
     openGraph: {
-      title: `${fullName} — Apex Affinity Group`,
-      description: `Join ${fullName}'s team at Apex.`,
+      title: `${displayName} — Apex Affinity Group`,
+      description: `Join ${displayName}'s team at Apex.`,
       images: distributor.photoUrl ? [distributor.photoUrl] : [],
     },
     robots: distributor.status !== "active" ? "noindex" : "index,follow",
@@ -76,13 +82,18 @@ export default async function ReplicatedPage({ params }: PageProps) {
     // Silent fail - analytics errors shouldn't affect page load
   });
 
-  const fullName = `${distributor.firstName} ${distributor.lastName}`;
+  const displayName = getDisplayName(
+    distributor.firstName,
+    distributor.lastName,
+    distributor.businessName,
+    distributor.displayPreference
+  );
 
   return (
     <div className="min-h-screen overflow-x-hidden">
       <MarketingHeader
         variant="replicated"
-        distributorName={fullName}
+        distributorName={displayName}
         ctaLink={`/join/${distributor.username}`}
       />
 
@@ -98,6 +109,9 @@ export default async function ReplicatedPage({ params }: PageProps) {
             bio: distributor.bio,
             createdAt: distributor.createdAt,
             targetAudience: distributor.targetAudience || "both",
+            businessName: distributor.businessName,
+            displayPreference: distributor.displayPreference,
+            displayName,
           }}
           teamStats={{
             totalTeamSize: teamSize,
