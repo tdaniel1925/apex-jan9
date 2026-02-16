@@ -140,15 +140,16 @@ export function AboutSection({
               className="relative"
             >
               <div className="aspect-[4/3] bg-gradient-to-br from-apex-navy/10 to-apex-dark/10 rounded-2xl overflow-hidden relative">
-                <Image
-                  src="/flag-waving.gif"
-                  alt="Apex Affinity Group Flag"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  priority
-                  unoptimized
-                />
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                >
+                  <source src="/flag-waving.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
               </div>
               {/* Decorative Element */}
               <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-apex-navy rounded-full opacity-20 blur-3xl"></div>
