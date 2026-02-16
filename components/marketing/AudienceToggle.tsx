@@ -8,7 +8,7 @@ import { useAudiencePreference } from "@/hooks/useAudiencePreference";
 import { useEffect, useState } from "react";
 
 export function AudienceToggle() {
-  const { preference, setPreference } = useAudiencePreference();
+  const { preference, setPreference, clearPreference } = useAudiencePreference();
   const [isVisible, setIsVisible] = useState(false);
 
   // Show toggle after scroll or after choice is made
@@ -80,7 +80,7 @@ export function AudienceToggle() {
                 </button>
 
                 <button
-                  onClick={() => setPreference(null)}
+                  onClick={clearPreference}
                   className={`
                     px-4 py-2 rounded-full text-sm font-semibold transition-all
                     ${
