@@ -114,13 +114,16 @@ export function SignUpForm({ enrollerId, enrollerName }: SignUpFormProps) {
       setIsSubmitting(true);
 
       const result = await createDistributor(enrollerId, data);
+      console.log("Signup result:", result);
 
       if (result.success) {
+        console.log("Success! Redirecting to:", result.redirectTo || "/login");
         toast.success(
           "Account created successfully! You can now log in to your dashboard."
         );
         router.push(result.redirectTo || "/login");
       } else {
+        console.log("Signup failed:", result.error);
         if (result.field) {
           setError(result.field as any, {
             type: "manual",
@@ -131,6 +134,7 @@ export function SignUpForm({ enrollerId, enrollerName }: SignUpFormProps) {
       }
     } catch (error) {
       // Error handled
+      console.error("Signup exception:", error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);

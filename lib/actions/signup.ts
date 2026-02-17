@@ -61,6 +61,7 @@ export async function createDistributor(
     });
 
     if (!rateLimitResult.allowed) {
+      console.log("Signup blocked: Rate limit");
       return {
         success: false,
         error: "Too many sign-up attempts. Please wait a moment.",
@@ -72,6 +73,7 @@ export async function createDistributor(
 
     if (!validation.success) {
       const firstError = validation.error.errors[0];
+      console.log("Signup blocked: Validation failed", firstError);
       return {
         success: false,
         error: firstError?.message || "Invalid form data",
@@ -85,6 +87,7 @@ export async function createDistributor(
     const usernameAvailable = await isUsernameAvailable(validData.username);
 
     if (!usernameAvailable) {
+      console.log("Signup blocked: Username taken", validData.username);
       return {
         success: false,
         error: "This username is already taken. Please choose another.",
@@ -96,6 +99,7 @@ export async function createDistributor(
     const emailAvailable = await isEmailAvailable(validData.email);
 
     if (!emailAvailable) {
+      console.log("Signup blocked: Email already registered", validData.email);
       return {
         success: false,
         error: "This email is already registered. Try logging in instead.",
@@ -111,11 +115,14 @@ export async function createDistributor(
       .limit(1);
 
     if (!enroller) {
+      console.log("Signup blocked: Invalid enrollerId", enrollerId);
       return {
         success: false,
         error: "Invalid sponsor. Please contact support.",
       };
     }
+
+    console.log("Signup validations passed, starting transaction...");
 
     // Step 6-15: Main transaction
     // This ensures everything succeeds or nothing happens (rollback)
@@ -137,6 +144,7 @@ export async function createDistributor(
                 first_name: validData.firstName,
                 last_name: validData.lastName,
               },
+              emailRedirectTo: undefined, // Disable email confirmation for development
             },
           });
 
@@ -200,6 +208,9 @@ export async function createDistributor(
       parentDistributor = result.parent;
     } catch (txError: any) {
       // Transaction error will be handled below
+      console.error("Transaction error:", txError);
+      console.error("Transaction error message:", txError.message);
+      console.error("Transaction error stack:", txError.stack);
 
       // Check for specific error messages
       if (
@@ -215,7 +226,7 @@ export async function createDistributor(
 
       return {
         success: false,
-        error: "Failed to create account. Please try again.",
+        error: txError.message || "Failed to create account. Please try again.",
       };
     }
 
@@ -304,7 +315,9 @@ export async function createDistributor(
       redirectTo: "/login",
     };
   } catch (error) {
-    // Error handled
+    // Log the actual error for debugging
+    console.error("Signup error:", error);
+    console.error("Error stack:", error instanceof Error ? error.stack : "No stack");
 
     // Track failed sign-up
     await trackSignupEvent({
@@ -319,7 +332,7 @@ export async function createDistributor(
 
     return {
       success: false,
-      error: "An unexpected error occurred. Please try again.",
+      error: error instanceof Error ? error.message : "An unexpected error occurred. Please try again.",
     };
   }
 }
