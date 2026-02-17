@@ -34,8 +34,6 @@ interface SendDripEmailParams {
  * Send welcome email immediately after signup
  */
 export async function sendWelcomeEmail(params: SendWelcomeEmailParams) {
-  "use server";
-
   try {
     const unsubscribeUrl = `${env.NEXT_PUBLIC_APP_URL}/unsubscribe?id=${params.distributorId}`;
 
@@ -72,8 +70,6 @@ export async function sendWelcomeEmail(params: SendWelcomeEmailParams) {
  * Send drip campaign email based on step and license status
  */
 export async function sendDripEmail(params: SendDripEmailParams) {
-  "use server";
-
   try {
     // Check for custom template in database first
     const templateType = params.licenseStatus === "licensed" ? "drip_licensed" : "drip_newcomer";
