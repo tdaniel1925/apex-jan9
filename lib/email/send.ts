@@ -39,7 +39,7 @@ export async function sendWelcomeEmail(params: SendWelcomeEmailParams) {
   try {
     const unsubscribeUrl = `${env.NEXT_PUBLIC_APP_URL}/unsubscribe?id=${params.distributorId}`;
 
-    const html = render(
+    const html = await render(
       WelcomeEmail({
         firstName: params.firstName,
         lastName: params.lastName,
@@ -119,7 +119,7 @@ export async function sendDripEmail(params: SendDripEmailParams) {
 
     const unsubscribeUrl = `${env.NEXT_PUBLIC_APP_URL}/unsubscribe?id=${params.distributorId}`;
 
-    const html = render(
+    const html = await render(
       DripEmailTemplate({
         firstName: params.firstName,
         email: emailContent,
