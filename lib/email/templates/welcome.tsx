@@ -49,16 +49,16 @@ export function WelcomeEmail({
           <strong>Username:</strong> {username}<br />
           <strong>Password:</strong> The password you created during registration
         </Paragraph>
-        <Paragraph style={{ margin: '16px 0 0', fontSize: '14px', color: '#666' }}>
+        <p style={{ margin: '16px 0 0', fontSize: '14px', color: '#666' }}>
           Keep these credentials secure. You'll use them to access your dashboard and manage your business.
-        </Paragraph>
+        </p>
       </InfoBox>
 
       <Divider />
 
-      <Heading style={{ fontSize: '22px', margin: '0 0 16px' }}>
+      <h1 style={{ fontSize: '22px', margin: '0 0 16px', fontWeight: '600', color: '#1a1a1a' }}>
         Getting Started
-      </Heading>
+      </h1>
 
       <Paragraph>
         <strong>1. Log in to your dashboard:</strong> Access your personalized back office
@@ -74,7 +74,7 @@ export function WelcomeEmail({
       </Paragraph>
 
       <InfoBox>
-        <Paragraph style={{ margin: 0, textAlign: 'center', fontSize: '18px' }}>
+        <p style={{ margin: 0, textAlign: 'center', fontSize: '18px', color: '#333' }}>
           <a href={`https://theapexway.net/${username}`} style={{
             color: '#0066cc',
             textDecoration: 'none',
@@ -82,7 +82,7 @@ export function WelcomeEmail({
           }}>
             theapexway.net/{username}
           </a>
-        </Paragraph>
+        </p>
       </InfoBox>
 
       <Paragraph>
@@ -97,9 +97,9 @@ export function WelcomeEmail({
 
       <Divider />
 
-      <Heading style={{ fontSize: '22px', margin: '0 0 16px' }}>
+      <h1 style={{ fontSize: '22px', margin: '0 0 16px', fontWeight: '600', color: '#1a1a1a' }}>
         What Makes Apex Different?
-      </Heading>
+      </h1>
 
       <Paragraph>
         At Apex Affinity Group, we're not just another MLM opportunity. We're building
@@ -107,25 +107,17 @@ export function WelcomeEmail({
       </Paragraph>
 
       <ul style={{ margin: '0 0 16px', paddingLeft: '20px' }}>
-        <li style={{ marginBottom: '8px', color: '#333' }}>
-          <Paragraph style={{ margin: 0 }}>
-            <strong>Own their business</strong> with unlimited earning potential
-          </Paragraph>
+        <li style={{ marginBottom: '8px', color: '#333', fontSize: '16px', lineHeight: '24px' }}>
+          <strong>Own their business</strong> with unlimited earning potential
         </li>
-        <li style={{ marginBottom: '8px', color: '#333' }}>
-          <Paragraph style={{ margin: 0 }}>
-            <strong>Build generational wealth</strong> through our proven 5×7 matrix system
-          </Paragraph>
+        <li style={{ marginBottom: '8px', color: '#333', fontSize: '16px', lineHeight: '24px' }}>
+          <strong>Build generational wealth</strong> through our proven 5×7 matrix system
         </li>
-        <li style={{ marginBottom: '8px', color: '#333' }}>
-          <Paragraph style={{ margin: 0 }}>
-            <strong>Help others succeed</strong> while growing their own success
-          </Paragraph>
+        <li style={{ marginBottom: '8px', color: '#333', fontSize: '16px', lineHeight: '24px' }}>
+          <strong>Help others succeed</strong> while growing their own success
         </li>
-        <li style={{ marginBottom: '8px', color: '#333' }}>
-          <Paragraph style={{ margin: 0 }}>
-            <strong>Access world-class training</strong> and ongoing support
-          </Paragraph>
+        <li style={{ marginBottom: '8px', color: '#333', fontSize: '16px', lineHeight: '24px' }}>
+          <strong>Access world-class training</strong> and ongoing support
         </li>
       </ul>
 
@@ -136,9 +128,9 @@ export function WelcomeEmail({
         and get ready to build something extraordinary.
       </Paragraph>
 
-      <Paragraph style={{ marginTop: '32px' }}>
+      <p style={{ marginTop: '32px', fontSize: '16px', lineHeight: '24px', color: '#333', marginBottom: '16px' }}>
         <strong>Welcome to the Apex family!</strong>
-      </Paragraph>
+      </p>
 
       <Paragraph>
         The Apex Team
