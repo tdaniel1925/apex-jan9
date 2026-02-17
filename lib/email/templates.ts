@@ -30,7 +30,7 @@ export async function sendWelcomeEmail(distributor: Distributor): Promise<void> 
 
     const unsubscribeUrl = `${APP_URL}/unsubscribe?id=${distributor.id}`;
 
-    const html = render(
+    const html = await render(
       WelcomeEmail({
         firstName: distributor.firstName,
         lastName: distributor.lastName,
