@@ -42,9 +42,9 @@ export function MarketingHeader({ variant, distributorName, ctaLink }: Marketing
         { label: "Home", href: "/" },
         { label: "For Newcomers", href: "/new-to-insurance" },
         { label: "For Licensed Agents", href: "/licensed-agents" },
-        { label: "About", href: "#about" },
-        { label: "FAQ", href: "#faq" },
-        { label: "Contact", href: "#contact" },
+        { label: "About", href: "/#about" },
+        { label: "FAQ", href: "/#faq" },
+        { label: "Contact", href: "/#contact" },
       ]
     : [
         { label: `About ${distributorName || "Us"}`, href: "#about" },
@@ -85,7 +85,7 @@ export function MarketingHeader({ variant, distributorName, ctaLink }: Marketing
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
-              link.href.startsWith("#") ? (
+              link.href.startsWith("#") && !link.href.startsWith("/#") ? (
                 <a
                   key={link.href}
                   href={link.href}
@@ -131,7 +131,7 @@ export function MarketingHeader({ variant, distributorName, ctaLink }: Marketing
           <div className="lg:hidden py-4 border-t border-gray-200 animate-in slide-in-from-top duration-300">
             <nav className="flex flex-col gap-1">
               {navLinks.map((link) => (
-                link.href.startsWith("#") ? (
+                link.href.startsWith("#") && !link.href.startsWith("/#") ? (
                   <a
                     key={link.href}
                     href={link.href}
