@@ -2,9 +2,7 @@
 // SPEC: SPEC-WORKFLOWS > WF-8: Login
 // Authentication helper functions for server components and actions
 
-import { createClient, createServiceClient } from "@/lib/db/client";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { createClient, db } from "@/lib/db/client";
 import { adminUsers, distributors, founderMembers, founderLogins } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import type { SessionUser, DistributorSession } from "@/lib/types/auth";
@@ -38,16 +36,6 @@ export async function getUser(): Promise<
 
   const authUserId = session.user.id;
 
-  // Check if user is an admin first
-  const serviceClient = createServiceClient();
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
-    throw new Error("DATABASE_URL not configured");
-  }
-
-  const queryClient = postgres(connectionString);
-  const db = drizzle(queryClient, { schema: { adminUsers, distributors, founderMembers, founderLogins } });
-
   // Try admin_users first
   const [adminUser] = await db
     .select()
@@ -56,7 +44,6 @@ export async function getUser(): Promise<
     .limit(1);
 
   if (adminUser) {
-    await queryClient.end();
     return {
       type: "admin",
       user: {
@@ -91,8 +78,6 @@ export async function getUser(): Promise<
       .where(eq(distributors.id, founderLogin.distributorId))
       .limit(1);
 
-    await queryClient.end();
-
     if (distributor) {
       return {
         type: "distributor",
@@ -120,8 +105,6 @@ export async function getUser(): Promise<
     .from(distributors)
     .where(eq(distributors.authUserId, authUserId))
     .limit(1);
-
-  await queryClient.end();
 
   if (distributor) {
     return {
