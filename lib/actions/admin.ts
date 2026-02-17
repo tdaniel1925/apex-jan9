@@ -5,7 +5,7 @@
 "use server";
 
 import { requireAdmin } from "@/lib/auth";
-import { db } from "@/lib/db/client";
+import { db, createServiceClient } from "@/lib/db/client";
 import {
   distributors,
   matrixPositions,
@@ -13,6 +13,9 @@ import {
   auditLog,
   signupAnalytics,
   systemSettings,
+  contactSubmissions,
+  dripEnrollments,
+  notifications,
   type Distributor,
   type MatrixPosition,
 } from "@/lib/db/schema";
@@ -511,6 +514,124 @@ export async function reactivateDistributor(
   revalidatePath(`/${distributor.username}`);
 
   return { success: true };
+}
+
+export async function deleteDistributor(
+  distributorId: string
+): Promise<{ success: boolean; error?: string }> {
+  const admin = await requireAdmin();
+
+  // Only super_admin can delete
+  if (admin.role !== "super_admin") {
+    return { success: false, error: "Super admin access required" };
+  }
+
+  // Validate distributor ID
+  const idValidation = uuidSchema.safeParse(distributorId);
+  if (!idValidation.success) {
+    return { success: false, error: "Invalid distributor ID" };
+  }
+
+  // Get client IP for audit trail
+  const headersList = await headers();
+  const clientIp = getClientIp(headersList);
+
+  // Get current distributor state
+  const [distributor] = await db
+    .select()
+    .from(distributors)
+    .where(eq(distributors.id, distributorId))
+    .limit(1);
+
+  if (!distributor) {
+    return { success: false, error: "Distributor not found" };
+  }
+
+  // Check if it's the root distributor (prevent deleting apex-vision)
+  const [position] = await db
+    .select()
+    .from(matrixPositions)
+    .where(eq(matrixPositions.distributorId, distributorId))
+    .limit(1);
+
+  if (position && position.depth === 0) {
+    return { success: false, error: "Cannot delete root distributor" };
+  }
+
+  try {
+    // Log to audit_log BEFORE deletion
+    await db.insert(auditLog).values({
+      adminId: admin.id,
+      action: "distributor.deleted",
+      targetId: distributorId,
+      targetType: "distributor",
+      beforeState: {
+        username: distributor.username,
+        email: distributor.email,
+        firstName: distributor.firstName,
+        lastName: distributor.lastName,
+        status: distributor.status,
+      },
+      afterState: null,
+      ipAddress: clientIp,
+    });
+
+    // Delete from all related tables (CASCADE will handle most, but explicit for safety)
+    await db.transaction(async (tx) => {
+      // Delete contact submissions
+      await tx.delete(contactSubmissions).where(
+        eq(contactSubmissions.distributorId, distributorId)
+      );
+
+      // Delete drip enrollments
+      await tx.delete(dripEnrollments).where(
+        eq(dripEnrollments.distributorId, distributorId)
+      );
+
+      // Delete notifications
+      await tx.delete(notifications).where(
+        eq(notifications.distributorId, distributorId)
+      );
+
+      // Delete matrix position
+      await tx.delete(matrixPositions).where(
+        eq(matrixPositions.distributorId, distributorId)
+      );
+
+      // Delete activity log entries (where distributor is actor)
+      await tx.delete(activityLog).where(
+        and(
+          eq(activityLog.actorType, "distributor"),
+          eq(activityLog.actorId, distributorId)
+        )
+      );
+
+      // Finally delete the distributor
+      await tx.delete(distributors).where(
+        eq(distributors.id, distributorId)
+      );
+    });
+
+    // Delete auth user from Supabase (if they have one)
+    if (distributor.authUserId) {
+      try {
+        const supabase = await createServiceClient();
+        await supabase.auth.admin.deleteUser(distributor.authUserId);
+      } catch (authError) {
+        // Log but don't fail - distributor already deleted from DB
+        console.error("Failed to delete auth user:", authError);
+      }
+    }
+
+    revalidatePath("/admin");
+    revalidatePath("/admin/distributors");
+    revalidatePath(`/${distributor.username}`);
+
+    return { success: true };
+  } catch (error) {
+    console.error("Delete distributor error:", error);
+    return { success: false, error: "Failed to delete distributor" };
+  }
 }
 
 // ============================================

@@ -26,6 +26,7 @@ type DistributorsTableProps = {
   totalCount: number;
   currentPage: number;
   totalPages: number;
+  adminRole?: "super_admin" | "admin" | "viewer";
 };
 
 export function DistributorsTable({
@@ -33,6 +34,7 @@ export function DistributorsTable({
   totalCount,
   currentPage,
   totalPages,
+  adminRole = "viewer",
 }: DistributorsTableProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -191,6 +193,7 @@ export function DistributorsTable({
         <DistributorDetailSheet
           distributorId={selectedDistributor}
           onClose={() => setSelectedDistributor(null)}
+          adminRole={adminRole}
         />
       )}
     </>

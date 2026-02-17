@@ -15,7 +15,7 @@ type PageProps = {
 };
 
 export default async function DistributorsPage({ searchParams }: PageProps) {
-  await requireAdmin();
+  const admin = await requireAdmin();
 
   const params = await searchParams;
   const page = parseInt(params.page || "1");
@@ -49,6 +49,7 @@ export default async function DistributorsPage({ searchParams }: PageProps) {
         totalCount={totalCount}
         currentPage={page}
         totalPages={totalPages}
+        adminRole={admin.role}
       />
     </div>
   );

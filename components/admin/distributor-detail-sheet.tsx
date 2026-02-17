@@ -9,6 +9,7 @@ import {
   getDistributorDetail,
   suspendDistributor,
   reactivateDistributor,
+  deleteDistributor,
   type DistributorDetail,
 } from "@/lib/actions/admin";
 import {
@@ -22,18 +23,20 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { Loader2, UserX, UserCheck } from "lucide-react";
+import { Loader2, UserX, UserCheck, Trash2 } from "lucide-react";
 import { formatDate } from "@/lib/utils/date";
 import { ConfirmDialog } from "./confirm-dialog";
 
 type DistributorDetailSheetProps = {
   distributorId: string;
   onClose: () => void;
+  adminRole?: "super_admin" | "admin" | "viewer";
 };
 
 export function DistributorDetailSheet({
   distributorId,
   onClose,
+  adminRole = "viewer",
 }: DistributorDetailSheetProps) {
   const router = useRouter();
   const [distributor, setDistributor] = useState<DistributorDetail | null>(
@@ -43,6 +46,7 @@ export function DistributorDetailSheet({
   const [actionLoading, setActionLoading] = useState(false);
   const [showSuspendDialog, setShowSuspendDialog] = useState(false);
   const [showReactivateDialog, setShowReactivateDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -79,6 +83,20 @@ export function DistributorDetailSheet({
       onClose();
     } else {
       toast.error(result.error || "Failed to reactivate distributor");
+    }
+  }
+
+  async function handleDelete() {
+    setActionLoading(true);
+    const result = await deleteDistributor(distributorId);
+    setActionLoading(false);
+
+    if (result.success) {
+      toast.success("Distributor permanently deleted");
+      router.refresh();
+      onClose();
+    } else {
+      toast.error(result.error || "Failed to delete distributor");
     }
   }
 
@@ -205,6 +223,23 @@ export function DistributorDetailSheet({
                       Reactivate Distributor
                     </Button>
                   ) : null}
+
+                  {/* Delete Button - Super Admin Only */}
+                  {adminRole === "super_admin" && (
+                    <Button
+                      variant="outline"
+                      className="w-full gap-2 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      onClick={() => setShowDeleteDialog(true)}
+                      disabled={actionLoading}
+                    >
+                      {actionLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
+                      Delete Permanently
+                    </Button>
+                  )}
                 </div>
               </div>
             </>
@@ -234,6 +269,16 @@ export function DistributorDetailSheet({
         description={`Are you sure you want to reactivate ${distributor?.firstName} ${distributor?.lastName}? Their replicated site will be activated.`}
         confirmText="Reactivate"
         onConfirm={handleReactivate}
+      />
+
+      <ConfirmDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title="Delete Distributor Permanently"
+        description={`⚠️ WARNING: This will PERMANENTLY delete ${distributor?.firstName} ${distributor?.lastName} and ALL associated data including contacts, enrollments, and matrix position. This action CANNOT be undone.`}
+        confirmText="Delete Forever"
+        onConfirm={handleDelete}
+        variant="destructive"
       />
     </>
   );
