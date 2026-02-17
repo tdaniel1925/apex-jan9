@@ -8,6 +8,7 @@ import { createClient } from "@/lib/db/client";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { env } from "@/lib/env";
+import { getUser } from "@/lib/auth";
 
 // ============================================
 // VALIDATION SCHEMAS
@@ -54,9 +55,14 @@ export async function loginAction(formData: FormData) {
     };
   }
 
-  // Success - redirect will happen via middleware
-  // Middleware will detect role and redirect to /admin or /dashboard
-  redirect("/dashboard");
+  // Success - check user type and redirect accordingly
+  const userData = await getUser();
+
+  if (userData.type === "admin") {
+    redirect("/admin");
+  } else {
+    redirect("/dashboard");
+  }
 }
 
 // ============================================
