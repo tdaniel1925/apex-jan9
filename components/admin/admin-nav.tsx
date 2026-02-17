@@ -5,13 +5,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, GitBranch, Settings } from "lucide-react";
+import { LayoutDashboard, Users, GitBranch, Mail, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/distributors", label: "Distributors", icon: Users },
   { href: "/admin/org-tree", label: "Org Tree", icon: GitBranch },
+  { href: "/admin/emails", label: "Emails", icon: Mail },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
@@ -27,7 +28,7 @@ export function AdminNav({ isMobile = false }: AdminNavProps) {
       <nav className="flex items-center justify-around py-2">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
 
           return (
             <Link
@@ -53,7 +54,7 @@ export function AdminNav({ isMobile = false }: AdminNavProps) {
     <nav className="space-y-1 px-3">
       {navItems.map((item) => {
         const Icon = item.icon;
-        const isActive = pathname === item.href;
+        const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
 
         return (
           <Link
