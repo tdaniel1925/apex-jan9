@@ -76,7 +76,7 @@ export function DripEmailTemplate({
         <strong>The Apex Team</strong>
       </Paragraph>
 
-      <Paragraph style={{
+      <p style={{
         marginTop: '24px',
         padding: '16px',
         backgroundColor: '#f0f9ff',
@@ -86,7 +86,7 @@ export function DripEmailTemplate({
       }}>
         <strong>📧 Next Email:</strong> Your next message in this series arrives in 3 days.
         You're on email {email.step} of 20 in your personalized training track.
-      </Paragraph>
+      </p>
     </EmailTemplate>
   );
 }
