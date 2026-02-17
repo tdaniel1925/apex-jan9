@@ -5,7 +5,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { distributors, dripEnrollments } from "@/lib/db/schema";
-import { and, eq, lte, or } from "drizzle-orm";
+import { and, eq, lte, or, isNull } from "drizzle-orm";
 import { sendDripEmail, getNextDripSendDate } from "@/lib/email";
 import { env } from "@/lib/env";
 
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
           eq(distributors.status, "active"),
           or(
             lte(dripEnrollments.nextSendAt, now),
-            eq(dripEnrollments.nextSendAt, null)
+            isNull(dripEnrollments.nextSendAt)
           )
         )
       );
