@@ -9,6 +9,9 @@ import { render } from "@react-email/render";
 import { WelcomeEmail } from "./templates/welcome";
 import { DripEmailTemplate } from "./templates/drip";
 import { newcomerTrack, licensedAgentTrack, type DripEmail } from "./drip-content";
+import { db } from "@/lib/db/client";
+import { emailTemplates } from "@/lib/db/schema";
+import { eq, and } from "drizzle-orm";
 
 const resend = new Resend(env.RESEND_API_KEY);
 
@@ -70,14 +73,46 @@ export async function sendWelcomeEmail(params: SendWelcomeEmailParams) {
  */
 export async function sendDripEmail(params: SendDripEmailParams) {
   try {
-    // Select the correct track based on license status
-    const track = params.licenseStatus === "licensed" ? licensedAgentTrack : newcomerTrack;
+    // Check for custom template in database first
+    const templateType = params.licenseStatus === "licensed" ? "drip_licensed" : "drip_newcomer";
 
-    // Get the email content for this step (step is 1-indexed)
-    const emailContent = track[params.step - 1];
+    const [customTemplate] = await db
+      .select()
+      .from(emailTemplates)
+      .where(
+        and(
+          eq(emailTemplates.templateType, templateType),
+          eq(emailTemplates.step, params.step),
+          eq(emailTemplates.isActive, true)
+        )
+      )
+      .limit(1);
 
-    if (!emailContent) {
-      return { success: false, error: `Invalid step: ${params.step}` };
+    let emailContent: DripEmail;
+
+    if (customTemplate) {
+      // Use custom template from database
+      emailContent = {
+        step: params.step,
+        subject: customTemplate.subject,
+        previewText: customTemplate.previewText,
+        content: {
+          heading: customTemplate.heading,
+          paragraphs: customTemplate.paragraphs as string[],
+          tips: customTemplate.tips as string[] | undefined,
+          callToAction: customTemplate.callToAction as { text: string; url: string } | undefined,
+        },
+      };
+    } else {
+      // Use default content from drip-content.ts
+      const track = params.licenseStatus === "licensed" ? licensedAgentTrack : newcomerTrack;
+      const defaultContent = track[params.step - 1];
+
+      if (!defaultContent) {
+        return { success: false, error: `Invalid step: ${params.step}` };
+      }
+
+      emailContent = defaultContent;
     }
 
     const unsubscribeUrl = `${env.NEXT_PUBLIC_APP_URL}/unsubscribe?id=${params.distributorId}`;
