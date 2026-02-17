@@ -325,6 +325,26 @@ export const founderLogins = pgTable("founder_logins", {
     .defaultNow(),
 });
 
+export const emailTemplates = pgTable("email_templates", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  templateType: text("template_type").notNull(), // 'welcome', 'drip_newcomer', 'drip_licensed'
+  step: integer("step"), // NULL for welcome, 1-20 for drip
+  subject: text("subject").notNull(),
+  previewText: text("preview_text").notNull(),
+  heading: text("heading").notNull(),
+  paragraphs: jsonb("paragraphs").notNull(), // Array of strings
+  tips: jsonb("tips"), // Optional array of strings
+  callToAction: jsonb("call_to_action"), // Optional {text, url}
+  isActive: boolean("is_active").notNull().default(true),
+  updatedBy: uuid("updated_by").references(() => adminUsers.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 // ============================================
 // TYPE EXPORTS
 // ============================================
@@ -367,3 +387,6 @@ export type NewFounderMember = typeof founderMembers.$inferInsert;
 
 export type FounderLogin = typeof founderLogins.$inferSelect;
 export type NewFounderLogin = typeof founderLogins.$inferInsert;
+
+export type EmailTemplate = typeof emailTemplates.$inferSelect;
+export type NewEmailTemplate = typeof emailTemplates.$inferInsert;
