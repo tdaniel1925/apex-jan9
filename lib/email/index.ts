@@ -8,4 +8,10 @@ export {
   sendSpilloverNotificationEmail,
 } from "./templates";
 
+export {
+  sendDripEmail,
+  getNextDripSendDate,
+  getDripEmailContent,
+} from "./send";
+
 export { resend, EMAIL_FROM, APP_NAME, APP_URL } from "./client";

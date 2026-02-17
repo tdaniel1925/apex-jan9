@@ -221,12 +221,18 @@ export async function getUnreadNotificationCount(
 
 /**
  * Create a drip enrollment for a new distributor
+ * First drip email will be sent 3 days after signup
  */
 export async function createDripEnrollment(distributorId: string) {
+  // Set first drip email to send 3 days after signup
+  const nextSendDate = new Date();
+  nextSendDate.setDate(nextSendDate.getDate() + 3);
+
   await db.insert(dripEnrollments).values({
     distributorId,
     campaignId: "welcome_series",
     status: "enrolled",
     currentStep: 0,
+    nextSendAt: nextSendDate,
   });
 }

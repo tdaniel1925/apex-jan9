@@ -1,84 +1,55 @@
 // SPEC: FEATURE 6 > Email Notifications > All Templates
 // Email templates for Resend
 
+import { render } from "@react-email/render";
 import { resend, EMAIL_FROM, APP_NAME, APP_URL } from "./client";
+import { WelcomeEmail } from "./templates/welcome";
 import type { Distributor } from "@/lib/db/schema";
+import { db } from "@/lib/db/client";
+import { distributors } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 /**
  * Send welcome email to new distributor
  */
 export async function sendWelcomeEmail(distributor: Distributor): Promise<void> {
   try {
+    // Get enroller/sponsor name if available
+    let sponsorName: string | undefined;
+    if (distributor.enrollerId) {
+      const [enroller] = await db
+        .select()
+        .from(distributors)
+        .where(eq(distributors.id, distributor.enrollerId))
+        .limit(1);
+
+      if (enroller) {
+        sponsorName = `${enroller.firstName} ${enroller.lastName}`;
+      }
+    }
+
+    const unsubscribeUrl = `${APP_URL}/unsubscribe?id=${distributor.id}`;
+
+    const html = render(
+      WelcomeEmail({
+        firstName: distributor.firstName,
+        lastName: distributor.lastName,
+        username: distributor.username,
+        sponsorName,
+        unsubscribeUrl,
+      })
+    );
+
     await resend.emails.send({
       from: EMAIL_FROM,
       to: distributor.email,
-      subject: `Welcome to ${APP_NAME}!`,
-      html: `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Welcome to ${APP_NAME}</title>
-          </head>
-          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center; border-radius: 8px 8px 0 0;">
-              <h1 style="color: white; margin: 0; font-size: 28px;">Welcome to ${APP_NAME}!</h1>
-            </div>
-
-            <div style="background: #f9fafb; padding: 40px 20px; border-radius: 0 0 8px 8px;">
-              <p style="font-size: 18px; margin-bottom: 20px;">Hi ${distributor.firstName},</p>
-
-              <p style="margin-bottom: 20px;">Congratulations on joining ${APP_NAME}! We're excited to have you on the team.</p>
-
-              <div style="background: white; padding: 20px; border-radius: 8px; margin: 30px 0; border-left: 4px solid #667eea;">
-                <h2 style="margin-top: 0; color: #667eea; font-size: 20px;">Your Replicated Site is Live!</h2>
-                <p style="margin-bottom: 15px;">Share this URL to start building your team:</p>
-                <a href="${APP_URL}/${distributor.username}" style="display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600;">
-                  ${APP_URL}/${distributor.username}
-                </a>
-              </div>
-
-              <h3 style="color: #667eea; margin-top: 30px;">Getting Started</h3>
-              <ol style="padding-left: 20px;">
-                <li style="margin-bottom: 10px;"><a href="${APP_URL}/login" style="color: #667eea;">Log in to your dashboard</a></li>
-                <li style="margin-bottom: 10px;">Complete your profile and upload a photo</li>
-                <li style="margin-bottom: 10px;">Share your replicated site link with prospects</li>
-                <li style="margin-bottom: 10px;">Watch your team grow!</li>
-              </ol>
-
-              <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 14px;">
-                <p>Need help? Reply to this email or contact support.</p>
-                <p style="margin-top: 20px;">&copy; ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.</p>
-              </div>
-            </div>
-          </body>
-        </html>
-      `,
-      text: `
-Welcome to ${APP_NAME}!
-
-Hi ${distributor.firstName},
-
-Congratulations on joining ${APP_NAME}! We're excited to have you on the team.
-
-Your Replicated Site is Live!
-Share this URL to start building your team: ${APP_URL}/${distributor.username}
-
-Getting Started:
-1. Log in to your dashboard: ${APP_URL}/login
-2. Complete your profile and upload a photo
-3. Share your replicated site link with prospects
-4. Watch your team grow!
-
-Need help? Reply to this email or contact support.
-
-© ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.
-      `.trim(),
+      subject: `Welcome to ${APP_NAME}, ${distributor.firstName}!`,
+      html,
     });
   } catch (error) {
     // Error handled
     // Don't throw - email failures shouldn't block sign-up
+    console.error("Welcome email error:", error);
   }
 }
 
